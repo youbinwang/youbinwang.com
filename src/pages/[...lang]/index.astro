@@ -2,33 +2,43 @@
 /**
  * Homepage — Hero + intro bio + featured game project cards grid.
  */
-import BaseLayout from '../../components/layout/BaseLayout.astro';
-import HeroSection from '../../components/layout/HeroSection.astro';
-import ProjectCard from '../../components/ui/ProjectCard.astro';
-import { getLangFromSlug, ui, getLocalizedPath } from '../../i18n';
-import { games } from '../../data/games';
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import HeroSection from "../../components/layout/HeroSection.astro";
+import ProjectCard from "../../components/ui/ProjectCard.astro";
+import { getLangFromSlug, ui, getLocalizedPath } from "../../i18n";
+import { games } from "../../data/games";
 
 export function getStaticPaths() {
-  return [
-    { params: { lang: undefined } },
-    { params: { lang: 'en' } },
-  ];
+  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
 }
 
 const lang = getLangFromSlug(Astro.params.lang);
 
 // Featured games order differs by language (per original site)
-const cnFeaturedSlugs = ['elemental-realm', 'echo-quest', 'the-scholars-side-quest', 'on-the-road', 'shepherds'];
-const enFeaturedSlugs = ['echo-quest', 'elemental-realm', 'on-the-road', 'the-scholars-side-quest', 'shepherds'];
-const featuredSlugs = lang === 'en' ? enFeaturedSlugs : cnFeaturedSlugs;
+const cnFeaturedSlugs = [
+  "elemental-realm",
+  "echo-quest",
+  "the-scholars-side-quest",
+  "on-the-road",
+  "shepherds",
+];
+const enFeaturedSlugs = [
+  "echo-quest",
+  "elemental-realm",
+  "on-the-road",
+  "the-scholars-side-quest",
+  "shepherds",
+];
+const featuredSlugs = lang === "en" ? enFeaturedSlugs : cnFeaturedSlugs;
 const featuredGames = featuredSlugs
   .map((slug) => games.find((g) => g.slug === slug))
   .filter(Boolean) as typeof games;
 
-const heroImage = 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/fdc01711-6ce1-41a5-9e9c-13e8a6277954/Main+Page.png';
+const heroImage =
+  "https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/fdc01711-6ce1-41a5-9e9c-13e8a6277954/Main+Page.png";
 ---
 
-<BaseLayout title={ui('nav.home', lang)} lang={lang}>
+<BaseLayout title={ui("nav.home", lang)} lang={lang}>
   {/* Hero */}
   <HeroSection
     backgroundImage={heroImage}
@@ -39,57 +49,109 @@ const heroImage = 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e5
 
   {/* Introduction */}
   <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    {lang === 'zh-cn' ? (
-      <div class="text-[#e0e0e0] text-base leading-relaxed space-y-4">
-        <p>
-          Hi，我是王佑彬！我本科毕业于<strong class="text-white">中国传媒大学游戏设计系</strong>，研究生毕业于<strong class="text-white">南加州大学互动媒体与游戏系 (USC Games)</strong>。
-        </p>
-        <p>
-          我广泛涉猎电子游戏，<strong class="text-white">对市场中主流的游戏玩法均有了解与思考</strong>，并有着<strong class="text-white">较丰富的游戏项目设计</strong>及<strong class="text-white">行业实践经验</strong>，曾在<strong class="text-white">腾讯、EA和网易雷火任职</strong>，并参与过10余款不同类型的商业、独立游戏项目的设计和开发工作。
-        </p>
-        <p>
-          与此同时，我可以<strong class="text-white">熟练独立使用 Unity、Unreal 引擎</strong>完成<strong class="text-white">游戏玩法和功能原型</strong>、<strong class="text-white">战斗系统</strong>的引擎内实现，并使用<strong class="text-white">Blender</strong>完成<strong class="text-white">关卡原型</strong>的设计与搭建。
-        </p>
-        <p class="text-lg mt-6">
-          欢迎在下方详细了解我的游戏作品 :D
-        </p>
-      </div>
-    ) : (
-      <div class="text-[#e0e0e0] text-base leading-relaxed space-y-4">
-        <p>
-          I earned my Bachelor's degree in Game Design from the <strong class="text-white">Communication University of China (CUC)</strong> and my Master's degree in Game Design and Development (MS) from the <strong class="text-white">University of Southern California (USC Games)</strong>, experienced in Game Design, Game Project Management, and Game Technical Skills.
-        </p>
-        <p>
-          My diverse experiences have taught me a broad range of creative skills. My ambition is to use gaming as a medium for storytelling, aiming to tell thought-provoking stories and explore deep emotional connections with players.
-        </p>
-        <p class="text-lg mt-6">
-          Welcome to the World of My Creations :)
-        </p>
-      </div>
-    )}
+    {
+      lang === "zh-cn" ? (
+        <div class="text-[var(--color-text-secondary)] text-base leading-relaxed space-y-4">
+          <p>
+            Hi，我是王佑彬！我本科毕业于
+            <strong class="text-[var(--color-text)]">
+              中国传媒大学游戏设计系
+            </strong>
+            ，研究生毕业于
+            <strong class="text-[var(--color-text)]">
+              南加州大学互动媒体与游戏系 (USC Games)
+            </strong>
+            。
+          </p>
+          <p>
+            我广泛涉猎电子游戏，
+            <strong class="text-[var(--color-text)]">
+              对市场中主流的游戏玩法均有了解与思考
+            </strong>
+            ，并有着
+            <strong class="text-[var(--color-text)]">
+              较丰富的游戏项目设计
+            </strong>
+            及<strong class="text-[var(--color-text)]">行业实践经验</strong>
+            ，曾在
+            <strong class="text-[var(--color-text)]">
+              腾讯、EA和网易雷火任职
+            </strong>
+            ，并参与过10余款不同类型的商业、独立游戏项目的设计和开发工作。
+          </p>
+          <p>
+            与此同时，我可以
+            <strong class="text-[var(--color-text)]">
+              熟练独立使用 Unity、Unreal 引擎
+            </strong>
+            完成
+            <strong class="text-[var(--color-text)]">游戏玩法和功能原型</strong>
+            、<strong class="text-[var(--color-text)]">战斗系统</strong>
+            的引擎内实现，并使用
+            <strong class="text-[var(--color-text)]">Blender</strong>完成
+            <strong class="text-[var(--color-text)]">关卡原型</strong>
+            的设计与搭建。
+          </p>
+          <p class="text-lg mt-6 text-[var(--color-text)]">
+            欢迎在下方详细了解我的游戏作品 :D
+          </p>
+        </div>
+      ) : (
+        <div class="text-[var(--color-text-secondary)] text-base leading-relaxed space-y-4">
+          <p>
+            I earned my Bachelor's degree in Game Design from the{" "}
+            <strong class="text-[var(--color-text)]">
+              Communication University of China (CUC)
+            </strong>{" "}
+            and my Master's degree in Game Design and Development (MS) from the{" "}
+            <strong class="text-[var(--color-text)]">
+              University of Southern California (USC Games)
+            </strong>
+            , experienced in Game Design, Game Project Management, and Game
+            Technical Skills.
+          </p>
+          <p>
+            My diverse experiences have taught me a broad range of creative
+            skills. My ambition is to use gaming as a medium for storytelling,
+            aiming to tell thought-provoking stories and explore deep emotional
+            connections with players.
+          </p>
+          <p class="text-lg mt-6 text-[var(--color-text)]">
+            Welcome to the World of My Creations :)
+          </p>
+        </div>
+      )
+    }
   </section>
 
   {/* Featured Games */}
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-    <h2 class="text-2xl font-bold text-white mb-8">
-      {lang === 'zh-cn' ? '游戏作品' : 'Game Works'}
+    <h2 class="text-2xl font-bold text-[var(--color-text)] mb-8">
+      {lang === "zh-cn" ? "游戏作品" : "Game Works"}
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {featuredGames.map((game) => (
-        <ProjectCard game={game} lang={lang} />
-      ))}
+      {featuredGames.map((game) => <ProjectCard game={game} lang={lang} />)}
     </div>
 
     {/* View All CTA */}
     <div class="text-center mt-10">
       <a
-        href={getLocalizedPath('/games/', lang)}
-        class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+        href={getLocalizedPath("/games/", lang)}
+        class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-[var(--color-text)] bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg border border-[var(--color-border)] transition-colors"
       >
-        {lang === 'zh-cn' ? '查看所有游戏作品' : 'View All Game Works'}
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        {lang === "zh-cn" ? "查看所有游戏作品" : "View All Game Works"}
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
         </svg>
       </a>
     </div>

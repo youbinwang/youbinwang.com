@@ -12,6 +12,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Youbin Wang',
+			favicon: '/favicon.png',
 			defaultLocale: 'root',
 			locales: {
 				root: { label: '中文', lang: 'zh-CN' },
@@ -19,27 +20,92 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
+					label: '📚 Docs Home',
+					link: '/docs/',
+				},
+				{
 					label: 'Echo Quest',
+					collapsed: true,
 					items: [
-						{ slug: 'echo-quest' },
-						{ slug: 'echo-quest/gas-system' },
-						{ slug: 'echo-quest/combat-system' },
-						{ slug: 'echo-quest/hit-feedback' },
-						{ slug: 'echo-quest/animation' },
-						{ slug: 'echo-quest/motion-warping' },
-						{ slug: 'echo-quest/enemy-ai' },
+						{ slug: 'docs/echo-quest' },
+						{ slug: 'docs/echo-quest/gas-system' },
+						{ slug: 'docs/echo-quest/combat-system' },
+						{ slug: 'docs/echo-quest/hit-feedback' },
+						{ slug: 'docs/echo-quest/animation' },
+						{ slug: 'docs/echo-quest/motion-warping' },
+						{ slug: 'docs/echo-quest/enemy-ai' },
 					],
 				},
-				{ slug: 'elemental-realm' },
-				{ slug: 'the-camera' },
-				{ slug: 'on-the-road' },
-				{ slug: 'the-scholars-side-quest' },
-				{ slug: 'shepherds' },
-				{ slug: 'aid-master' },
-				{ slug: 'baihua-pavilion' },
-				{ slug: 'elliot-fig' },
-				{ slug: 'greedy-roots' },
-				{ slug: 'stars-chat' },
+				{
+					label: 'Elemental Realm',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/elemental-realm' },
+					],
+				},
+				{
+					label: "The Scholar's Side Quest",
+					collapsed: true,
+					items: [
+						{ slug: 'docs/the-scholars-side-quest' },
+					],
+				},
+				{
+					label: 'Baihua Pavilion',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/baihua-pavilion' },
+					],
+				},
+				{
+					label: 'The Camera',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/the-camera' },
+					],
+				},
+				{
+					label: 'On the Road',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/on-the-road' },
+					],
+				},
+				{
+					label: 'Elliot Fig',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/elliot-fig' },
+					],
+				},
+				{
+					label: 'Stars Chat',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/stars-chat' },
+					],
+				},
+				{
+					label: 'Greedy Roots',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/greedy-roots' },
+					],
+				},
+				{
+					label: 'Shepherds',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/shepherds' },
+					],
+				},
+				{
+					label: 'Aid Master',
+					collapsed: true,
+					items: [
+						{ slug: 'docs/aid-master' },
+					],
+				},
 			],
 			customCss: [
 				'./src/styles/starlight-tailwind.css',
@@ -47,6 +113,7 @@ export default defineConfig({
 			],
 			components: {
 				Header: './src/components/starlight/Header.astro',
+				Sidebar: './src/components/starlight/Sidebar.astro',
 			},
 		}),
 		react(),

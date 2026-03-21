@@ -7,21 +7,27 @@ interface Props {
   title?: string;
 }
 
-const { videoId, title = 'Video' } = Astro.props;
+const { videoId, title = "Video" } = Astro.props;
 ---
 
-<div class="aspect-video rounded-lg overflow-hidden bg-[#1a1a1a]">
+<div
+  class="aspect-video rounded-lg overflow-hidden bg-[var(--color-bg-secondary)]"
+>
   <lite-youtube videoid={videoId} playlabel={`Play: ${title}`}>
-    <a href={`https://youtube.com/watch?v=${videoId}`} class="lty-playbtn" title={`Play: ${title}`}>
+    <a
+      href={`https://youtube.com/watch?v=${videoId}`}
+      class="lty-playbtn"
+      title={`Play: ${title}`}
+    >
       <span class="lyt-visually-hidden">{`Play: ${title}`}</span>
     </a>
   </lite-youtube>
 </div>
 
 <script>
-  import 'lite-youtube-embed/src/lite-yt-embed.js';
+  import "lite-youtube-embed/src/lite-yt-embed.js";
 </script>
 
 <style is:global>
-  @import 'lite-youtube-embed/src/lite-yt-embed.css';
+  @import "lite-youtube-embed/src/lite-yt-embed.css";
 </style>

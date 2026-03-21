@@ -2,17 +2,20 @@
 /**
  * Film detail page — video + description + gallery.
  */
-import BaseLayout from '../../../components/layout/BaseLayout.astro';
-import HeroSection from '../../../components/layout/HeroSection.astro';
-import VideoEmbed from '../../../components/ui/VideoEmbed.astro';
-import { getLangFromSlug, t, getLocalizedPath } from '../../../i18n';
-import { films } from '../../../data/films';
+import BaseLayout from "../../../components/layout/BaseLayout.astro";
+import HeroSection from "../../../components/layout/HeroSection.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+import { getLangFromSlug, t, getLocalizedPath } from "../../../i18n";
+import { films } from "../../../data/films";
 
 export function getStaticPaths() {
   const paths = [];
   for (const film of films) {
-    paths.push({ params: { lang: undefined, slug: film.slug }, props: { film } });
-    paths.push({ params: { lang: 'en', slug: film.slug }, props: { film } });
+    paths.push({
+      params: { lang: undefined, slug: film.slug },
+      props: { film },
+    });
+    paths.push({ params: { lang: "en", slug: film.slug }, props: { film } });
   }
   return paths;
 }
@@ -20,7 +23,7 @@ export function getStaticPaths() {
 const { film } = Astro.props;
 const lang = getLangFromSlug(Astro.params.lang);
 const title = t(film.title, lang);
-const titleEN = t(film.title, 'en');
+const titleEN = t(film.title, "en");
 ---
 
 <BaseLayout title={titleEN} lang={lang}>
@@ -28,62 +31,89 @@ const titleEN = t(film.title, 'en');
 
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <a
-      href={getLocalizedPath('/films/', lang)}
-      class="inline-flex items-center gap-1 text-sm text-[#6b6b6b] hover:text-white transition-colors mb-8"
+      href={getLocalizedPath("/films/", lang)}
+      class="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors mb-8"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"></path>
       </svg>
-      {lang === 'zh-cn' ? '返回电影列表' : 'Back to Films'}
+      {lang === "zh-cn" ? "返回电影列表" : "Back to Films"}
     </a>
 
     <div class="space-y-2 mb-8">
-      <p class="text-sm text-[#6b6b6b]">{t(film.role, lang)} &middot; {film.year}</p>
+      <p class="text-sm text-[var(--color-text-muted)]">
+        {t(film.role, lang)} &middot; {film.year}
+      </p>
     </div>
 
     {/* Video */}
-    {film.videoId && (
-      <div class="mb-10">
-        <VideoEmbed videoId={film.videoId} title={title} />
-      </div>
-    )}
+    {
+      film.videoId && (
+        <div class="mb-10">
+          <VideoEmbed videoId={film.videoId} title={title} />
+        </div>
+      )
+    }
 
     {/* Description */}
     <div class="prose prose-invert max-w-none mb-10">
-      <p class="text-[#e0e0e0] text-base leading-relaxed">
+      <p class="text-[var(--color-text-secondary)] text-base leading-relaxed">
         {t(film.description, lang)}
       </p>
     </div>
 
     {/* Gallery */}
-    {film.gallery.length > 0 && (
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {film.gallery.map((src, i) => (
-          <img
-            src={src}
-            alt={`${title} still ${i + 1}`}
-            class="rounded-lg w-full aspect-video object-cover"
-            loading="lazy"
-          />
-        ))}
-      </div>
-    )}
+    {
+      film.gallery.length > 0 && (
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {film.gallery.map((src, i) => (
+            <img
+              src={src}
+              alt={`${title} still ${i + 1}`}
+              class="rounded-lg w-full aspect-video object-cover"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      )
+    }
 
     {/* Links */}
-    {film.links.gdrive && (
-      <div class="mt-8">
-        <a
-          href={film.links.gdrive}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-[#b0b0b0] hover:text-white text-sm rounded-lg border border-white/10 transition-colors"
-        >
-          Google Drive
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-      </div>
-    )}
+    {
+      film.links.gdrive && (
+        <div class="mt-8">
+          <a
+            href={film.links.gdrive}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:text-[var(--color-text)] text-sm rounded-lg border border-[var(--color-border)] transition-colors"
+          >
+            Google Drive
+            <svg
+              class="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </a>
+        </div>
+      )
+    }
   </div>
 </BaseLayout>

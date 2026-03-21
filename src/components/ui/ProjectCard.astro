@@ -3,9 +3,9 @@
  * ProjectCard — game project card with cover image, hover zoom, title, genre, keywords.
  * Used on homepage featured grid and games list page.
  */
-import type { GameProject } from '../../data/games';
-import type { Lang } from '../../i18n/config';
-import { t, getLocalizedPath } from '../../i18n';
+import type { GameProject } from "../../data/games";
+import type { Lang } from "../../i18n/config";
+import { t, getLocalizedPath } from "../../i18n";
 
 interface Props {
   game: GameProject;
@@ -16,7 +16,10 @@ const { game, lang } = Astro.props;
 const href = getLocalizedPath(`/games/${game.slug}/`, lang);
 ---
 
-<a href={href} class="group block overflow-hidden rounded-lg bg-[#1a1a1a] transition-transform hover:-translate-y-1">
+<a
+  href={href}
+  class="group block overflow-hidden rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] transition-transform hover:-translate-y-1 shadow-sm hover:shadow-md"
+>
   {/* Cover Image */}
   <div class="relative aspect-[16/9] overflow-hidden">
     <img
@@ -26,35 +29,48 @@ const href = getLocalizedPath(`/games/${game.slug}/`, lang);
       loading="lazy"
     />
     {/* Gradient overlay */}
-    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+    >
+    </div>
   </div>
 
   {/* Info */}
   <div class="p-4">
-    <h3 class="text-lg font-semibold text-white group-hover:text-[#e94560] transition-colors">
+    <h3
+      class="text-lg font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors"
+    >
       {t(game.title, lang)}
     </h3>
-    <p class="mt-1 text-sm text-[#b0b0b0]">
+    <p class="mt-1 text-sm text-[var(--color-text-secondary)]">
       {t(game.genre, lang)}
     </p>
-    <p class="mt-1 text-xs text-[#6b6b6b]">
+    <p class="mt-1 text-xs text-[var(--color-text-muted)]">
       {t(game.keywords, lang)}
     </p>
 
     {/* External link icons */}
     <div class="flex items-center gap-2 mt-3">
-      {game.links.itch && (
-        <span class="text-[#6b6b6b] text-xs">itch.io</span>
-      )}
-      {game.links.steam && (
-        <span class="text-[#6b6b6b] text-xs">Steam</span>
-      )}
-      {game.links.youtube && (
-        <span class="text-[#6b6b6b] text-xs">YouTube</span>
-      )}
-      {game.links.gdrive && game.links.gdrive.length > 0 && (
-        <span class="text-[#6b6b6b] text-xs">Drive</span>
-      )}
+      {
+        game.links.itch && (
+          <span class="text-[var(--color-text-muted)] text-xs">itch.io</span>
+        )
+      }
+      {
+        game.links.steam && (
+          <span class="text-[var(--color-text-muted)] text-xs">Steam</span>
+        )
+      }
+      {
+        game.links.youtube && (
+          <span class="text-[var(--color-text-muted)] text-xs">YouTube</span>
+        )
+      }
+      {
+        game.links.gdrive && game.links.gdrive.length > 0 && (
+          <span class="text-[var(--color-text-muted)] text-xs">Drive</span>
+        )
+      }
     </div>
   </div>
 </a>

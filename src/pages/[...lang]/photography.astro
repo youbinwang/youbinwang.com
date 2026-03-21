@@ -2,14 +2,11 @@
 /**
  * Photography page — quote + photo grid. PhotoSwipe lightbox to be added later.
  */
-import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, ui, uiEN } from '../../i18n';
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
-  return [
-    { params: { lang: undefined } },
-    { params: { lang: 'en' } },
-  ];
+  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
 }
 
 const lang = getLangFromSlug(Astro.params.lang);
@@ -18,32 +15,36 @@ const lang = getLangFromSlug(Astro.params.lang);
 const photos: string[] = [];
 ---
 
-<BaseLayout title={uiEN('photography.title')} lang={lang}>
+<BaseLayout title={uiEN("photography.title")} lang={lang}>
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     {/* Quote */}
     <blockquote class="text-center mb-16">
-      <p class="text-xl italic text-[#b0b0b0]">
+      <p class="text-xl italic text-[var(--color-text-secondary)]">
         "We had longer ways to go. But no matter, the road is life."
       </p>
-      <cite class="mt-2 block text-sm text-[#6b6b6b]">— Jack Kerouac</cite>
+      <cite class="mt-2 block text-sm text-[var(--color-text-muted)]"
+        >— Jack Kerouac</cite
+      >
     </blockquote>
 
     {/* Photo Grid */}
-    {photos.length > 0 ? (
-      <div class="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
-        {photos.map((src, i) => (
-          <img
-            src={src}
-            alt={`Photography ${i + 1}`}
-            class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-            loading="lazy"
-          />
-        ))}
-      </div>
-    ) : (
-      <p class="text-center text-[#6b6b6b]">
-        {lang === 'zh-cn' ? '照片即将上线...' : 'Photos coming soon...'}
-      </p>
-    )}
+    {
+      photos.length > 0 ? (
+        <div class="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
+          {photos.map((src, i) => (
+            <img
+              src={src}
+              alt={`Photography ${i + 1}`}
+              class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-center text-[var(--color-text-muted)]">
+          {lang === "zh-cn" ? "照片即将上线..." : "Photos coming soon..."}
+        </p>
+      )
+    }
   </section>
 </BaseLayout>

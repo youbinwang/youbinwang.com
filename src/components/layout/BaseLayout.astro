@@ -2,6 +2,7 @@
 /**
  * BaseLayout — wraps all custom Astro pages with consistent head, nav, footer.
  * Includes View Transitions for smooth page changes and scroll animation observer.
+ * Supports Light/Dark mode via prefers-color-scheme (default: Light).
  * Starlight docs use their own layout; this is for portfolio pages only.
  */
 import { ClientRouter } from 'astro:transitions';
@@ -29,13 +30,14 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://www.youb
 ---
 
 <!doctype html>
-<html lang={htmlLang} class="dark">
+<html lang={htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <title>{title} | Youbin Wang</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="canonical" href={canonicalUrl.href} />
     <meta name="generator" content={Astro.generator} />
 
@@ -53,7 +55,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://www.youb
     <!-- Client-side router for smooth page transitions -->
     <ClientRouter />
   </head>
-  <body class="min-h-screen bg-[#111111] text-[#e0e0e0] font-sans antialiased">
+  <body class="min-h-screen bg-bg text-foreground font-sans antialiased transition-colors duration-200">
     <Navbar lang={lang} />
     <main>
       <slot />

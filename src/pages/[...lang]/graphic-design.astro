@@ -2,14 +2,11 @@
 /**
  * Graphic Design page — works grid with lightbox.
  */
-import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, ui, uiEN } from '../../i18n';
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
-  return [
-    { params: { lang: undefined } },
-    { params: { lang: 'en' } },
-  ];
+  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
 }
 
 const lang = getLangFromSlug(Astro.params.lang);
@@ -18,27 +15,29 @@ const lang = getLangFromSlug(Astro.params.lang);
 const works: string[] = [];
 ---
 
-<BaseLayout title={uiEN('graphicDesign.title')} lang={lang}>
+<BaseLayout title={uiEN("graphicDesign.title")} lang={lang}>
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <h1 class="text-3xl font-bold text-white mb-12 text-center">
-      {ui('graphicDesign.title', lang)}
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-12 text-center">
+      {ui("graphicDesign.title", lang)}
     </h1>
 
-    {works.length > 0 ? (
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {works.map((src, i) => (
-          <img
-            src={src}
-            alt={`Graphic Design ${i + 1}`}
-            class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-            loading="lazy"
-          />
-        ))}
-      </div>
-    ) : (
-      <p class="text-center text-[#6b6b6b]">
-        {lang === 'zh-cn' ? '作品即将上线...' : 'Works coming soon...'}
-      </p>
-    )}
+    {
+      works.length > 0 ? (
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {works.map((src, i) => (
+            <img
+              src={src}
+              alt={`Graphic Design ${i + 1}`}
+              class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-center text-[var(--color-text-muted)]">
+          {lang === "zh-cn" ? "作品即将上线..." : "Works coming soon..."}
+        </p>
+      )
+    }
   </section>
 </BaseLayout>

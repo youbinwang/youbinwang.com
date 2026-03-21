@@ -2,51 +2,75 @@
 /**
  * About Me page — bio, education, skills.
  */
-import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, ui, uiEN } from '../../i18n';
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
-  return [
-    { params: { lang: undefined } },
-    { params: { lang: 'en' } },
-  ];
+  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
 }
 
 const lang = getLangFromSlug(Astro.params.lang);
 ---
 
-<BaseLayout title={uiEN('about.title')} lang={lang}>
+<BaseLayout title={uiEN("about.title")} lang={lang}>
   <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <h1 class="text-3xl font-bold text-white mb-8">
-      {ui('about.title', lang)}
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-8">
+      {ui("about.title", lang)}
     </h1>
 
-    <div class="text-[#e0e0e0] text-base leading-relaxed space-y-4">
-      {lang === 'zh-cn' ? (
-        <>
-          <p>
-            Hi，我是王佑彬！我本科毕业于<strong class="text-white">中国传媒大学游戏设计系</strong>，研究生毕业于<strong class="text-white">南加州大学互动媒体与游戏系 (USC Games)</strong>。
-          </p>
-          <p>
-            我广泛涉猎电子游戏，对市场中主流的游戏玩法均有了解与思考，并有着较丰富的游戏项目设计及行业实践经验，曾在腾讯、EA和网易雷火任职。
-          </p>
-          <p>
-            我可以熟练独立使用 Unity、Unreal 引擎完成游戏玩法和功能原型、战斗系统的引擎内实现，并使用 Blender 完成关卡原型的设计与搭建。
-          </p>
-        </>
-      ) : (
-        <>
-          <p>
-            I earned my Bachelor's degree in Game Design from the <strong class="text-white">Communication University of China (CUC)</strong> and my Master's degree in Game Design and Development (MS) from the <strong class="text-white">University of Southern California (USC Games)</strong>.
-          </p>
-          <p>
-            Experienced in Game Design, Game Project Management, and Game Technical Skills. My diverse experiences have taught me a broad range of creative skills.
-          </p>
-          <p>
-            My ambition is to use gaming as a medium for storytelling, aiming to tell thought-provoking stories and explore deep emotional connections with players.
-          </p>
-        </>
-      )}
+    <div
+      class="text-[var(--color-text-secondary)] text-base leading-relaxed space-y-4"
+    >
+      {
+        lang === "zh-cn" ? (
+          <>
+            <p>
+              Hi，我是王佑彬！我本科毕业于
+              <strong class="text-[var(--color-text)]">
+                中国传媒大学游戏设计系
+              </strong>
+              ，研究生毕业于
+              <strong class="text-[var(--color-text)]">
+                南加州大学互动媒体与游戏系 (USC Games)
+              </strong>
+              。
+            </p>
+            <p>
+              我广泛涉猎电子游戏，对市场中主流的游戏玩法均有了解与思考，并有着较丰富的游戏项目设计及行业实践经验，曾在腾讯、EA和网易雷火任职。
+            </p>
+            <p>
+              我可以熟练独立使用 Unity、Unreal
+              引擎完成游戏玩法和功能原型、战斗系统的引擎内实现，并使用 Blender
+              完成关卡原型的设计与搭建。
+            </p>
+          </>
+        ) : (
+          <>
+            <p>
+              I earned my Bachelor's degree in Game Design from the{" "}
+              <strong class="text-[var(--color-text)]">
+                Communication University of China (CUC)
+              </strong>{" "}
+              and my Master's degree in Game Design and Development (MS) from
+              the{" "}
+              <strong class="text-[var(--color-text)]">
+                University of Southern California (USC Games)
+              </strong>
+              .
+            </p>
+            <p>
+              Experienced in Game Design, Game Project Management, and Game
+              Technical Skills. My diverse experiences have taught me a broad
+              range of creative skills.
+            </p>
+            <p>
+              My ambition is to use gaming as a medium for storytelling, aiming
+              to tell thought-provoking stories and explore deep emotional
+              connections with players.
+            </p>
+          </>
+        )
+      }
     </div>
   </section>
 </BaseLayout>

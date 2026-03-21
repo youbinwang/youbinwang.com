@@ -1,10 +1,94 @@
 @import "tailwindcss";
 
+/* ─── Theme tokens (Light = default, Dark = prefers-color-scheme) ──── */
+
+:root {
+    /* Accent */
+    --color-accent: #FF9300;
+    --color-accent-hover: #E08200;
+    --color-accent-bg: rgba(255, 147, 0, 0.08);
+    --color-accent-selection: rgba(255, 147, 0, 0.2);
+
+    /* Surfaces — Apple-inspired warm gray whites */
+    --color-bg: #FAFAFA;
+    --color-bg-secondary: #F2F2F7;
+    --color-bg-tertiary: #E5E5EA;
+    --color-surface: #FFFFFF;
+    --color-surface-hover: #F2F2F7;
+    --color-surface-overlay: rgba(250, 250, 250, 0.92);
+
+    /* Text — Apple Human Interface near-blacks */
+    --color-text: #1D1D1F;
+    --color-text-secondary: #48484A;
+    --color-text-muted: #8E8E93;
+    --color-text-inverse: #F5F5F7;
+
+    /* Borders */
+    --color-border: rgba(0, 0, 0, 0.08);
+    --color-border-strong: rgba(0, 0, 0, 0.15);
+
+    /* Scrollbar */
+    --color-scrollbar-track: #F2F2F7;
+    --color-scrollbar-thumb: #C7C7CC;
+    --color-scrollbar-thumb-hover: #8E8E93;
+
+    /* Hero overlays (always dark for readability on images) */
+    --color-hero-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.45), var(--color-bg));
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        /* Surfaces — Material Design dark + Apple Dark */
+        --color-bg: #121212;
+        --color-bg-secondary: #1C1C1E;
+        --color-bg-tertiary: #2C2C2E;
+        --color-surface: #1C1C1E;
+        --color-surface-hover: #2C2C2E;
+        --color-surface-overlay: rgba(18, 18, 18, 0.92);
+
+        /* Text — Apple Dark near-whites */
+        --color-text: #F5F5F7;
+        --color-text-secondary: #A1A1A6;
+        --color-text-muted: #636366;
+        --color-text-inverse: #1D1D1F;
+
+        /* Borders */
+        --color-border: rgba(255, 255, 255, 0.08);
+        --color-border-strong: rgba(255, 255, 255, 0.15);
+
+        /* Scrollbar */
+        --color-scrollbar-track: #121212;
+        --color-scrollbar-thumb: #3A3A3C;
+        --color-scrollbar-thumb-hover: #636366;
+
+        /* Hero overlay */
+        --color-hero-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5), #121212);
+    }
+}
+
+/* ─── Tailwind v4 theme extension ──────────────────────────────────── */
+@theme {
+    --color-bg: var(--color-bg);
+    --color-bg-secondary: var(--color-bg-secondary);
+    --color-bg-tertiary: var(--color-bg-tertiary);
+    --color-surface: var(--color-surface);
+    --color-surface-hover: var(--color-surface-hover);
+    --color-surface-overlay: var(--color-surface-overlay);
+    --color-foreground: var(--color-text);
+    --color-foreground-secondary: var(--color-text-secondary);
+    --color-foreground-muted: var(--color-text-muted);
+    --color-foreground-inverse: var(--color-text-inverse);
+    --color-border: var(--color-border);
+    --color-border-strong: var(--color-border-strong);
+    --color-accent: var(--color-accent);
+    --color-accent-hover: var(--color-accent-hover);
+}
+
 /* ─── Base reset & global styles ───────────────────────────────────── */
 
-/* Smooth scrolling */
 html {
     scroll-behavior: smooth;
+    color-scheme: light dark;
 }
 
 /* Custom scrollbar (webkit) */
@@ -14,33 +98,33 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-    background: #111111;
+    background: var(--color-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #3a3a3a;
+    background: var(--color-scrollbar-thumb);
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--color-scrollbar-thumb-hover);
 }
 
 /* Firefox scrollbar */
 * {
     scrollbar-width: thin;
-    scrollbar-color: #3a3a3a #111111;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
 }
 
 /* Text selection */
 ::selection {
-    background: rgba(233, 69, 96, 0.3);
-    color: #fff;
+    background: var(--color-accent-selection);
+    color: var(--color-text);
 }
 
 /* Focus visible — accessible keyboard focus ring */
 :focus-visible {
-    outline: 2px solid #e94560;
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
     border-radius: 4px;
 }
@@ -59,6 +143,8 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    background-color: var(--color-bg);
+    color: var(--color-text);
 }
 
 /* ─── Image defaults ───────────────────────────────────────────────── */
@@ -71,7 +157,6 @@ img {
 
 /* ─── View Transition animations ───────────────────────────────────── */
 
-/* Fade transition (default for page changes) */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -104,7 +189,6 @@ img {
     animation: fadeIn 0.3s ease-in-out forwards;
 }
 
-/* Slide transition for hero sections */
 ::view-transition-old(hero) {
     animation: fadeOut 0.15s ease-in forwards;
 }
@@ -126,7 +210,6 @@ img {
     transform: translateY(0);
 }
 
-/* Staggered children animation */
 .stagger-children>* {
     opacity: 0;
     transform: translateY(16px);
@@ -171,12 +254,10 @@ img {
 
 /* ─── Utility overrides ────────────────────────────────────────────── */
 
-/* Prevent body scroll when mobile menu is open */
 body.menu-open {
     overflow: hidden;
 }
 
-/* Minimum touch target for interactive elements on mobile */
 @media (pointer: coarse) {
 
     a,

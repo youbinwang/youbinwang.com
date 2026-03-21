@@ -68,13 +68,14 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
       {/* Full-screen Overlay */}
       <div
         className={`fixed inset-0 z-40 transition-all duration-300 ${isOpen
-            ? 'opacity-100 visible'
-            : 'opacity-0 invisible pointer-events-none'
+          ? 'opacity-100 visible'
+          : 'opacity-0 invisible pointer-events-none'
           }`}
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-[#111111]/98 backdrop-blur-xl"
+          className="absolute inset-0 backdrop-blur-xl"
+          style={{ backgroundColor: 'var(--color-surface-overlay)' }}
           onClick={() => setIsOpen(false)}
         />
 
@@ -86,8 +87,8 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
                 key={item.href}
                 href={item.href}
                 className={`text-xl py-3 px-6 text-[#e0e0e0] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-4'
+                  ? 'opacity-100 translate-y-0'
+                  : 'opacity-0 translate-y-4'
                   }`}
                 style={{
                   transitionDelay: isOpen ? `${index * 50 + 100}ms` : '0ms',

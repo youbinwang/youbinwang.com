@@ -2,15 +2,15 @@
 /**
  * Experience detail page.
  */
-import BaseLayout from '../../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, t, getLocalizedPath } from '../../../i18n';
-import { experiences } from '../../../data/experiences';
+import BaseLayout from "../../../components/layout/BaseLayout.astro";
+import { getLangFromSlug, t, getLocalizedPath } from "../../../i18n";
+import { experiences } from "../../../data/experiences";
 
 export function getStaticPaths() {
   const paths = [];
   for (const exp of experiences) {
     paths.push({ params: { lang: undefined, slug: exp.slug }, props: { exp } });
-    paths.push({ params: { lang: 'en', slug: exp.slug }, props: { exp } });
+    paths.push({ params: { lang: "en", slug: exp.slug }, props: { exp } });
   }
   return paths;
 }
@@ -19,41 +19,56 @@ const { exp } = Astro.props;
 const lang = getLangFromSlug(Astro.params.lang);
 ---
 
-<BaseLayout title={t(exp.company, 'en')} lang={lang}>
+<BaseLayout title={t(exp.company, "en")} lang={lang}>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <a
-      href={getLocalizedPath('/experience/', lang)}
-      class="inline-flex items-center gap-1 text-sm text-[#6b6b6b] hover:text-white transition-colors mb-8"
+      href={getLocalizedPath("/experience/", lang)}
+      class="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors mb-8"
     >
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      <svg
+        class="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"></path>
       </svg>
-      {lang === 'zh-cn' ? '返回工作经历' : 'Back to Experience'}
+      {lang === "zh-cn" ? "返回工作经历" : "Back to Experience"}
     </a>
 
-    <h1 class="text-3xl font-bold text-white mb-2">{t(exp.company, lang)}</h1>
-    <p class="text-lg text-[#b0b0b0]">{t(exp.title, lang)}</p>
-    <p class="text-sm text-[#6b6b6b] mt-1">
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
+      {t(exp.company, lang)}
+    </h1>
+    <p class="text-lg text-[var(--color-text-secondary)]">
+      {t(exp.title, lang)}
+    </p>
+    <p class="text-sm text-[var(--color-text-muted)] mt-1">
       {t(exp.duration, lang)} &middot; {t(exp.location, lang)}
     </p>
 
-    <hr class="border-white/10 my-8" />
+    <hr class="border-[var(--color-border)] my-8" />
 
-    <div class="prose prose-invert max-w-none">
-      <p class="text-[#e0e0e0] leading-relaxed">
+    <div class="prose max-w-none">
+      <p class="text-[var(--color-text-secondary)] leading-relaxed">
         {t(exp.description, lang)}
       </p>
     </div>
 
-    {exp.responsibilities.length > 0 && (
-      <ul class="mt-6 space-y-2">
-        {exp.responsibilities.map((r) => (
-          <li class="flex items-start gap-2 text-[#e0e0e0]">
-            <span class="text-[#e94560] mt-1.5">-</span>
-            <span>{t(r, lang)}</span>
-          </li>
-        ))}
-      </ul>
-    )}
+    {
+      exp.responsibilities.length > 0 && (
+        <ul class="mt-6 space-y-2">
+          {exp.responsibilities.map((r) => (
+            <li class="flex items-start gap-2 text-[var(--color-text-secondary)]">
+              <span class="text-[var(--color-accent)] mt-1.5">-</span>
+              <span>{t(r, lang)}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </div>
 </BaseLayout>
