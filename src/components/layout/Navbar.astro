@@ -5,7 +5,7 @@
  * Items: Home | Games | Films | Other Works▾ | About Me  +  Lang switch  +  Social icons
  */
 import type { Lang } from '../../i18n/config';
-import { getLocalizedPath, ui } from '../../i18n';
+import { getLocalizedPath, ui, uiEN } from '../../i18n';
 import MobileMenu from './MobileMenu';
 
 interface Props {
@@ -29,18 +29,18 @@ function isActive(href: string): boolean {
 }
 
 const navItems = [
-  { label: ui('nav.home', lang), href: getLocalizedPath('/', lang) },
-  { label: ui('nav.games', lang), href: getLocalizedPath('/games/', lang) },
-  { label: ui('nav.films', lang), href: getLocalizedPath('/films/', lang) },
+  { label: uiEN('nav.home'), href: getLocalizedPath('/', lang) },
+  { label: uiEN('nav.games'), href: getLocalizedPath('/games/', lang) },
+  { label: uiEN('nav.films'), href: getLocalizedPath('/films/', lang) },
 ];
 
 const otherWorksItems = [
-  { label: ui('nav.photography', lang), href: getLocalizedPath('/photography/', lang) },
-  { label: ui('nav.graphicDesign', lang), href: getLocalizedPath('/graphic-design/', lang) },
-  { label: ui('nav.music', lang), href: getLocalizedPath('/music/', lang) },
+  { label: uiEN('nav.photography'), href: getLocalizedPath('/photography/', lang) },
+  { label: uiEN('nav.graphicDesign'), href: getLocalizedPath('/graphic-design/', lang) },
+  { label: uiEN('nav.music'), href: getLocalizedPath('/music/', lang) },
 ];
 
-const aboutItem = { label: ui('nav.about', lang), href: getLocalizedPath('/about/', lang) };
+const aboutItem = { label: uiEN('nav.about'), href: getLocalizedPath('/about/', lang) };
 
 const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
 
@@ -53,7 +53,7 @@ const allNavItems = [
 
 <nav
   class="fixed top-0 left-0 right-0 z-50 bg-[#111111]/80 backdrop-blur-md border-b border-white/5"
-  transition:persist
+  transition:animate="none"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
@@ -95,7 +95,7 @@ const allNavItems = [
                 : 'text-[#b0b0b0] hover:text-white',
             ]}
           >
-            {ui('nav.otherWorks', lang)}
+            {uiEN('nav.otherWorks')}
             <svg class="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>

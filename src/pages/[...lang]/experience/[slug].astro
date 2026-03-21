@@ -19,7 +19,7 @@ const { exp } = Astro.props;
 const lang = getLangFromSlug(Astro.params.lang);
 ---
 
-<BaseLayout title={t(exp.company, lang)} lang={lang}>
+<BaseLayout title={t(exp.company, 'en')} lang={lang}>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <a
       href={getLocalizedPath('/experience/', lang)}

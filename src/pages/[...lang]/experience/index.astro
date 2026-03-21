@@ -3,7 +3,7 @@
  * Work Experience list page.
  */
 import BaseLayout from '../../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, ui, t, getLocalizedPath } from '../../../i18n';
+import { getLangFromSlug, ui, uiEN, t, getLocalizedPath } from '../../../i18n';
 import { getExperiencesByOrder } from '../../../data/experiences';
 
 export function getStaticPaths() {
@@ -17,7 +17,7 @@ const lang = getLangFromSlug(Astro.params.lang);
 const experiences = getExperiencesByOrder();
 ---
 
-<BaseLayout title={ui('experience.title', lang)} lang={lang}>
+<BaseLayout title={uiEN('experience.title')} lang={lang}>
   <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <h1 class="text-3xl font-bold text-white mb-12">
       {ui('experience.title', lang)}

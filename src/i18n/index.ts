@@ -24,3 +24,12 @@ const translations: Record<Lang, Record<TranslationKey, string>> = {
 export function ui(key: TranslationKey, lang: Lang): string {
   return translations[lang][key];
 }
+
+/**
+ * Always return the English translation for a given key.
+ * Used for HTML <title> tags — page titles are always English
+ * (except homepage and /games/ which use ui() directly).
+ */
+export function uiEN(key: TranslationKey): string {
+  return translations['en'][key];
+}

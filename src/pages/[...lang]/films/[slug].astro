@@ -20,9 +20,10 @@ export function getStaticPaths() {
 const { film } = Astro.props;
 const lang = getLangFromSlug(Astro.params.lang);
 const title = t(film.title, lang);
+const titleEN = t(film.title, 'en');
 ---
 
-<BaseLayout title={title} lang={lang}>
+<BaseLayout title={titleEN} lang={lang}>
   <HeroSection backgroundImage={film.coverImage} title={title} />
 
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

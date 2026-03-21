@@ -4,7 +4,7 @@
  * Shows track cards with cover images and embed players (placeholders for now).
  */
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, ui, t, getLocalizedPath } from '../../i18n';
+import { getLangFromSlug, ui, uiEN, t, getLocalizedPath } from '../../i18n';
 import { getMusicByCategory } from '../../data/music';
 
 export function getStaticPaths() {
@@ -19,7 +19,7 @@ const productionTracks = getMusicByCategory('production');
 const ostTracks = getMusicByCategory('ost');
 ---
 
-<BaseLayout title={ui('music.title', lang)} lang={lang}>
+<BaseLayout title={uiEN('music.title')} lang={lang}>
   <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <h1 class="text-3xl font-bold text-white mb-12 text-center">
       {ui('music.title', lang)}

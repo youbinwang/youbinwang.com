@@ -3,7 +3,7 @@
  * Graphic Design page — works grid with lightbox.
  */
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import { getLangFromSlug, ui } from '../../i18n';
+import { getLangFromSlug, ui, uiEN } from '../../i18n';
 
 export function getStaticPaths() {
   return [
@@ -18,7 +18,7 @@ const lang = getLangFromSlug(Astro.params.lang);
 const works: string[] = [];
 ---
 
-<BaseLayout title={ui('graphicDesign.title', lang)} lang={lang}>
+<BaseLayout title={uiEN('graphicDesign.title')} lang={lang}>
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <h1 class="text-3xl font-bold text-white mb-12 text-center">
       {ui('graphicDesign.title', lang)}
