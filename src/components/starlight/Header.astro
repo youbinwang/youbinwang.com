@@ -1,0 +1,13 @@
+---
+/**
+ * Custom Starlight Header — replaces default Starlight header
+ * to unify navigation across portfolio and documentation pages.
+ */
+import type { Props as StarlightProps } from '@astrojs/starlight/props';
+import Navbar from '../layout/Navbar.astro';
+
+// Determine language from Starlight locale
+const lang = Astro.url.pathname.startsWith('/en/') ? 'en' : 'zh-cn';
+---
+
+<Navbar lang={lang as 'en' | 'zh-cn'} />

@@ -1,0 +1,164 @@
+/**
+ * MobileMenu — React Island for hamburger menu with full-screen overlay.
+ * Features: body scroll lock, fade/slide entrance animation, accessible.
+ * Used in Navbar.astro with client:load for immediate interactivity.
+ */
+
+import { useState, useEffect } from 'react';
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  lang: string;
+  navItems: NavItem[];
+  langSwitchPath: string;
+  langLabel: string;
+}
+
+export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('menu-open');
+    } else {
+      document.body.classList.remove('menu-open');
+    }
+    return () => document.body.classList.remove('menu-open');
+  }, [isOpen]);
+
+  // Close menu on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) setIsOpen(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
+
+  return (
+    <>
+      {/* Hamburger Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative z-50 w-11 h-11 flex items-center justify-center rounded-md hover:bg-white/5 transition-colors"
+        aria-label={isOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={isOpen}
+      >
+        <div className="flex flex-col gap-1.5">
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all duration-300 origin-center ${isOpen ? 'rotate-45 translate-y-2' : ''
+              }`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'opacity-0 scale-x-0' : ''
+              }`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-white transition-all duration-300 origin-center ${isOpen ? '-rotate-45 -translate-y-2' : ''
+              }`}
+          />
+        </div>
+      </button>
+
+      {/* Full-screen Overlay */}
+      <div
+        className={`fixed inset-0 z-40 transition-all duration-300 ${isOpen
+            ? 'opacity-100 visible'
+            : 'opacity-0 invisible pointer-events-none'
+          }`}
+      >
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-[#111111]/98 backdrop-blur-xl"
+          onClick={() => setIsOpen(false)}
+        />
+
+        {/* Menu Content */}
+        <div className="relative flex flex-col items-center justify-center h-full">
+          <nav className="flex flex-col items-center gap-1">
+            {navItems.map((item, index) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className={`text-xl py-3 px-6 text-[#e0e0e0] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 translate-y-4'
+                  }`}
+                style={{
+                  transitionDelay: isOpen ? `${index * 50 + 100}ms` : '0ms',
+                }}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Separator */}
+          <div
+            className={`w-16 h-px bg-white/20 my-6 transition-all duration-300 ${isOpen ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+              }`}
+            style={{ transitionDelay: isOpen ? '450ms' : '0ms' }}
+          />
+
+          {/* Language Switch */}
+          <a
+            href={langSwitchPath}
+            className={`text-lg py-2 px-6 text-[#b0b0b0] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+            style={{ transitionDelay: isOpen ? '500ms' : '0ms' }}
+            onClick={() => setIsOpen(false)}
+          >
+            {langLabel}
+          </a>
+
+          {/* Social Icons */}
+          <div
+            className={`flex items-center gap-5 mt-8 transition-all duration-300 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+            style={{ transitionDelay: isOpen ? '550ms' : '0ms' }}
+          >
+            <a
+              href="https://mumu3an.itch.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#b0b0b0] hover:text-white transition-colors p-2"
+              aria-label="itch.io"
+            >
+              <svg className="w-6 h-6" viewBox="0 0 245.371 220.736" fill="currentColor">
+                <path d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.584 0 23.36-11.258 23.36-24.62 0 13.362 11.674 24.62 25.258 24.62h.001c13.584 0 25.257-11.258 25.257-24.62 0 13.362 9.777 24.62 23.36 24.62 13.585 0 24.516-11.258 24.516-24.62 0 13.362 11.319 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0 88.316-.005 65.253.197 31.99 1.365zm65.194 66.217a28.025 28.025 0 01-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 01-19.948-8.126c-1.858-1.82-3.27-3.766-4.455-5.826a28.165 28.165 0 01-4.405 5.825c-5.166 5.053-12.196 8.13-19.907 8.127v.002c-.084 0-.167-.005-.251-.005v87.457c0 4.07 2.29 10.3 12.123 10.3 13.664 0 24.504-1.29 37.453-12.167 3.467-2.913 11.987-2.89 15.451 0 12.95 10.876 23.79 12.166 37.453 12.166 9.833 0 12.123-6.23 12.123-10.3V81.735a27.23 27.23 0 01-.252.005v-.003c-7.71.003-14.74-3.073-19.906-8.126a28.17 28.17 0 01-4.406-5.825 28.003 28.003 0 01-4.455 5.826c-5.166 5.053-12.195 8.13-19.906 8.126a28.49 28.49 0 01-19.948-8.122 28.03 28.03 0 01-4.78-6.155h-.001zm-35.81 37.95h31.891l-7.545 35.322 19.228-14.186L122.685 145l17.737-18.332 19.229 14.186-7.546-35.322h31.892v49.878l-36.07 28.674c-3.467-2.913-11.986-2.89-15.452 0l-36.069-28.674v-49.878z" />
+              </svg>
+            </a>
+            <a
+              href="https://github.com/youbinwang"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#b0b0b0] hover:text-white transition-colors p-2"
+              aria-label="GitHub"
+            >
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+              </svg>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/youbinwang/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#b0b0b0] hover:text-white transition-colors p-2"
+              aria-label="LinkedIn"
+            >
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -1,0 +1,49 @@
+---
+/**
+ * Films list page — cover cards for each film project.
+ */
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import HeroSection from '../../../components/layout/HeroSection.astro';
+import { getLangFromSlug, ui, t, getLocalizedPath } from '../../../i18n';
+import { getFilmsByOrder } from '../../../data/films';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = getLangFromSlug(Astro.params.lang);
+const films = getFilmsByOrder();
+---
+
+<BaseLayout title={ui('films.title', lang)} lang={lang}>
+  <HeroSection title={ui('films.title', lang)} />
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {films.map((film) => (
+        <a
+          href={getLocalizedPath(`/films/${film.slug}/`, lang)}
+          class="group block overflow-hidden rounded-lg bg-[#1a1a1a] transition-transform hover:-translate-y-1"
+        >
+          <div class="relative aspect-[16/9] overflow-hidden">
+            <img
+              src={film.coverImage}
+              alt={t(film.title, lang)}
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-4">
+            <h3 class="text-lg font-semibold text-white group-hover:text-[#e94560] transition-colors">
+              {t(film.title, lang)}
+            </h3>
+            <p class="mt-1 text-sm text-[#b0b0b0]">{t(film.role, lang)} &middot; {film.year}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,89 @@
+---
+/**
+ * Game overview page — Hero + ProjectMeta + Video + Gallery + ExternalLinks + Description.
+ * Generates one page per game slug × language.
+ */
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import HeroSection from '../../../components/layout/HeroSection.astro';
+import ProjectMeta from '../../../components/ui/ProjectMeta.astro';
+import VideoEmbed from '../../../components/ui/VideoEmbed.astro';
+import ExternalLinks from '../../../components/ui/ExternalLinks.astro';
+import { getLangFromSlug, t, getLocalizedPath } from '../../../i18n';
+import { games } from '../../../data/games';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const game of games) {
+    paths.push({ params: { lang: undefined, slug: game.slug }, props: { game } });
+    paths.push({ params: { lang: 'en', slug: game.slug }, props: { game } });
+  }
+  return paths;
+}
+
+const { game } = Astro.props;
+const lang = getLangFromSlug(Astro.params.lang);
+const title = t(game.title, lang);
+---
+
+<BaseLayout title={title} lang={lang}>
+  {/* Hero */}
+  <HeroSection backgroundImage={game.heroImage} title={title} />
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {/* Back link */}
+    <a
+      href={getLocalizedPath('/games/', lang)}
+      class="inline-flex items-center gap-1 text-sm text-[#6b6b6b] hover:text-white transition-colors mb-8"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      {lang === 'zh-cn' ? '返回游戏列表' : 'Back to Games'}
+    </a>
+
+    {/* Meta Info */}
+    <ProjectMeta game={game} lang={lang} />
+
+    {/* Separator */}
+    <hr class="border-white/10 my-8" />
+
+    {/* Description */}
+    <div class="prose prose-invert max-w-none mb-10">
+      <p class="text-[#e0e0e0] text-base leading-relaxed">
+        {t(game.description, lang)}
+      </p>
+    </div>
+
+    {/* Video */}
+    {game.videoId && (
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold text-white mb-4">
+          {lang === 'zh-cn' ? '演示视频' : 'Demo Video'}
+        </h2>
+        <VideoEmbed videoId={game.videoId} title={title} />
+      </section>
+    )}
+
+    {/* Gallery */}
+    {game.gallery.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-lg font-semibold text-white mb-4">
+          {lang === 'zh-cn' ? '截图' : 'Screenshots'}
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {game.gallery.map((src, i) => (
+            <img
+              src={src}
+              alt={`${title} screenshot ${i + 1}`}
+              class="rounded-lg w-full aspect-video object-cover"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    {/* External Links & Docs CTA */}
+    <ExternalLinks game={game} lang={lang} />
+  </div>
+</BaseLayout>

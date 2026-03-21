@@ -1,0 +1,8 @@
+/main         /               301
+/main-cn      /               301
+/games        /games/         301
+/games-en     /en/games/      301
+/games-cn     /games/         301
+/about-me     /about/         301
+/work-experiences    /experience/           301
+/work-experiences/*  /experience/:splat     301

@@ -1,0 +1,29 @@
+{
+  "name": "youbinwang-com",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/starlight": "^0.38.2",
+    "astro": "^6.0.1",
+    "lite-youtube-embed": "^0.3.3",
+    "photoswipe": "^5.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sharp": "^0.34.2",
+    "swiper": "^11.2.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

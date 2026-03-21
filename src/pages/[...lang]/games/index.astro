@@ -1,0 +1,147 @@
+---
+/**
+ * Games list page — vertical layout with projects grouped by category.
+ * Each project: cover image on one side, info on the other, alternating positions.
+ * Categories: Personal | Combat & Level | Gameplay | Producer
+ */
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import HeroSection from '../../../components/layout/HeroSection.astro';
+import { getLangFromSlug, ui } from '../../../i18n';
+import { t, getLocalizedPath } from '../../../i18n/config';
+import { getGamesByCategory } from '../../../data/games';
+import type { GameProject } from '../../../data/games';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = getLangFromSlug(Astro.params.lang);
+
+const categories: { key: GameProject['category']; label: string }[] = [
+  { key: 'personal', label: ui('games.category.personal', lang) },
+  { key: 'combat-level', label: ui('games.category.combat-level', lang) },
+  { key: 'gameplay', label: ui('games.category.gameplay', lang) },
+  { key: 'producer', label: ui('games.category.producer', lang) },
+];
+
+/** Track global index for alternating layout */
+let globalIndex = 0;
+---
+
+<BaseLayout title={ui('games.title', lang)} lang={lang}>
+  {/* Banner */}
+  <HeroSection
+    title={ui('games.title', lang)}
+    subtitle={lang === 'zh-cn'
+      ? '游戏策划 / 战斗策划 / 关卡策划'
+      : 'Gameplay / Combat / Level Designer'}
+  />
+
+  {/* Category Sections */}
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+    {categories.map(({ key, label }) => {
+      const categoryGames = getGamesByCategory(key);
+      if (categoryGames.length === 0) return null;
+      return (
+        <section>
+          <h2 class="text-2xl font-bold text-white mb-10 pb-3 border-b border-white/10">
+            {label}
+          </h2>
+          <div class="space-y-16">
+            {categoryGames.map((game) => {
+              const isReversed = globalIndex % 2 === 1;
+              globalIndex++;
+              const href = getLocalizedPath(`/games/${game.slug}/`, lang);
+              return (
+                <a href={href} class="group block">
+                  <div class={`flex flex-col ${isReversed ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 items-start`}>
+                    {/* Cover Image */}
+                    <div class="w-full md:w-1/2 overflow-hidden rounded-lg">
+                      <img
+                        src={game.coverImage}
+                        alt={t(game.title, lang)}
+                        class="w-full aspect-[16/10] object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    {/* Project Info */}
+                    <div class="w-full md:w-1/2 flex flex-col justify-center py-2">
+                      <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-[#c0c0c0] transition-colors">
+                        {t(game.title, lang)}
+                      </h3>
+                      <p class="text-[#999] text-sm mb-1">{t(game.genre, lang)}</p>
+                      <p class="text-[#777] text-xs mb-4 uppercase tracking-wider">{t(game.keywords, lang)}</p>
+
+                      {/* Meta info */}
+                      <div class="space-y-1.5 text-sm text-[#999] mb-4">
+                        <div class="flex gap-2">
+                          <span class="text-[#666] min-w-[60px]">{ui('game.role', lang)}:</span>
+                          <span>{t(game.meta.role, lang)}</span>
+                        </div>
+                        <div class="flex gap-2">
+                          <span class="text-[#666] min-w-[60px]">{ui('game.engine', lang)}:</span>
+                          <span>{game.meta.engine}</span>
+                        </div>
+                        <div class="flex gap-2">
+                          <span class="text-[#666] min-w-[60px]">{ui('game.platform', lang)}:</span>
+                          <span>{game.meta.platform}</span>
+                        </div>
+                        <div class="flex gap-2">
+                          <span class="text-[#666] min-w-[60px]">{ui('game.duration', lang)}:</span>
+                          <span>{t(game.meta.duration, lang)}</span>
+                        </div>
+                      </div>
+
+                      {/* External link icons */}
+                      <div class="flex items-center gap-3">
+                        {game.links.itch && (
+                          <span class="text-[#999] hover:text-white transition-colors" title="itch.io">
+                            <svg class="w-5 h-5" viewBox="0 0 245.371 220.736" fill="currentColor">
+                              <path d="M31.99 1.365C21.287 7.72.2 31.945 0 38.298v10.516C0 62.144 12.46 73.86 23.773 73.86c13.584 0 24.902-11.258 24.903-24.62 0 13.362 10.93 24.62 24.515 24.62 13.584 0 23.36-11.258 23.36-24.62 0 13.362 11.674 24.62 25.258 24.62h.001c13.584 0 25.257-11.258 25.257-24.62 0 13.362 9.777 24.62 23.36 24.62 13.585 0 24.516-11.258 24.516-24.62 0 13.362 11.319 24.62 24.903 24.62 11.313 0 23.773-11.714 23.773-25.046V38.298c-.2-6.354-21.287-30.58-31.988-36.933C180.118.197 157.056-.005 122.685 0 88.316-.005 65.253.197 31.99 1.365zm65.194 66.217a28.025 28.025 0 01-4.78 6.155c-5.128 5.014-12.157 8.122-19.906 8.122a28.482 28.482 0 01-19.948-8.126c-1.858-1.82-3.27-3.766-4.455-5.826a28.165 28.165 0 01-4.405 5.825c-5.166 5.053-12.196 8.13-19.907 8.127v.002c-.084 0-.167-.005-.251-.005v87.457c0 4.07 2.29 10.3 12.123 10.3 13.664 0 24.504-1.29 37.453-12.167 3.467-2.913 11.987-2.89 15.451 0 12.95 10.876 23.79 12.166 37.453 12.166 9.833 0 12.123-6.23 12.123-10.3V81.735a27.23 27.23 0 01-.252.005v-.003c-7.71.003-14.74-3.073-19.906-8.126a28.17 28.17 0 01-4.406-5.825 28.003 28.003 0 01-4.455 5.826c-5.166 5.053-12.195 8.13-19.906 8.126a28.49 28.49 0 01-19.948-8.122 28.03 28.03 0 01-4.78-6.155h-.001zm-35.81 37.95h31.891l-7.545 35.322 19.228-14.186L122.685 145l17.737-18.332 19.229 14.186-7.546-35.322h31.892v49.878l-36.07 28.674c-3.467-2.913-11.986-2.89-15.452 0l-36.069-28.674v-49.878z"/>
+                            </svg>
+                          </span>
+                        )}
+                        {game.links.steam && (
+                          <span class="text-[#999] hover:text-white transition-colors" title="Steam">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.031 4.524 4.527s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 12-5.373 12-12S18.606 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.377-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.454 1.012zm11.415-9.303a3.015 3.015 0 00-3.016-3.016 3.015 3.015 0 00-3.016 3.016 3.015 3.015 0 003.016 3.016 3.015 3.015 0 003.016-3.016zm-5.273-.005c0-1.248 1.013-2.26 2.26-2.26 1.246 0 2.26 1.013 2.26 2.26 0 1.247-1.014 2.26-2.26 2.26-1.248 0-2.26-1.013-2.26-2.26z"/>
+                            </svg>
+                          </span>
+                        )}
+                        {game.links.youtube && (
+                          <span class="text-[#999] hover:text-white transition-colors" title="YouTube">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                          </span>
+                        )}
+                        {game.links.gdrive && (
+                          <span class="text-[#999] hover:text-white transition-colors" title="Google Drive">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M4.433 22.396l4-6.93H24l-4 6.93H4.433zm3.566-6.93L0 1.604h7.076L15.07 15.466H7.999zm8.59-7.788L20.59 1.6h-7.078l-4 6.93 3.538 6.128 3.539-6.05z"/>
+                            </svg>
+                          </span>
+                        )}
+                        {game.links.github && (
+                          <span class="text-[#999] hover:text-white transition-colors" title="GitHub">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      );
+    })}
+  </div>
+</BaseLayout>
