@@ -45,8 +45,25 @@ const href = getLocalizedPath(`/games/${game.slug}/`, lang);
     <p class="mt-1 text-sm text-[var(--color-text-secondary)]">
       {t(game.genre, lang)}
     </p>
-    <p class="mt-1 text-xs text-[var(--color-text-muted)]">
-      {t(game.keywords, lang)}
+
+    {/* Tags */}
+    <div class="flex flex-wrap gap-1.5 mt-2">
+      {
+        [
+          game.tags.genre,
+          game.tags.engine,
+          game.tags.discipline,
+          game.tags.scope,
+        ].map((tag) => (
+          <span class="inline-block px-2 py-0.5 text-[10px] font-medium rounded-full bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)] border border-[var(--color-border)]">
+            {tag}
+          </span>
+        ))
+      }
+    </div>
+
+    <p class="mt-2 text-xs text-[var(--color-text-muted)]">
+      {t(game.meta.role, lang)}
     </p>
 
     {/* External link icons */}

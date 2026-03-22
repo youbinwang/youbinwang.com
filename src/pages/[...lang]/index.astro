@@ -38,7 +38,7 @@ const heroImage =
   "https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/fdc01711-6ce1-41a5-9e9c-13e8a6277954/Main+Page.png";
 ---
 
-<BaseLayout title={ui("nav.home", lang)} lang={lang}>
+<BaseLayout title={ui("nav.home", lang)} lang={lang} transparentNav>
   {/* Hero */}
   <HeroSection
     backgroundImage={heroImage}
@@ -125,7 +125,7 @@ const heroImage =
   </section>
 
   {/* Featured Games */}
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+  <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
     <h2 class="text-2xl font-bold text-[var(--color-text)] mb-8">
       {lang === "zh-cn" ? "游戏作品" : "Game Works"}
     </h2>

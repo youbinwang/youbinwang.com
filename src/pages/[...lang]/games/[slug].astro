@@ -38,17 +38,12 @@ const metaItems = [
   { label: "DURATION", value: t(game.meta.duration, lang) },
 ];
 
-/* ── Hero tags (genre, engine shorthand, category) ── */
-const categoryLabels: Record<string, string> = {
-  personal: "Personal Project",
-  "combat-level": "Combat & Level Design",
-  gameplay: "Gameplay Design",
-  producer: "Producer",
-};
+/* ── Hero tags (genre, engine, discipline, scope) ── */
 const heroTags = [
-  t(game.genre, "en"),
-  game.meta.engine.replace("Unreal Engine ", "UE"),
-  categoryLabels[game.category] ?? game.category,
+  game.tags.genre,
+  game.tags.engine,
+  game.tags.discipline,
+  game.tags.scope,
 ];
 
 /* ── External links ── */
@@ -93,7 +88,7 @@ if (game.docsType === "key-features") {
 }
 ---
 
-<BaseLayout title={titleEN} lang={lang}>
+<BaseLayout title={titleEN} lang={lang} transparentNav>
   {/* ═══════ Hero with tags & title ═══════ */}
   <section
     class="relative w-full min-h-[40vh] flex items-end overflow-hidden"
@@ -122,7 +117,7 @@ if (game.docsType === "key-features") {
 
     {/* Tags + Title */}
     <div
-      class="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-10"
+      class="relative z-10 max-w-screen-xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-10"
     >
       <div class="flex flex-wrap gap-2 mb-4">
         {
@@ -141,7 +136,7 @@ if (game.docsType === "key-features") {
     </div>
   </section>
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
     {/* ═══════ Video ═══════ */}
     {
       game.videoId && (
@@ -213,11 +208,13 @@ if (game.docsType === "key-features") {
       game.gallery.length > 0 && (
         <section>
           <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">
-            {game.slug === 'elemental-realm'
-              ? (lang === 'zh-cn' ? '设计文档' : 'Design Document Slides')
-              : 'Screenshots'}
+            {game.slug === "elemental-realm"
+              ? lang === "zh-cn"
+                ? "设计文档"
+                : "Design Document Slides"
+              : "Screenshots"}
           </h2>
-          {game.slug === 'elemental-realm' ? (
+          {game.slug === "elemental-realm" ? (
             <ImageCarousel
               client:visible
               images={game.gallery}

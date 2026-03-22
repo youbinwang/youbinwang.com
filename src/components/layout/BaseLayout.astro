@@ -5,11 +5,11 @@
  * Supports Light/Dark mode via prefers-color-scheme (default: Light).
  * Starlight docs use their own layout; this is for portfolio pages only.
  */
-import { ClientRouter } from 'astro:transitions';
-import Navbar from './Navbar.astro';
-import Footer from './Footer.astro';
-import type { Lang } from '../../i18n/config';
-import '../../styles/global.css';
+import { ClientRouter } from "astro:transitions";
+import Navbar from "./Navbar.astro";
+import Footer from "./Footer.astro";
+import type { Lang } from "../../i18n/config";
+import "../../styles/global.css";
 
 interface Props {
   title: string;
@@ -17,16 +17,22 @@ interface Props {
   lang: Lang;
   /** Optional OG image for social sharing */
   ogImage?: string;
+  /** Navbar starts transparent over hero image */
+  transparentNav?: boolean;
 }
 
 const {
   title,
-  description = 'Youbin Wang — Gameplay / Combat / Level Designer',
+  description = "Youbin Wang — Gameplay / Combat / Level Designer",
   lang,
   ogImage,
+  transparentNav = false,
 } = Astro.props;
-const htmlLang = lang === 'en' ? 'en' : 'zh-CN';
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://www.youbinwang.com');
+const htmlLang = lang === "en" ? "en" : "zh-CN";
+const canonicalUrl = new URL(
+  Astro.url.pathname,
+  Astro.site || "https://www.youbinwang.com",
+);
 ---
 
 <!doctype html>
@@ -55,8 +61,10 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://www.youb
     <!-- Client-side router for smooth page transitions -->
     <ClientRouter />
   </head>
-  <body class="min-h-screen bg-bg text-foreground font-sans antialiased transition-colors duration-200">
-    <Navbar lang={lang} />
+  <body
+    class="min-h-screen bg-bg text-foreground font-sans antialiased transition-colors duration-200"
+  >
+    <Navbar lang={lang} transparent={transparentNav} />
     <main>
       <slot />
     </main>
@@ -69,24 +77,26 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://www.youb
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
+                entry.target.classList.add("is-visible");
                 observer.unobserve(entry.target);
               }
             });
           },
-          { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+          { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
         );
 
-        document.querySelectorAll('.animate-on-scroll, .stagger-children').forEach((el) => {
-          observer.observe(el);
-        });
+        document
+          .querySelectorAll(".animate-on-scroll, .stagger-children")
+          .forEach((el) => {
+            observer.observe(el);
+          });
       }
 
       // Run on initial load
       initScrollAnimations();
 
       // Re-run after View Transition navigations
-      document.addEventListener('astro:after-swap', initScrollAnimations);
+      document.addEventListener("astro:after-swap", initScrollAnimations);
     </script>
   </body>
 </html>
