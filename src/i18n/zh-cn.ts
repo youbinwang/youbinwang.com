@@ -19,10 +19,10 @@ const zhCN = {
 
   // Games page
   'games.title': '游戏项目',
-  'games.category.personal': '个人项目',
-  'games.category.combat-level': '战斗 & 关卡设计',
-  'games.category.gameplay': '玩法设计',
-  'games.category.producer': '制作人',
+  'games.category.personal': '个人独立游戏作品',
+  'games.category.combat-level': '玩法 / 战斗 / 关卡策划',
+  'games.category.gameplay': '其他游戏作品',
+  'games.category.producer': '研发制作人',
 
   // Game detail
   'game.role': '职责',

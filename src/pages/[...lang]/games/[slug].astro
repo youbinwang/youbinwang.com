@@ -6,6 +6,8 @@
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+import ImageGallery from "../../../components/ui/ImageGallery.tsx";
+import ImageCarousel from "../../../components/ui/ImageCarousel.tsx";
 import { getLangFromSlug, t, getLocalizedPath, ui, uiEN } from "../../../i18n";
 import { games } from "../../../data/games";
 import { getEntry } from "astro:content";
@@ -206,23 +208,30 @@ if (game.docsType === "key-features") {
       )
     }
 
-    {/* ═══════ Screenshots — horizontal scroll ═══════ */}
+    {/* ═══════ Screenshots / Slides ═══════ */}
     {
       game.gallery.length > 0 && (
         <section>
           <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">
-            Screenshots
+            {game.slug === 'elemental-realm'
+              ? (lang === 'zh-cn' ? '设计文档' : 'Design Document Slides')
+              : 'Screenshots'}
           </h2>
-          <div class="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent -mx-4 px-4">
-            {game.gallery.map((src, i) => (
-              <img
-                src={src}
-                alt={`${titleEN} screenshot ${i + 1}`}
-                class="h-52 sm:h-64 w-auto rounded-lg flex-shrink-0 snap-start object-cover"
-                loading="lazy"
-              />
-            ))}
-          </div>
+          {game.slug === 'elemental-realm' ? (
+            <ImageCarousel
+              client:visible
+              images={game.gallery}
+              altPrefix={`${titleEN} slide`}
+            />
+          ) : (
+            <ImageGallery
+              client:visible
+              images={game.gallery}
+              altPrefix={`${titleEN} screenshot`}
+              layout="grid"
+              columns={3}
+            />
+          )}
         </section>
       )
     }

@@ -20,8 +20,8 @@ const en = {
   // Games page
   'games.title': 'Game Projects',
   'games.category.personal': 'Personal Projects',
-  'games.category.combat-level': 'Combat & Level Design',
-  'games.category.gameplay': 'Gameplay Design',
+  'games.category.combat-level': 'Gameplay / Combat / Level Design',
+  'games.category.gameplay': 'Other Game Works',
   'games.category.producer': 'Producer',
 
   // Game detail

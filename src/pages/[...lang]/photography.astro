@@ -1,8 +1,9 @@
 ---
 /**
- * Photography page — quote + photo grid. PhotoSwipe lightbox to be added later.
+ * Photography page — quote + masonry photo grid with PhotoSwipe lightbox.
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
+import ImageGallery from "../../components/ui/ImageGallery.tsx";
 import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
@@ -27,19 +28,15 @@ const photos: string[] = [];
       >
     </blockquote>
 
-    {/* Photo Grid */}
+    {/* Photo Grid with PhotoSwipe lightbox */}
     {
       photos.length > 0 ? (
-        <div class="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
-          {photos.map((src, i) => (
-            <img
-              src={src}
-              alt={`Photography ${i + 1}`}
-              class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-              loading="lazy"
-            />
-          ))}
-        </div>
+        <ImageGallery
+          client:visible
+          images={photos}
+          altPrefix="Photography"
+          layout="masonry"
+        />
       ) : (
         <p class="text-center text-[var(--color-text-muted)]">
           {lang === "zh-cn" ? "照片即将上线..." : "Photos coming soon..."}

@@ -1,6 +1,7 @@
 /**
  * Game projects data — all 11 games with bilingual metadata.
  * Images use Squarespace CDN URLs as placeholders until local assets are added.
+ * Order and categories match the original Squarespace site.
  */
 
 import type { Bilingual } from '../i18n/config';
@@ -39,7 +40,123 @@ export interface GameProject {
 }
 
 export const games: GameProject[] = [
-  // ─── Personal Projects ───────────────────────────────────────────────
+  // ─── 玩法 / 战斗 / 关卡策划 (Combat & Level Design) ─────────────────
+  {
+    slug: 'echo-quest',
+    title: { en: 'Echo Quest', cn: 'Echo Quest' },
+    genre: { en: '3D Action / Technical Showcase', cn: '3D 动作 / 技术展示' },
+    keywords: { en: 'Combat & Level Design', cn: '战斗、关卡策划' },
+    category: 'combat-level',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/0331de16-1f75-4fa8-82fa-ba704f580cc4/ScreenShot00042.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/0331de16-1f75-4fa8-82fa-ba704f580cc4/ScreenShot00042.png',
+    meta: {
+      role: { en: 'Gameplay / Combat / Level Designer, UE Engineer', cn: '个人作品，战斗、关卡策划，Unreal Engine 程序' },
+      engine: 'Unreal Engine 5',
+      platform: 'PC (Windows)',
+      teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
+      duration: { en: 'Sep 2024 - Dec 2024', cn: '2024 年 09 月 - 2024 年 12 月' },
+    },
+    links: {
+      youtube: 'https://youtu.be/0G4o5tulQy8',
+      gdrive: ['https://drive.google.com/drive/folders/1W-M1RD9tYhUKIo5nNcmzqbBVo9w34Cnt'],
+    },
+    gallery: [],
+    videoId: '0G4o5tulQy8',
+    docsType: 'tech-docs',
+    featured: true,
+    order: 1,
+    description: {
+      en: 'A 3D action game and technical showcase built in UE5, demonstrating GAS, combat systems, hit feedback, animation, motion warping, and enemy AI.',
+      cn: '使用 UE5 制作的 3D 动作游戏技术展示，涵盖 GAS、战斗系统、打击反馈、动画、Motion Warping 和敌人 AI。',
+    },
+  },
+  {
+    slug: 'elemental-realm',
+    title: { en: 'Elemental Realm', cn: '元素秘境' },
+    genre: { en: 'ARPG / Puzzle', cn: '动作冒险 / 解谜' },
+    keywords: { en: 'Gameplay, Combat and Level Design Demo', cn: '玩法、战斗与关卡设计Demo' },
+    category: 'combat-level',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
+    meta: {
+      role: { en: 'Personal Project, Gameplay / Level / Combat Designer, Unreal Engineer', cn: '个人作品，玩法、战斗、关卡策划，Unreal Engine 程序' },
+      engine: 'Unreal Engine 5',
+      platform: 'PC (Windows)',
+      teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
+      duration: { en: 'Apr 2024 - Aug 2024', cn: '2024 年 04 月 - 2024 年 08 月' },
+    },
+    links: {
+      youtube: 'https://youtu.be/DPjPorI-D4o',
+      gdrive: ['https://drive.google.com/drive/folders/18jW6LWy-X8tijZTGRoy0F0cP8bAIHT7V'],
+    },
+    gallery: [],
+    videoId: 'DPjPorI-D4o',
+    docsType: 'key-features',
+    featured: true,
+    order: 2,
+    description: {
+      en: 'An ARPG/Puzzle demo showcasing gameplay, level, and combat design with 34 design document slides.',
+      cn: '动作冒险/解谜 Demo，展示玩法、关卡与战斗设计，包含 34 页设计文档。',
+    },
+  },
+  {
+    slug: 'the-scholars-side-quest',
+    title: { en: "The Scholar's Side Quest", cn: '信镇书生支线任务' },
+    genre: { en: 'Action RPG', cn: 'ARPG' },
+    keywords: { en: 'Combat and Level Design', cn: '战斗、关卡策划' },
+    category: 'combat-level',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
+    meta: {
+      role: { en: 'Level / Combat Designer', cn: '战斗、关卡策划' },
+      engine: 'Unreal Engine 4',
+      platform: 'PC (Windows)',
+      teamSize: { en: 'Team project', cn: '团队项目' },
+      duration: { en: 'May 2022 - Aug 2022', cn: '2022 年 05 月 - 2022 年 08 月' },
+    },
+    links: {
+      gdrive: ['https://drive.google.com/drive/folders/1oRgGsrhmBcpwVLUGthcC7K7tpuCkZxN0'],
+    },
+    gallery: [],
+    docsType: 'key-features',
+    featured: false,
+    order: 3,
+    description: {
+      en: 'An ARPG project where I designed combat encounters, level layouts, and boss fights.',
+      cn: 'ARPG 项目，负责战斗遭遇、关卡布局和 Boss 战设计。',
+    },
+  },
+
+  // ─── 研发制作人 (Producer) ──────────────────────────────────────────
+  {
+    slug: 'shepherds',
+    title: { en: 'Shepherds', cn: 'Shepherds' },
+    genre: { en: 'Two-player Co-op Action-adventure Game', cn: '双人合作动作冒险游戏' },
+    keywords: { en: 'Production Management', cn: '研发管理' },
+    category: 'producer',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
+    meta: {
+      role: { en: 'Game Producer', cn: '研发制作人' },
+      engine: 'Unity',
+      platform: 'PC (Windows)',
+      teamSize: { en: '28 members', cn: '28 人' },
+      duration: { en: 'Aug 2023 - May 2024', cn: '2023 年 08 月 - 2024 年 05 月' },
+    },
+    links: {
+      steam: 'https://store.steampowered.com/app/2969240/Shepherds/',
+    },
+    gallery: [],
+    docsType: 'key-features',
+    featured: false,
+    order: 4,
+    description: {
+      en: 'A co-op game where a shepherd and wolf combine abilities to overcome rhythm-based puzzles while descending into a volcano. USC Games MFA thesis project.',
+      cn: '合作游戏，牧羊人与狼组合能力，通过节奏解谜与平台跳跃深入火山。USC Games MFA 毕设项目。',
+    },
+  },
+
+  // ─── 个人独立游戏作品 (Personal Projects) ──────────────────────────
   {
     slug: 'the-camera',
     title: { en: 'The Camera', cn: 'The Camera' },
@@ -49,11 +166,11 @@ export const games: GameProject[] = [
     coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1c2c1b34-4897-4ab6-8a8d-cdff74be1321/Details+Icon.png',
     heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1c2c1b34-4897-4ab6-8a8d-cdff74be1321/Details+Icon.png',
     meta: {
-      role: { en: 'Solo Developer', cn: '独立开发' },
+      role: { en: 'Personal Project', cn: '个人游戏作品，独立开发' },
       engine: 'Unity',
       platform: 'PC (Windows, MacOS)',
       teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
-      duration: { en: 'Apr 2022 - Jun 2022', cn: '2022年4月 - 2022年6月' },
+      duration: { en: 'Apr 2022 - Jun 2022', cn: '2022 年 04 月 - 2022 年 06 月' },
     },
     links: {
       itch: 'https://mumu3an.itch.io/the-camera',
@@ -62,7 +179,7 @@ export const games: GameProject[] = [
     gallery: [],
     docsType: 'key-features',
     featured: true,
-    order: 1,
+    order: 5,
     description: {
       en: 'A 2D top-down narrative RPG where players explore stories through the lens of a camera.',
       cn: '一款 2D 俯视角叙事 RPG，玩家通过摄像机的视角探索故事。',
@@ -77,11 +194,11 @@ export const games: GameProject[] = [
     coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
     heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
     meta: {
-      role: { en: 'Solo Developer & Publisher', cn: '独立开发与发行' },
+      role: { en: 'Personal Undergraduate Thesis Project', cn: '个人本科毕业设计，独立开发及发行' },
       engine: 'Tabletop Simulator',
       platform: 'Board Game, PC (Steam Workshop)',
       teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
-      duration: { en: 'Sep 2022 - Jun 2023', cn: '2022年9月 - 2023年6月' },
+      duration: { en: 'Sep 2022 - Jun 2023', cn: '2022 年 09 月 - 2023 年 06 月' },
     },
     links: {
       steam: 'https://steamcommunity.com/sharedfiles/filedetails/?id=2972812373',
@@ -90,7 +207,7 @@ export const games: GameProject[] = [
     gallery: [],
     docsType: 'key-features',
     featured: true,
-    order: 2,
+    order: 6,
     description: {
       en: 'A board game designed as an undergraduate thesis project, exploring gameplay and system design.',
       cn: '本科毕业设计桌游项目，探索玩法与系统设计。',
@@ -100,16 +217,16 @@ export const games: GameProject[] = [
     slug: 'aid-master',
     title: { en: 'Aid Master', cn: 'Aid Master' },
     genre: { en: 'Educational Game', cn: '严肃游戏' },
-    keywords: { en: 'Innovative Interaction & Gameplay Design', cn: '创新性的交互方式与玩法设计' },
+    keywords: { en: 'Innovative Interaction and Gameplay Design', cn: '创新性的交互方式与玩法设计' },
     category: 'personal',
     coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
     heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
     meta: {
-      role: { en: 'Solo Developer', cn: '独立开发' },
+      role: { en: 'Personal Project', cn: '个人游戏作品，独立开发' },
       engine: 'Unity',
       platform: 'PC (Windows x Kinect)',
       teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
-      duration: { en: 'Jul 2022 - Sep 2022', cn: '2022年7月 - 2022年9月' },
+      duration: { en: 'Jul 2022 - Sep 2022', cn: '2022 年 07 月 - 2022 年 09 月' },
     },
     links: {
       youtube: 'https://youtu.be/Z6WZnn8ib5g',
@@ -119,104 +236,20 @@ export const games: GameProject[] = [
     videoId: 'Z6WZnn8ib5g',
     docsType: 'key-features',
     featured: true,
-    order: 3,
+    order: 7,
     description: {
       en: 'An educational serious game featuring innovative Kinect-based interaction and gameplay design.',
       cn: '一款严肃游戏，采用创新的 Kinect 交互方式与玩法设计。',
     },
   },
 
-  // ─── Combat & Level Design ───────────────────────────────────────────
-  {
-    slug: 'echo-quest',
-    title: { en: 'Echo Quest', cn: 'Echo Quest' },
-    genre: { en: '3D Action / Technical Showcase', cn: '3D 动作 / 技术展示' },
-    keywords: { en: 'Combat & Level Design', cn: '战斗、关卡策划' },
-    category: 'combat-level',
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/0331de16-1f75-4fa8-82fa-ba704f580cc4/ScreenShot00042.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/0331de16-1f75-4fa8-82fa-ba704f580cc4/ScreenShot00042.png',
-    meta: {
-      role: { en: 'Gameplay / Combat / Level Designer, UE Engineer', cn: '玩法 / 战斗 / 关卡策划，UE 工程师' },
-      engine: 'Unreal Engine 5',
-      platform: 'PC (Windows)',
-      teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
-      duration: { en: 'Sep 2024 - Dec 2024', cn: '2024年9月 - 2024年12月' },
-    },
-    links: {
-      gdrive: ['https://drive.google.com/drive/folders/1W-M1RD9tYhUKIo5nNcmzqbBVo9w34Cnt'],
-    },
-    gallery: [],
-    videoId: '0G4o5tulQy8',
-    docsType: 'tech-docs',
-    featured: true,
-    order: 4,
-    description: {
-      en: 'A 3D action game and technical showcase built in UE5, demonstrating GAS, combat systems, hit feedback, animation, motion warping, and enemy AI.',
-      cn: '使用 UE5 制作的 3D 动作游戏技术展示，涵盖 GAS、战斗系统、打击反馈、动画、Motion Warping 和敌人 AI。',
-    },
-  },
-  {
-    slug: 'elemental-realm',
-    title: { en: 'Elemental Realm', cn: '元素秘境' },
-    genre: { en: 'ARPG / Puzzle', cn: '动作冒险 / 解谜' },
-    keywords: { en: 'Gameplay, Combat & Level Design', cn: '玩法、战斗与关卡设计' },
-    category: 'combat-level',
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
-    meta: {
-      role: { en: 'Gameplay / Combat Designer, UE Engineer', cn: '玩法 / 战斗策划，UE 工程师' },
-      engine: 'Unreal Engine 5',
-      platform: 'PC (Windows)',
-      teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
-      duration: { en: 'Apr 2024 - Aug 2024', cn: '2024年4月 - 2024年8月' },
-    },
-    links: {
-      youtube: 'https://youtu.be/DPjPorI-D4o',
-      gdrive: ['https://drive.google.com/drive/folders/18jW6LWy-X8tijZTGRoy0F0cP8bAIHT7V'],
-    },
-    gallery: [],
-    videoId: 'DPjPorI-D4o',
-    docsType: 'key-features',
-    featured: true,
-    order: 5,
-    description: {
-      en: 'An ARPG/Puzzle demo showcasing gameplay, level, and combat design with 34 design document slides.',
-      cn: '动作冒险/解谜 Demo，展示玩法、关卡与战斗设计，包含 34 页设计文档。',
-    },
-  },
-  {
-    slug: 'the-scholars-side-quest',
-    title: { en: "The Scholar's Side Quest", cn: '信镇书生支线任务' },
-    genre: { en: 'Action RPG', cn: 'ARPG' },
-    keywords: { en: 'Combat & Level Design', cn: '战斗、关卡策划' },
-    category: 'combat-level',
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
-    meta: {
-      role: { en: 'Level / Combat Designer', cn: '战斗 / 关卡策划' },
-      engine: 'Unreal Engine 4',
-      platform: 'PC (Windows)',
-      teamSize: { en: 'Team project', cn: '团队项目' },
-      duration: { en: 'May 2022 - Aug 2022', cn: '2022年5月 - 2022年8月' },
-    },
-    links: {
-      gdrive: ['https://drive.google.com/drive/folders/1oRgGsrhmBcpwVLUGthcC7K7tpuCkZxN0'],
-    },
-    gallery: [],
-    docsType: 'key-features',
-    featured: false,
-    order: 6,
-    description: {
-      en: 'An ARPG project where I designed combat encounters, level layouts, and boss fights.',
-      cn: 'ARPG 项目，负责战斗遭遇、关卡布局和 Boss 战设计。',
-    },
-  },
+  // ─── 其他游戏作品 (Other Game Works) ───────────────────────────────
   {
     slug: 'baihua-pavilion',
     title: { en: 'Baihua Pavilion', cn: '百花亭（Baihua Pavilion）' },
-    genre: { en: '3D Multiplayer Action PvP', cn: '3D 多人联机动作对战' },
+    genre: { en: '3D Multiplayer Online Action Combat Game', cn: '3D多人联机动作对战游戏' },
     keywords: { en: 'Combat System Design', cn: '战斗系统设计' },
-    category: 'combat-level',
+    category: 'gameplay',
     coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/7087fe07-e90c-4612-b03e-76c7767fc9c9/Scenes+-+2.png',
     heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/7087fe07-e90c-4612-b03e-76c7767fc9c9/Scenes+-+2.png',
     meta: {
@@ -224,7 +257,7 @@ export const games: GameProject[] = [
       engine: 'Unity',
       platform: 'PC (Windows)',
       teamSize: { en: 'Team project', cn: '团队项目' },
-      duration: { en: 'Sep 2021 - Nov 2021', cn: '2021年9月 - 2021年11月' },
+      duration: { en: 'Sep 2021 - Nov 2021', cn: '2021 年 09 月 - 2021 年 11 月' },
     },
     links: {
       itch: 'https://mumu3an.itch.io/baihua-pavilion',
@@ -232,37 +265,10 @@ export const games: GameProject[] = [
     gallery: [],
     docsType: 'key-features',
     featured: false,
-    order: 7,
+    order: 8,
     description: {
       en: 'A 3D multiplayer online action PvP game featuring combat system and character design.',
       cn: '3D 多人联机动作对战游戏，包含战斗系统与角色设计。',
-    },
-  },
-
-  // ─── Gameplay Design ─────────────────────────────────────────────────
-  {
-    slug: 'elliot-fig',
-    title: { en: 'The Journey & Drinks of Elliot Fig', cn: 'The Journey & Drinks of Elliot Fig' },
-    genre: { en: '2.5D Narrative RPG', cn: '2.5D 叙事 RPG' },
-    keywords: { en: 'Narrative & Gameplay Design', cn: '叙事与玩法设计' },
-    category: 'gameplay',
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elliot-fig.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elliot-fig.png',
-    meta: {
-      role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
-      engine: 'Unity',
-      platform: 'PC',
-      teamSize: { en: 'Team project', cn: '团队项目' },
-      duration: { en: '2023', cn: '2023年' },
-    },
-    links: {},
-    gallery: [],
-    docsType: 'key-features',
-    featured: false,
-    order: 8,
-    description: {
-      en: 'A narrative-driven RPG featuring drink mixing mechanics integrated with storytelling, using Yarn Spinner for dialogue.',
-      cn: '叙事驱动的 RPG，将调酒机制与故事叙述结合，使用 Yarn Spinner 实现对话系统。',
     },
   },
   {
@@ -293,6 +299,31 @@ export const games: GameProject[] = [
     },
   },
   {
+    slug: 'elliot-fig',
+    title: { en: 'The Journey & Drinks of Elliot Fig', cn: 'The Journey & Drinks of Elliot Fig' },
+    genre: { en: '2.5D Narrative RPG', cn: '2.5D 叙事 RPG' },
+    keywords: { en: 'Narrative & Gameplay Design', cn: '叙事与玩法设计' },
+    category: 'gameplay',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elliot-fig.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elliot-fig.png',
+    meta: {
+      role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
+      engine: 'Unity',
+      platform: 'PC',
+      teamSize: { en: 'Team project', cn: '团队项目' },
+      duration: { en: '2023', cn: '2023 年' },
+    },
+    links: {},
+    gallery: [],
+    docsType: 'key-features',
+    featured: false,
+    order: 10,
+    description: {
+      en: 'A narrative-driven RPG featuring drink mixing mechanics integrated with storytelling, using Yarn Spinner for dialogue.',
+      cn: '叙事驱动的 RPG，将调酒机制与故事叙述结合，使用 Yarn Spinner 实现对话系统。',
+    },
+  },
+  {
     slug: 'stars-chat',
     title: { en: 'Stars Chat', cn: 'Stars Chat' },
     genre: { en: 'Narrative Mobile Game', cn: '叙事手游' },
@@ -305,7 +336,7 @@ export const games: GameProject[] = [
       engine: 'Unity 2D',
       platform: 'Mobile',
       teamSize: { en: '4 members', cn: '4 人' },
-      duration: { en: '2021 (Game Jam)', cn: '2021年（Game Jam）' },
+      duration: { en: '2021 (Game Jam)', cn: '2021 年（Game Jam）' },
     },
     links: {
       itch: 'https://mumu3an.itch.io/stars-chat',
@@ -313,39 +344,10 @@ export const games: GameProject[] = [
     gallery: [],
     docsType: 'key-features',
     featured: false,
-    order: 10,
+    order: 11,
     description: {
       en: 'A mobile game where players chat with historical figures as Stefan Zweig, inspired by Decisive Moments in History.',
       cn: '玩家扮演茨威格，通过即时通讯与历史人物对话，灵感来源于《人类群星闪耀时》。',
-    },
-  },
-
-  // ─── Producer ────────────────────────────────────────────────────────
-  {
-    slug: 'shepherds',
-    title: { en: 'Shepherds', cn: 'Shepherds' },
-    genre: { en: '3D Co-op Action-Adventure', cn: '3D 合作动作冒险' },
-    keywords: { en: 'Production Management', cn: '研发管理' },
-    category: 'producer',
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
-    meta: {
-      role: { en: 'Producer', cn: '研发制作人' },
-      engine: 'Unreal Engine 5',
-      platform: 'PC (Steam)',
-      teamSize: { en: '28 members', cn: '28 人' },
-      duration: { en: '2024 (USC Games MFA Thesis)', cn: '2024年（USC Games MFA 毕设）' },
-    },
-    links: {
-      steam: 'https://store.steampowered.com/app/2969240/Shepherds/',
-    },
-    gallery: [],
-    docsType: 'key-features',
-    featured: false,
-    order: 11,
-    description: {
-      en: 'A co-op game where a shepherd and wolf combine abilities to overcome rhythm-based puzzles while descending into a volcano. USC Games MFA thesis project.',
-      cn: '合作游戏，牧羊人与狼组合能力，通过节奏解谜与平台跳跃深入火山。USC Games MFA 毕设项目。',
     },
   },
 ];
