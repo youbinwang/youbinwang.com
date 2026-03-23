@@ -63,8 +63,6 @@ header.header {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border, var(--sl-color-hairline-shade));
-  /* Let our .docs-header-inner handle padding & max-width */
-  padding-inline: 0 !important;
 }
 
 /* Prevent Starlight default link styles from leaking into our custom header */
