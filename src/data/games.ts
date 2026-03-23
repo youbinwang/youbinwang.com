@@ -144,7 +144,7 @@ export const games: GameProject[] = [
     genre: { en: 'Two-player Co-op Action-adventure Game', cn: '双人合作动作冒险游戏' },
     keywords: { en: 'Production Management', cn: '研发管理' },
     category: 'producer',
-    tags: { genre: 'Co-op Action', engine: 'UE5', discipline: 'Production', scope: 'Team Project' },
+    tags: { genre: 'Co-op Action', engine: 'Unity', discipline: 'Production', scope: 'Team Project' },
     coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
     heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
     meta: {
@@ -179,7 +179,7 @@ export const games: GameProject[] = [
     heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1c2c1b34-4897-4ab6-8a8d-cdff74be1321/Details+Icon.png',
     meta: {
       role: { en: 'Personal Project', cn: '个人游戏作品，独立开发' },
-      engine: 'Unity',
+      engine: 'RPG Maker',
       platform: 'PC (Windows, MacOS)',
       teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
       duration: { en: 'Apr 2022 - Jun 2022', cn: '2022 年 04 月 - 2022 年 06 月' },

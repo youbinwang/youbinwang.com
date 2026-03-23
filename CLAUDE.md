@@ -116,11 +116,11 @@ src/
 │       ├── Header.astro          # 覆盖 Starlight 导航统一风格
 │       └── Sidebar.astro         # 自定义侧边栏（智能过滤当前项目）
 ├── content/docs/
-│   ├── docs/                     # ← /docs/ URL 前缀
-│   │   ├── index.mdx
+│   ├── docs/                     # ← 中文文档（/docs/ URL 前缀）
+│   │   ├── index.mdx             # Docs 落地页
 │   │   ├── echo-quest/           # Tech Docs（index + 6 章 MDX）
-│   │   └── {slug}.mdx            # Key Features × 10
-│   └── en/docs/                  # 英文版镜像
+│   │   └── {slug}.mdx            # Key Features × 10（每个游戏一个）
+│   └── en/docs/                  # 英文版镜像（结构相同）
 ├── pages/[...lang]/
 │   ├── index.astro               # 首页（transparentNav）
 │   ├── games/index.astro         # 游戏列表
@@ -220,7 +220,7 @@ uiEN(key: string): string              // 永远返回英文翻译
 | 1 | Echo Quest | 3D Action | UE5 | Combat & Level Design | Technical Showcase |
 | 2 | Elemental Realm | ARPG / Puzzle | UE5 | Combat & Level Design | Technical Showcase |
 | 3 | Scholar's Side Quest | Action RPG | UE4 | Combat & Level Design | Professional |
-| 4 | Shepherds | Co-op Action | UE5 | Production | Team Project |
+| 4 | Shepherds | Co-op Action | Unity | Production | Team Project |
 | 5 | The Camera | 2D Narrative RPG | RPG Maker | Narrative Design | Personal Project |
 | 6 | On the Road | Board Game | Tabletop | System Design | Personal Thesis Project |
 | 7 | Aid Master | Educational Game | Unity | Gameplay & UX Design | Personal Project |
@@ -234,15 +234,18 @@ uiEN(key: string): string              // 永远返回英文翻译
 ## Navbar 结构
 
 ### 桌面端
+
 导航项: `Home | Games | Films | Other Works▾ (Photography, Graphic Design, Music) | About Me`
 右侧: `语言切换(EN/中文)` → 图标区 `[Docs📖] [GitHub] [LinkedIn]`
 
 ### 透明模式
+
 - 有 Hero 的页面（首页、游戏详情页）：`transparent={true}`，Navbar 起初透明，白色文字
 - 滚动超过 80px 后：平滑过渡为毛玻璃背景 + 边框，文字恢复主题色
 - 无 Hero 的页面：直接使用不透明背景
 
 ### 移动端
+
 `MobileMenu.tsx` (React Island)，全屏 overlay + body scroll lock
 
 ---

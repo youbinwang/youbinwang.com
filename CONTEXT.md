@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-23 17:00 (UTC+8)
+> **更新时间**：2026-03-24 00:15 (UTC+8)
 
 ---
 
@@ -17,7 +17,8 @@
 ## 二、当前进度总览
 
 ### 构建状态
-- `npm run build` ✅ 零错误，**125 个页面**
+
+- `npm run build` ✅ 零错误，**91 个页面**
 - Astro v6.0.8 + Starlight + Tailwind CSS 4 + React Islands
 
 ### 已完成的 Steps
@@ -52,13 +53,16 @@
 | 11 | 透明 Header | 有 Hero 的页面 Navbar 起初透明，滚动后变毛玻璃 |
 | 12 | 加宽内容区 | `max-w-7xl`(1280px) → `max-w-screen-xl`(1440px) |
 | 13 | 加大 Logo | `text-lg font-semibold` → `text-xl font-bold` |
-| 14 | 硬编码颜色修复 | `MobileMenu.tsx` (`#e0e0e0`→`var(--color-text-secondary)`, `#b0b0b0`→`var(--color-text-muted)`)；`ImageCarousel.tsx` (`#FF9300`→`var(--color-accent)`) |
+| 14 | 硬编码颜色修复 | `MobileMenu.tsx`、`ImageCarousel.tsx` 颜色变量化 |
+| 15 | 删除 34 个重复 MDX | 文档重构时遗留的旧文件（根级别 + en 根级别），125 页 → 91 页 |
+| 16 | 数据一致性修复 | Shepherds: tags.engine `UE5` → `Unity`；The Camera: meta.engine `Unity` → `RPG Maker` |
 
 ---
 
 ## 四、项目中文正式名称对照表
 
 ### 游戏
+
 | slug | 英文名 | 中文正式名 |
 |---|---|---|
 | echo-quest | Echo Quest | Echo Quest |
@@ -74,6 +78,7 @@
 | stars-chat | Stars Chat | Stars Chat |
 
 ### 电影
+
 | slug | 英文名 | 中文正式名 |
 |---|---|---|
 | fibonacci | Fibonacci | 斐波那契 |
@@ -81,6 +86,7 @@
 | meme-contaminate | Meme Contaminate | 模因污染 |
 
 ### 音乐
+
 | slug | 中文正式名 |
 |---|---|
 | falling | 跌落 |
@@ -92,6 +98,7 @@
 ## 五、尚未实现 / 待填充的内容
 
 ### 内容填充
+
 1. **8 个游戏缺 videoId**：The Camera, On the Road, Scholar's Side Quest, Baihua Pavilion, Elliot Fig, Greedy Roots, Stars Chat, Shepherds
 2. **全部 11 个游戏缺 gallery**：截图数组为空
 3. **10 个 Key Features MDX**：均为 placeholder 内容
@@ -106,7 +113,13 @@
 
 （暂无已知样式问题）
 
+### 代码质量备注
+
+- 游戏列表页 `bg-[#FF0000]`（YouTube 品牌红）和 `bg-[#35A852]`（Google Drive 品牌绿）为外部品牌色，属合理例外
+- SVG 内 `fill` 属性使用品牌色（Google Drive 图标），属合理例外
+
 ### 部署配置（Step 13）
+
 - Cloudflare Pages 配置
 - sitemap 生成（已有 `@astrojs/sitemap`）
 - 最终链接检查
@@ -116,7 +129,7 @@
 ## 六、继续工作的指令
 
 ```
-请阅读项目根目录的 CLAUDE.md 和 Context.md，了解项目完整架构和当前进度。
+请阅读项目根目录的 CLAUDE.md 和 CONTEXT.md，了解项目完整架构和当前进度。
 
 当前处于优化与内容填充阶段。主要工作：
 1. 视觉打磨和 Bug 修复
@@ -142,3 +155,4 @@ Docs 页面：http://localhost:4321/docs/
 - 页面标题格式：`{title} | Youbin Wang`（title 始终英文）
 - 中文是默认语言（URL 无前缀），英文带 `/en/` 前缀
 - `Navbar` 使用 `transition:animate="none"` 而非 `transition:persist`
+- **文档文件位置**：`src/content/docs/docs/` 对应中文（`/docs/` URL），`src/content/docs/en/docs/` 对应英文（`/en/docs/` URL）——注意路径有两层 `docs`
