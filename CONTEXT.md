@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-24 00:15 (UTC+8)
+> **更新时间**：2026-03-24 00:57 (UTC+8)
 
 ---
 
@@ -20,6 +20,7 @@
 
 - `npm run build` ✅ 零错误，**91 个页面**
 - Astro v6.0.8 + Starlight + Tailwind CSS 4 + React Islands
+- Git 仓库已清理：84 个文件，.git 576KB（已执行 filter-branch 清除历史中的 node_modules）
 
 ### 已完成的 Steps
 
@@ -56,10 +57,21 @@
 | 14 | 硬编码颜色修复 | `MobileMenu.tsx`、`ImageCarousel.tsx` 颜色变量化 |
 | 15 | 删除 34 个重复 MDX | 文档重构时遗留的旧文件（根级别 + en 根级别），125 页 → 91 页 |
 | 16 | 数据一致性修复 | Shepherds: tags.engine `UE5` → `Unity`；The Camera: meta.engine `Unity` → `RPG Maker` |
+| 17 | Git Housekeeping | 从 git 移除 node_modules/dist/.astro，补全 .gitignore，filter-branch 清理历史 |
+| 18 | 删除 47 个冲突文件夹 | node_modules 中 " 2" 后缀的文件同步冲突副本 |
+| 19 | 文档页 Header 重写 | 独立 CSS（不依赖 Tailwind），修复 Logo 下划线、修复 header 上移 |
 
 ---
 
-## 四、项目中文正式名称对照表
+## 四、已知 Bug
+
+| # | 问题 | 原因 | 状态 |
+|---|---|---|---|
+| 1 | 文档页 Header 宽度与 Portfolio Navbar 不一致 | Starlight 的 `<header class="header">` 在 `@layer starlight.core` 中用 `padding: var(--sl-nav-pad-x)` 控制宽度，与 Portfolio 的 `max-w-screen-xl` 居中方案不同。尝试覆盖 Starlight header padding 会破坏 sidebar 和内容区布局 | ⏸️ 暂不处理 |
+
+---
+
+## 五、项目中文正式名称对照表
 
 ### 游戏
 
@@ -95,7 +107,7 @@
 
 ---
 
-## 五、尚未实现 / 待填充的内容
+## 六、尚未实现 / 待填充的内容
 
 ### 内容填充
 
@@ -108,10 +120,6 @@
 7. **音乐页面**：播放器嵌入 URL 待配置，coverImage 全空
 8. **电影**：gallery 全空，仅 Meme Contaminate 有 gdrive 链接，无 videoId
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
-
-### 待修复的样式问题
-
-（暂无已知样式问题）
 
 ### 代码质量备注
 
@@ -126,7 +134,7 @@
 
 ---
 
-## 六、继续工作的指令
+## 七、继续工作的指令
 
 ```
 请阅读项目根目录的 CLAUDE.md 和 CONTEXT.md，了解项目完整架构和当前进度。
@@ -146,7 +154,7 @@ Docs 页面：http://localhost:4321/docs/
 
 ---
 
-## 七、技术备忘
+## 八、技术备忘
 
 - **Navbar 透明模式**：`BaseLayout` 传 `transparentNav` → `Navbar` 的 `transparent` prop → JS 监听 `scrollY > 80` 切换样式
 - **游戏详情页 inline MDX**：`getEntry('docs', 'docs/slug')` + `render()` + `<DetailsContent />`
@@ -156,3 +164,4 @@ Docs 页面：http://localhost:4321/docs/
 - 中文是默认语言（URL 无前缀），英文带 `/en/` 前缀
 - `Navbar` 使用 `transition:animate="none"` 而非 `transition:persist`
 - **文档文件位置**：`src/content/docs/docs/` 对应中文（`/docs/` URL），`src/content/docs/en/docs/` 对应英文（`/en/docs/` URL）——注意路径有两层 `docs`
+- **文档页 Header**：独立的 `Header.astro` 组件，不使用 Portfolio 的 `Navbar.astro`，使用 scoped CSS（不依赖 Tailwind），Starlight 的 `PageFrame.astro` 包裹在外层 `<header class="header">` 中

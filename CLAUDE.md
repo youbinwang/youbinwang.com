@@ -35,10 +35,11 @@ Youbin Wang 的个人作品集网站，基于 Astro + Starlight + Cloudflare Pag
 
 ### 布局与宽度
 
-- **内容容器**：`max-w-screen-xl`（1440px），全站统一
+- **Portfolio 页面内容容器**：`max-w-screen-xl`（1440px），居中
 - **正文/简介**：`max-w-4xl`（896px）保持可读性
 - **Hero/Banner**：全屏宽（`w-full`）
 - **Navbar**：透明→固定切换模式（有 Hero 的页面 Navbar 起初透明，滚动后变不透明毛玻璃）
+- **⚠️ 已知 Bug**：文档页 Header 宽度与 Portfolio Navbar 不一致（Starlight 的 `<header class="header">` 使用 `@layer starlight.core` 控制 padding，与 Portfolio 的 `max-w-screen-xl` 不统一。修改 Starlight header padding 会破坏 sidebar 和内容区布局，暂不处理）
 
 ### 游戏项目详情页布局
 
