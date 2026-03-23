@@ -10,7 +10,7 @@ import ImageGallery from "../../../components/ui/ImageGallery.tsx";
 import ImageCarousel from "../../../components/ui/ImageCarousel.tsx";
 import { getLangFromSlug, t, getLocalizedPath, ui, uiEN } from "../../../i18n";
 import { games } from "../../../data/games";
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 
 export function getStaticPaths() {
   const paths = [];
@@ -79,7 +79,7 @@ if (game.docsType === "key-features") {
   try {
     const entry = await getEntry("docs", entryId);
     if (entry) {
-      const rendered = await entry.render();
+      const rendered = await render(entry);
       DetailsContent = rendered.Content;
     }
   } catch {
