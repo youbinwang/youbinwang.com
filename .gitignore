@@ -17,6 +17,9 @@ dist/
 Thumbs.db
 Desktop.ini
 
+# CodeMaker
+.codemaker/
+
 # Editor
 .vscode/
 *.swp
