@@ -47,7 +47,8 @@ const aboutItem = {
   href: getLocalizedPath("/about/", lang),
 };
 
-const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
+const isDocsActive = currentPath.startsWith('/docs/') || currentPath.startsWith('/en/docs/');
+const isOtherWorksActive = !isDocsActive && otherWorksItems.some((item) => isActive(item.href));
 const allNavItems = [...navItems, ...otherWorksItems, aboutItem];
 
 /* Color classes based on transparent mode */
@@ -84,6 +85,7 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
         {navItems.map((item) => (
           <a
             href={item.href}
+            data-navlink={item.href}
             class:list={[
               "nav-text px-3 py-2 text-sm transition-all duration-300 relative",
               isActive(item.href) ? textCls : textMutedCls,
@@ -91,7 +93,7 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
           >
             {item.label}
             {isActive(item.href) && (
-              <span class="absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full" />
+              <span class="nav-active-bar absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full" />
             )}
           </a>
         ))}
@@ -99,8 +101,9 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
         <!-- Other Works Dropdown -->
         <div class="relative group">
           <button
+            data-otherworks
             class:list={[
-              "nav-text px-3 py-2 text-sm transition-all duration-300 flex items-center gap-1 relative",
+              "nav-text border-0 bg-transparent cursor-pointer px-3 py-2 text-sm transition-all duration-300 flex items-center gap-1 relative",
               isOtherWorksActive ? textCls : textMutedCls,
             ]}
           >
@@ -109,7 +112,7 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
             {isOtherWorksActive && (
-              <span class="absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full" />
+              <span class="nav-active-bar absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full" />
             )}
           </button>
           <div class="absolute top-full left-1/2 -translate-x-1/2 mt-1 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[180px]">
@@ -131,6 +134,7 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
 
         <a
           href={aboutItem.href}
+          data-navlink={aboutItem.href}
           class:list={[
             "nav-text px-3 py-2 text-sm transition-all duration-300 relative",
             isActive(aboutItem.href) ? textCls : textMutedCls,
@@ -138,7 +142,7 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
         >
           {aboutItem.label}
           {isActive(aboutItem.href) && (
-            <span class="absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full" />
+            <span class="nav-active-bar absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full" />
           )}
         </a>
 
@@ -155,7 +159,7 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
 
         <!-- Social Icons -->
         <div class="flex items-center gap-1 ml-2">
-          <a href={getLocalizedPath("/docs/", lang)} class:list={["nav-icon transition-all duration-300 p-1.5 rounded-md", iconCls]} aria-label="Docs">
+          <a href={getLocalizedPath("/docs/", lang)} data-docsicon class:list={["nav-icon transition-all duration-300 p-1.5 rounded-md", isDocsActive ? "text-[var(--color-accent)] shadow-[0_2px_0_0_var(--color-accent)]" : iconCls]} aria-label="Docs">
             <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
@@ -222,4 +226,84 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
 
   initNavbarScroll();
   document.addEventListener('astro:after-swap', initNavbarScroll);
+
+  // ── Active nav state (runs after every SPA navigation) ──────────────
+  const OTHER_WORKS_PATHS = ['/photography/', '/graphic-design/', '/music/'];
+
+  function isPathActive(href: string, path: string): boolean {
+    if (href === '/' || href === '/en/') return path === href;
+    return path.startsWith(href);
+  }
+
+  function updateActiveNav() {
+    const nav = document.getElementById('main-nav');
+    if (!nav) return;
+    const path = window.location.pathname;
+    const isTransparent = nav.dataset.transparent === 'true';
+    const isScrolled = window.scrollY > 80;
+    const useDarkText = !isTransparent || isScrolled;
+
+    const activeText = useDarkText ? 'text-[var(--color-text)]' : 'text-white';
+    const mutedText  = useDarkText ? 'text-[var(--color-text-muted)]' : 'text-white/70';
+    const mutedHover = useDarkText ? 'hover:text-[var(--color-text)]' : 'hover:text-white';
+
+    const isDocsPage = path.startsWith('/docs/') || path.startsWith('/en/docs/');
+    const isOtherWorksPage = !isDocsPage && OTHER_WORKS_PATHS.some(p => isPathActive(p, path));
+
+    // Regular nav links
+    nav.querySelectorAll<HTMLAnchorElement>('[data-navlink]').forEach(link => {
+      const href = link.dataset.navlink!;
+      const active = isPathActive(href, path);
+      link.classList.remove('text-[var(--color-text)]', 'text-white', 'text-[var(--color-text-muted)]', 'text-white/70', 'hover:text-[var(--color-text)]', 'hover:text-white');
+      link.classList.add(active ? activeText : mutedText);
+      if (!active) link.classList.add(mutedHover);
+      // underline bar
+      const bar = link.querySelector('.nav-active-bar');
+      if (active && !bar) {
+        const span = document.createElement('span');
+        span.className = 'nav-active-bar absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full';
+        link.appendChild(span);
+      } else if (!active && bar) {
+        bar.remove();
+      }
+    });
+
+    // Other Works button
+    const otherBtn = nav.querySelector<HTMLButtonElement>('[data-otherworks]');
+    if (otherBtn) {
+      otherBtn.classList.remove('text-[var(--color-text)]', 'text-white', 'text-[var(--color-text-muted)]', 'text-white/70', 'hover:text-[var(--color-text)]', 'hover:text-white');
+      otherBtn.classList.add(isOtherWorksPage ? activeText : mutedText);
+      if (!isOtherWorksPage) otherBtn.classList.add(mutedHover);
+      const bar = otherBtn.querySelector('.nav-active-bar');
+      if (isOtherWorksPage && !bar) {
+        const span = document.createElement('span');
+        span.className = 'nav-active-bar absolute bottom-0 left-3 right-3 h-0.5 bg-[var(--color-accent)] rounded-full';
+        otherBtn.appendChild(span);
+      } else if (!isOtherWorksPage && bar) {
+        bar.remove();
+      }
+    }
+
+    // Docs icon
+    const docsIcon = nav.querySelector<HTMLAnchorElement>('[data-docsicon]');
+    if (docsIcon) {
+      docsIcon.classList.remove(
+        'text-[var(--color-accent)]',
+        'text-[var(--color-text-muted)]', 'text-white/70',
+        'hover:text-[var(--color-text)]', 'hover:text-white',
+        'hover:bg-[var(--color-surface-hover)]', 'hover:bg-white/10'
+      );
+      if (isDocsPage) {
+        docsIcon.classList.add('text-[var(--color-accent)]');
+      } else if (useDarkText) {
+        docsIcon.classList.add('text-[var(--color-text-muted)]', 'hover:text-[var(--color-text)]', 'hover:bg-[var(--color-surface-hover)]');
+      } else {
+        docsIcon.classList.add('text-white/70', 'hover:text-white', 'hover:bg-white/10');
+      }
+      docsIcon.classList.toggle('shadow-[0_2px_0_0_var(--color-accent)]', isDocsPage);
+    }
+  }
+
+  updateActiveNav();
+  document.addEventListener('astro:after-swap', updateActiveNav);
 </script>
