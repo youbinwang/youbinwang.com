@@ -57,9 +57,17 @@
   --sl-content-width: 48rem;
 }
 
-/* ─── Hide default Starlight header (we use custom Navbar) ─────────── */
+/* ─── Custom Starlight header overrides ────────────────────────────── */
 header.header {
-  padding-top: 0;
+  background-color: var(--color-surface-overlay, var(--sl-color-bg-nav));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border, var(--sl-color-hairline-shade));
+}
+
+/* Prevent Starlight default link styles from leaking into our custom header */
+header.header a {
+  text-decoration: none !important;
 }
 
 /* ─── Sidebar polish ───────────────────────────────────────────────── */
