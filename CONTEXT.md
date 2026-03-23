@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-23 02:50 (UTC+8)
+> **更新时间**：2026-03-23 17:00 (UTC+8)
 
 ---
 
@@ -52,6 +52,7 @@
 | 11 | 透明 Header | 有 Hero 的页面 Navbar 起初透明，滚动后变毛玻璃 |
 | 12 | 加宽内容区 | `max-w-7xl`(1280px) → `max-w-screen-xl`(1440px) |
 | 13 | 加大 Logo | `text-lg font-semibold` → `text-xl font-bold` |
+| 14 | 硬编码颜色修复 | `MobileMenu.tsx` (`#e0e0e0`→`var(--color-text-secondary)`, `#b0b0b0`→`var(--color-text-muted)`)；`ImageCarousel.tsx` (`#FF9300`→`var(--color-accent)`) |
 
 ---
 
@@ -102,8 +103,8 @@
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
 ### 待修复的样式问题
-- `MobileMenu.tsx` — 硬编码颜色（`#e0e0e0`, `#b0b0b0`）应替换为 CSS 变量
-- `ImageCarousel.tsx` — Swiper 导航色硬编码 `#FF9300` 应使用 `var(--color-accent)`
+
+（暂无已知样式问题）
 
 ### 部署配置（Step 13）
 - Cloudflare Pages 配置
@@ -124,7 +125,8 @@
 
 每次修改后请运行 `npm run build` 验证构建通过。
 
-项目根目录：/Users/youbinwang/Documents/GitHub/youbinwang.com
+项目根目录（公司 Windows）：h:\GitHub\youbinwang.com
+项目根目录（家 Mac）：/Users/youbinwang/Documents/GitHub/youbinwang.com
 Dev server：npm run dev（http://localhost:4321）
 Docs 页面：http://localhost:4321/docs/
 ```

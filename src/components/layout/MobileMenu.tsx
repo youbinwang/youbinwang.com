@@ -86,7 +86,7 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
               <a
                 key={item.href}
                 href={item.href}
-                className={`text-xl py-3 px-6 text-[#e0e0e0] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen
+                className={`text-xl py-3 px-6 text-[var(--color-text-secondary)] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen
                   ? 'opacity-100 translate-y-0'
                   : 'opacity-0 translate-y-4'
                   }`}
@@ -110,7 +110,7 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
           {/* Language Switch */}
           <a
             href={langSwitchPath}
-            className={`text-lg py-2 px-6 text-[#b0b0b0] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            className={`text-lg py-2 px-6 text-[var(--color-text-muted)] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             style={{ transitionDelay: isOpen ? '500ms' : '0ms' }}
             onClick={() => setIsOpen(false)}
@@ -128,7 +128,7 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
               href="https://github.com/youbinwang"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#b0b0b0] hover:text-white transition-colors p-2"
+              className="text-[var(--color-text-muted)] hover:text-white transition-colors p-2"
               aria-label="GitHub"
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -139,7 +139,7 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
               href="https://www.linkedin.com/in/youbinwang/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#b0b0b0] hover:text-white transition-colors p-2"
+              className="text-[var(--color-text-muted)] hover:text-white transition-colors p-2"
               aria-label="LinkedIn"
             >
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">

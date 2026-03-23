@@ -42,7 +42,7 @@ export default function ImageCarousel({
         onSwiper={(swiper) => { mainRef.current = swiper; }}
         className="mb-3 rounded-lg overflow-hidden"
         style={{
-          '--swiper-navigation-color': '#FF9300',
+          '--swiper-navigation-color': 'var(--color-accent)',
           '--swiper-navigation-size': '28px',
         } as React.CSSProperties}
       >
