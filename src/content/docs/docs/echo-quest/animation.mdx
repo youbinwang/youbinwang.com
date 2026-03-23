@@ -1,8 +1,244 @@
 ---
-title: 动画系统
-description: Echo Quest 动画系统文档
+title: 角色动画系统
+description: Lyra 动画蓝图架构、线程安全更新、分层动画接口、Distance Matching 与 Control Rig Foot IK
 ---
 
-# 动画系统
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-占位页面。
+> 本章介绍基于 Lyra 架构的动画系统实现，包括线程安全更新、分层动画接口、Distance Matching 消除滑步，以及 Control Rig Foot IK 程序化物理修正。
+
+## 4.1 技术选型分析：为什么要用 Lyra 架构？
+
+<Aside type="tip" title="选型结论">
+选择 Lyra（Distance Matching）方案，是在**运行性能、开发维护成本、动作类玩法精确控制**三者间取得的最佳平衡点。
+</Aside>
+
+| 方案 | 优势 | 不适合本项目的原因 |
+|------|------|-------------------|
+| **ALS** | 极高的拟真度表现 | 复杂蓝图数学运算占用主线程 CPU；单体式架构高耦合，扩展难度指数级上升，不适配 GAS |
+| **Motion Matching** | 极自然的动作过渡 | 依赖高质量动捕数据，不适合个人项目；本质是模糊搜索，过渡具有不可预测性 |
+| **Lyra (✅)** | 多线程高性能；模块化低耦合 | — |
+
+本项目属于强动作类，强调响应速度和精准的攻击判定。Lyra 的状态机方案提供了更强的确定性控制，确保连招和闪避的手感永远是精确且可稳定复现。
+
+## 4.2 Lyra 动画架构的核心技术优势
+
+| 特性 | 传统方式 | Lyra 架构 |
+|------|---------|-----------|
+| **数据更新** | Event Graph 主线程处理，影响 CPU 性能 | Thread Safe Update Animation，剥离至工作线程并行执行 |
+| **数据获取** | 蓝图节点逐个读取，开销大 | UE5 Property Access 系统直接从 C++ 层高效获取，缓存为原生 Float/Bool |
+| **架构耦合** | 单体动画蓝图，所有逻辑紧耦合 | Anim Layer Interface 分层解耦，逻辑与表现分离 |
+| **扩展性** | 修改一处影响全局 | 动态链接 Layer 资产，新增武器/角色无需修改基础逻辑 |
+
+---
+
+## 4.3 以主角 AnimBP 为例，说明 Lyra 架构与程序化动画修正在项目中的实现
+
+以主角动画蓝图 ABP_CyberSkaterBase 为例，我将整个动画流程拆解为数据驱动层、图层架构层与表现执行层三个部分：
+
+### 4.3.1 线程安全的数据驱动 - Thread Safe Update Animation
+
+传统的动画蓝图在 Event Graph 中每帧 Tick 执行大量逻辑，极易造成主线程性能瓶颈；在 Lyra 架构中，改用 BlueprintThreadSafeUpdateAnimation 函数接管数据更新（位于主动画蓝图中）。利用 UE5 的 Property Access（属性访问）系统，直接从工作线程访问 CharacterMovementComponent，提取旋转、速度 (Velocity)、加速度 (Acceleration) 及角色状态等数据（下文会分类解释每个函数的作用），并将它们缓存为原生 Float 或 Bool。
+
+这样做的好处：将繁重的动画解算逻辑从游戏主线程剥离，降低 CPU 性能开销，确保极端情况下的帧率稳定性。
+
+{/* ![Thread Safe Update Animation 函数总览](/images/echo-quest/thread-safe-update.png) */}
+
+#### 1.1 基础物理数据更新
+
+- **Update Velocity（更新速度）**：从 CharacterMovementComponent 获取角色的世界空间速度向量（注意 Property Access 节点），并计算 Ground Speed（地面速度）。这是驱动动画状态机的核心数据。它决定了角色状态 (Idle / Moving)，同时 Ground Speed 直接驱动了 Distance Matching 的播放速率，确保步伐与移动速度匹配。
+
+- **Update Acceleration（更新加速度）**：获取角色的当前输入加速度（Input Acceleration），也就是玩家的操作输入。在角色速度还没提起来的瞬间（起步阶段），动画系统须依靠加速度来预判玩家想往哪走，从而立刻播放正确的起步动画。
+
+- **Update Rotation（更新旋转）**：获取角色的世界旋转 (Actor Rotation)，用于计算角色面朝向与玩家视角的偏差。
+
+#### 1.2 方向与位移解算
+
+- **Update Locomotion（更新位移参数）**：计算并缓存角色在帧与帧之间的实际位移量 (DisplacementSinceLastUpdate) 和基于位移的实际速度 (DisplacementSpeed)，作为 Distance Matching 的核心输入源。它确保动画的播放进度是根据实际运动距离驱动，而不是简单的时间，从而在底层物理层面彻底消除滑步现象。
+
+- **Update Cardinal Direction from Velocity（基于速度更新基本方向）**：将 360 度的连续移动方向，量化为 4 个枚举值：F（前），B（后），L（左），R（右），主要用于急停动画的选择。当玩家瞬间取消方向输入时，系统根据当前的速度方向决定急停动画方向。
+
+- **Update Cardinal Direction from Acceleration（基于加速度更新基本方向）**：将玩家的输入意图量化为 4 个离散方向，主要用于 Start（起步）和 Pivot（折返）动画的选择。如当速度向前但加速度突然向后时，系统会识别出这是折返跑操作，从而触发 Pivot 动画。
+
+- **Update Is Moving Perpendicular to Initial Pivot（更新垂直切向运动状态）**：用于检测玩家是否在进行直角拐弯或者复杂的混合输入（如从按住 W 变成突然按住 D），用来优化 Pivot（折返）的手感，确保在复杂走位下的动作过渡平滑流畅。
+
+#### 1.3 状态与环境感知
+
+- **Update Character State Data（更新角色状态数据）**：从移动组件中读取当前的移动模式，并将其转换为动画系统专用的 Bool 状态。这是主状态机进行 Locomotion / Jump 状态切换的根本依据。
+
+- **Update Jump Fall Data（更新跳跃与滞空数据）**：用于计算并设置 JumpApexTime（跳跃顶点时间戳），也就是角色在跳跃过程中，垂直速度（Z 轴速度）从正数变为负数（开始下落）的那一瞬间的时间，也就是角色到达最高点 (Apex) 的时间点。通过计算 `CurrentTime - JumpApexTime`，得到 TimeFromApex（下落持续时间），来驱动下落时 (Fall Loop) 的动画混合，并辅助落地预判逻辑的计算。
+
+### 4.3.2 分层动画接口 - Linked Anim Layers
+
+为了解决传统动画蓝图的高耦合问题，Lyra 引入了 Linked Anim Layers，实现了逻辑容器与具体表现的分离，这样做主要有模块解耦和高扩展性两个好处。
+
+ABP_CyberSkaterBase 的 AnimGraph 本质上是一个分层状态机，它并不直接包含动作序列，而是通过 Linked Anim Layer 节点调用子图层。
+
+#### 2.1 动画图层接口定义 - Anim Layer Interface
+
+为实现逻辑与表现的解耦，首先要定义 Anim Layer Interface（动画图层接口）。在项目中，ALI 不是简单的上下半身分层，而是采用了更符合动作游戏需求的"基于状态的细粒度分层 (State-Based Layering)"模式。
+
+- **模板规范**：在 ALI AnimLayerInterface 中定义了动画系统的标准插槽，这些插槽本质上是一种"模板"和"规范"，它们不包含具体动画资源，而是定义各个子蓝图里有哪些状态插槽 (State Slots)，并通过主蓝图对这些状态的逻辑声明实现动态调用。
+
+- **具体插槽定义**：接口涵盖了完整的运动周期，确保了对动作混合的精确控制。包括：
+  - 地面运动：Idle（待机）、Start（起步）、Cycle（跑动循环）、Stop（急停）、Pivot（折返）
+  - 空中运动：Jump Start（起跳爆发）、Jump Start Loop（起跳上升循环）、Jump Apex（跳跃顶点重力反转瞬间）、Fall Loop（下落循环）、Fall Land（下落接地）、DodgeFallToIdle（空中闪避后的落地缓冲/恢复）
+
+- **动态调用机制**：主动画蓝图 (ABP_CyberSkaterBase) 负责维护核心状态机的跳转逻辑（判断应该在满足什么条件时切换到什么状态），而具体动画数据则通过接口委托给子蓝图 (Linked Anim Layers) 中执行（播对应子蓝图中的对应动作），从而实现逻辑判断与动作资源的解耦。
+
+{/* ![Anim Layer Interface 接口定义](/images/echo-quest/anim-layer-interface.png) */}
+
+#### 2.2 主蓝图逻辑管线 - ABP_CyberSkaterBase (AnimGraph)
+
+在 ABP_CyberSkaterBase 的 AnimGraph 中，我搭建了一条标准化的 Pose 处理流水线：
+
+Locomotion State Machine（见下文）→ Inertialization（惯性插值，Lyra 架构的关键节点，负责所有状态间的平滑过渡，允许状态机在极短时间内完成姿态突变，保持视觉的连续性）→ Slot DefaultSlot（蒙太奇插槽）→ Control Rig（程序化 IK，见下文，在 IsFalling = False 时启用，防止双腿在空中出现拉伸）。
+
+{/* ![AnimGraph 主蓝图逻辑管线](/images/echo-quest/animgraph-pipeline.png) */}
+
+#### 2.3 核心实现：移动层状态机 - Locomotion State Machine
+
+Locomotion State Machine 负责处理各个状态的具体切换逻辑，它利用 Conduit（导管/通路节点）和 State Alias（状态别名）构建了一个高响应度的复杂逻辑网。我们可以将整个状态机拆分为地面、空中与落地决策三个模块。
+
+{/* ![Locomotion State Machine 总览](/images/echo-quest/locomotion-state-machine.png) */}
+
+<Tabs>
+  <TabItem label="🏃 地面循环">
+    角色最基础的移动闭环，完全由 Distance Matching 驱动。
+
+    | State | 进入条件 | 退出条件 |
+    |-------|---------|---------|
+    | **Idle** | 状态机原点；落地无输入时返回 | 有速度+加速度 → Start |
+    | **Start** | 检测到速度和加速度 | 播放完成 → Cycle；无加速度 → Stop |
+    | **Cycle** | Start 播放完成 | 无加速度 → Stop |
+    | **Stop** | 无加速度时（Distance Matching 预测停下位置，决定左/右脚停） | 播放完成 → Idle；有新输入 → Start |
+    | **Pivot** | 速度与加速度点乘 < 0（方向反转） | 无加速度 → Stop；侧向输入 → Cycle |
+
+    <Aside type="note" title="Pivot（折返）详解">
+    当速度向量与加速度向量夹角 > 90°时，从 Start 或 Cycle 进入。可被打断：ANS_ToLocomotion 激活时，或 IsMovingPerpendicularToInitialPivot = True（折返中突然侧向输入）时混合回 Cycle。
+    </Aside>
+  </TabItem>
+  <TabItem label="🦅 空中循环">
+    为实现细腻的跳跃手感，将起跳至落地拆分为五个 State：
+
+    | State | 说明 |
+    |-------|------|
+    | **JumpSources** | 状态别名，统一管理所有进入跳跃的来源（Idle/Start/Cycle/Stop/Pivot/DodgeFallToIdle） |
+    | **JumpSelector** | Conduit 节点：IsJumping=True(Vz&gt;0) → JumpStart；IsFalling=True(Vz&lt;0) → JumpApex |
+    | **JumpStart → JumpStartLoop** | 蹬地起跳 → 上升循环 |
+    | **JumpApex** | 过渡状态，表现重力反转失重感。通过 `-Vz/g` 计算剩余时间，< 0.4s 时进入（提前量为动画混合预留时间） |
+    | **FallLoop** | 下落循环动画 |
+    | **FallLand** | 落地卸力，GroundDistance < 200 时进入，播放结束且 IsOnGround=True 时退出 |
+  </TabItem>
+  <TabItem label="🎯 落地决策">
+    通过 **EndInAir (Conduit)** 进行分流决策：
+
+    | 条件 | 目标状态 |
+    |------|---------|
+    | IsOnGround=True 且有速度+加速度 | → **CycleAlias**（返回地面 Cycle） |
+    | IsOnGround=True 且无速度无加速度 | → **IdleAlias**（返回地面 Idle） |
+    | 有速度但无加速度（闪避残余动量） | → **DodgeFallToIdle** |
+
+    <Aside type="tip" title="DodgeFallToIdle — 项目特有状态">
+    处理空中闪避后的高动量落地。角色落地时仍有闪避残余水平动量但无玩家输入，为避免"溜冰"滑步，进入急停滑步动画，利用动画本身位移匹配残余动量，平滑过渡回 Idle。若检测到新加速度输入，立即打断进入 Cycle。
+    </Aside>
+  </TabItem>
+</Tabs>
+
+### 4.3.3 扩展实现与程序化修正：逻辑驱动层 - ABP_ItemLayerBase
+
+ABP_ItemLayerBase 是动画系统中的核心逻辑基类，它利用面向对象的继承特性，封装了所有与程序化修正相关的底层算法。
+
+该类包含了一系列 Setup 和 Update 函数，这些函数直接绑定在状态机内部的 SequenceEvaluator 节点上，实现了对动画播放进度的精确物理控制。
+
+- **Setup 函数**：绑定于状态机的 Entry 节点，它根据当前的角色状态（如速度方向）选择正确的动画资产（Sequence），并将 SequenceEvaluator 的显式时间重置为初始值（一般情况下为 0.0），为后续的计算做好准备。
+
+- **Update 函数**：绑定于状态机的 Update 节点，负责实时驱动。它在每一帧计算角色实际的物理位移或预测目标点，通过数学算法算出当前动画应该播放到哪一帧（Explicit Time），从而强制动画进度与世界的物理移动距离同步。
+
+通过 Setup 的零点重置和 Update 的实时预测，ABP_ItemLayerBase 实现了"物理决定位移，位移驱动动画"的闭环。无论地面摩擦力如何变化，这套逻辑都能保证角色的脚底不会出现滑动，实现了高精度的运动表现。
+
+{/* ![ABP_ItemLayerBase Setup/Update 函数一览](/images/echo-quest/item-layer-base.png) */}
+
+#### 案例解析：急停（Stop）逻辑的具体实现 + Distance Matching
+
+以急停（Stop）状态（UpdateStopAnim 函数）为例，这是 Distance Matching 最典型的应用场景。为解决玩家松开键盘后角色向前滑行距离与动画停步距离不匹配的滑步问题，我在这里实现了基于物理预测的距离匹配。
+
+**状态初始化 Setup StopAnim 函数**：当状态机检测到角色速度降为 0 或停止输入时，系统自动调用 Setup StopAnim 函数，该函数执行了两个关键步骤：首先先将当前的动画节点强制转换为 SequenceEvaluator，即取消自动播放动画，由代码接管动画播放的进度；接下来重置时间（Set Explicit Time），将动画播放进度强制重置为 0.0 秒，确保每一次急停动作都从动画的第一帧开始播放，为后续的距离计算提供一个确定的 T=0，Distance = 0 的起始参照点。
+
+**实时帧驱动 Update 函数**：初始化完成后，系统在每一帧调用 Update StopAnim 函数，利用 Distance Matching 实时修正动画进度。逻辑流程如下：
+
+1. **物理预测（Predict Ground Movement Stop Location）**：核心节点是 Predict Ground Movement Stop Location。该节点通过读取 CharacterMovementComponent 中的物理参数（如当前速度、摩擦力 Friction、刹车减速度 BrakingDeceleration）等，利用物理公式算出按照当前的地面摩擦力，角色自然滑行停止的最终位置。
+
+2. **距离计算（Stop Location）**：计算当前角色位置与预测停止位置间的距离，得出 Stop Location（距离目标的剩余距离），并每帧更新。
+
+3. **距离匹配（Distance Matching）**：数据最终会传入 Distance Match to Target 节点，该节点会查询急停动画中的根节点位移的距离曲线（Distance Curve），并将传入的距离与距离曲线中对应距离的动画帧匹配，以确定从哪帧开始播放动画。
+
+   > `AnimExplicitTime = DistanceCurve.Evaluate(PredictedStopDistance)`
+   >
+   > 例：如果物理计算显示角色还需要滑行 1.5 米才能停下，该节点就会强制将动画跳转到距离动画结束还有 1.5 米的那一帧。
+
+4. **边界处理（Branch）**：两个 Branch 节点提供了保护机制，如果不需要距离匹配，或物理预测失败（如停步距离不存在或极短），则会自动回退到 Advance Time（普通时间推进节点），防止动画卡死，确保持续的视觉反馈。
+
+{/* ![Distance Matching 急停实现流程](/images/echo-quest/distance-matching-stop.png) */}
+
+#### 图层实现的模块化封装 + Orientation Warping / Stride Warping
+
+如果说上面的 Setup 和 Update 函数决定了进入每个 State 后执行的逻辑算法，急停案例说明了这些算法的执行原理，那么本节则阐述了这些逻辑的"执行容器"是如何构建的。
+
+我将 4.3.2 接口 (ALI) 中的每一个标准插槽（如 Full Body Start、Full Body Pivot）都实例化为了一个独立的动画图层（Animation Layer）。这种"状态即图层"的设计模式实现了逻辑的原子化封装——每个动作状态都是一个独立且流程逻辑完善的独立单元。
+
+以 Pivot A（折返）图层为例，一个标准的图层实现包含 Sequence Evaluator 和最终的 Output 节点，并在此基础上可以添加程序化变形环节。下面来解释每个节点的具体作用：
+
+{/* ![Pivot 图层实现](/images/echo-quest/pivot-layer.png) */}
+
+- **节点绑定 Sequence Evaluator**：这里是连接上述 Setup/Update 函数与图层的桥梁。通过 Sequence Evaluator 节点，在状态机进入这个图层时（On Become Relevant），图表内的动画节点就会自动调用执行基类中的 SetupPivotAnim 节点；持续在这个图层中更新时（On Update），则会持续调用 UpdatePivotAnim 函数。
+
+- **空间转换 Local To Component / Component To Local**：由于后续的 Warping 节点需要在组件空间（Component Space）下进行骨骼运算，所以在流程中需要经过 Local To Component 和 Component To Local 的转换。
+
+- **方向扭曲 Orientation Warping**：通过读取 Locomotion Angle，保持角色下半身按照 Pivot 动画运动，但会强制扭转脊柱（Spine）骨骼，使角色上半身朝向始终面向玩家的实际输入方向。
+
+- **步幅扭曲 Stride Warping**：通过读取 Locomotion Speed，在角色折返时动态拉伸/压缩双腿跨出的距离，以匹配胶囊体的实际移动速度，彻底消除滑步。
+
+值得注意的是，图层内部不仅可以是单一的动画节点，也可以是更细分的子状态机。如 Pivot_State 中包含一个微型状态机，用于处理 Pivot A（左折返）与 Pivot B（右折返）的选择逻辑。这里也是 Lyra 分层架构宏观状态机控制流程、微观图层处理细节优势的体现。
+
+### 4.3.4 资产配置与具体实现：装配层 - ABP_LocomotionLayers
+
+如果说 4.3.3 中的 ABP_ItemLayerBase 构建了结构和逻辑，那么这里的 ABP_LocomotionLayers 就对应了每条结构需要实际执行的动画。作为 ABP_ItemLayerBase 的具体子类，这个蓝图展现了 Lyra 架构中逻辑与资源彻底解耦的终极形态：零逻辑，纯数据。
+
+这个蓝图的唯一职责就是通过变量覆写（Asset Override）的方式，将具体的动画序列（Anim Sequence）注入到父类预留的插槽中。一旦这些变量被赋值，父类的 Setup/Update 函数在运行时就会自动读取这些具体的动画资源，并应用到对应的 Sequence Evaluator 上。
+
+{/* ![ABP_LocomotionLayers 资产配置界面](/images/echo-quest/locomotion-layers.png) */}
+
+这样做的优势在于将逻辑层和表现层完全解耦。动画或策划在配置时，无论如何修改表现层内容，都不会破坏底层的状态机逻辑或算法。同时，这套架构有很强的复用性与扩展度，如果我想做多人游戏中的另一个角色、或者当前角色拿着另一种武器、或是受伤状态下的主角状态，只需创建一个新的子蓝图继承 ABP_ItemLayerBase，再替换掉里面的动画资产即可。一套逻辑可以驱动无数种完全不同风格的动作表现。
+
+---
+
+## 4.4 程序化物理修正 - Control Rig Foot IK
+
+在动画管线的末端，我引入了 Control Rig 来处理 Foot IK（足部反向动力学）。这是实现角色与环境（斜坡、楼梯、障碍物）真实交互的关键。
+
+### 4.4.1 技术选型分析：为什么要用 Control Rig，而不用传统 IK？
+
+在 UE4 时代，通常直接在 AnimGraph 中使用 Two Bone IK 节点配合复杂的蓝图射线检测逻辑。在本项目中，我全面转向了 Control Rig，主要基于以下优势：
+
+- **逻辑可视化与封装**：传统方式下射线检测逻辑写在 CharacterBP 里，动画修正写在 AnimBP，逻辑分散且难以调试。在 Control Rig 中，所有射线检测、数学计算、骨骼变换逻辑都封装在 CR_CyberSkater_Mage_BasicFootIK 中，我们可以直接在其中看到逻辑和 Debug Flow，所见即所得。
+
+- **更自然的全身解算（Full Body IK Integration）**：传统方式的 Two Bone IK 只能简单地折叠膝盖，容易导致骨骼的僵硬和不自然弯曲。Control Rig 则使用了 Full Body IK (FBIK) 求解器。当脚抬高时，它不仅会弯曲膝盖，还会自然地调整骨盆高度甚至脊柱姿态，实现全身联动的自然姿态输出。
+
+- **零开销混合**：如 AnimGraph 所示，我通过 ShouldDoIKTrace 变量控制整个 Rig 的开关。当角色在空中时，IK 逻辑完全停止，减少了性能消耗。
+
+### 4.4.2 核心实现逻辑
+
+在 Control Rig 中，严格遵循检测 → 平滑 → 偏移 → 求解的标准流水线，分为 5 个步骤：
+
+{/* ![Control Rig Foot IK 流程图](/images/echo-quest/control-rig-foot-ik.png) */}
+
+- **Step 1 - 环境感知**：首先判断 ShouldDoIKTrace 是否开启。若开启，从双脚位置向下发射球形射线，获取双脚正下方的地面高度并计算脚底与实际地面的高度差（ZOffsetTarget），即"脚悬空了多少"或"脚陷进去多少"。
+
+- **Step 2 - 信号平滑**：射线检测的数据是瞬变的（如瞬间跨过一个台阶时，如果直接应用，脚会瞬间"瞬移"到台阶上），在这一步中通过插值节点 (AlphaInterpolate) 让数值平滑过渡，避免鬼畜抖动。
+
+- **Step 3 - 骨盆适配**：对比左右脚的 Offset 并取最低值，来调整骨盆 (Pelvis) 的高度 (ZOffset_Pelvis)。
+
+- **Step 4 - 应用偏移**：通过将计算好的 Z Offset 传入到 Modify Transform 节点，应用到虚拟的 IK 骨骼（ik_foot_l、ik_foot_r）和骨盆上。这时会将 IK 的目标点贴合地面，但真正的腿骨还没动。
+
+- **Step 5 - 全身求解**：最后，调用 Full Body IK 节点，将 Step 4 中移动到位的 ik_foot 骨骼作为 Effectors（效应器），FBIK 求解器会自动计算大腿、小腿、脚踝的旋转角度，使其自然地通过骨骼链传递到这些目标点。

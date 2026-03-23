@@ -1,8 +1,55 @@
 ---
-title: Echo Quest
-description: Echo Quest 技术文档
+title: Echo Quest 技术实现文档
+description: Echo Quest 3D ARPG 技术实现文档 — 涵盖 GAS、战斗系统、打击感、动画系统、Motion Warping 与敌人 AI
 ---
 
-# Echo Quest
+import { LinkCard, CardGrid, Aside, Badge } from '@astrojs/starlight/components';
 
-技术文档占位页面，将在 Step 8a 中完善。
+<Aside type="tip" title="项目定位">
+Echo Quest 是一个 **3D 动作 RPG 技术展示项目**，基于 **Unreal Engine 5** 开发，聚焦于战斗系统与角色动作的工业化实现方案。
+</Aside>
+
+| 属性 | 信息 |
+|------|------|
+| **引擎** | Unreal Engine 5.3 |
+| **类型** | 3D Action RPG（技术 Demo） |
+| **核心技术** | GAS · ComboGraph · Lyra Animation · Motion Warping · Behavior Tree · EQS |
+| **开发规模** | 个人独立开发 |
+
+---
+
+## 文档目录
+
+本文档涵盖六大核心系统，按照从底层框架到上层表现的顺序组织：
+
+<CardGrid>
+  <LinkCard title="1. GAS (Gameplay Ability System)" href="/docs/echo-quest/gas-system/" description="GAS 核心组件解析、技术选型理由，以闪避为例说明完整数据流" />
+  <LinkCard title="2. 战斗系统（ComboGraph）" href="/docs/echo-quest/combat-system/" description="ComboGraph 技术选型、轻攻击 Combo 实现、碰撞检测与射线检测" />
+  <LinkCard title="3. 打击感的构成与实现" href="/docs/echo-quest/hit-feedback/" description="动作游戏打击感的感官维度分类、索敌与受击判定、玩家与敌人侧表现" />
+  <LinkCard title="4. 角色动画系统" href="/docs/echo-quest/animation/" description="Lyra 动画蓝图架构、线程安全更新、分层动画接口、Distance Matching 与 Foot IK" />
+  <LinkCard title="5. Motion Warping" href="/docs/echo-quest/motion-warping/" description="Motion Warping 原理与技术选型、近战攻击吸附实现、双轨协同配置" />
+  <LinkCard title="6. 敌人 AI 与 EQS" href="/docs/echo-quest/enemy-ai/" description="敌人 AI 三层架构、近战敌人全流程详解、环境查询系统（EQS）" />
+</CardGrid>
+
+---
+
+## 技术架构概览
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    玩家输入 (Enhanced Input)              │
+├────────────┬────────────┬───────────────────────────────┤
+│  GA_Dodge  │  GA_Attack │  GA_Jump / GA_Skill ...       │  ← GAS 技能层
+├────────────┴────────────┴───────────────────────────────┤
+│         ComboGraph（连招编排 · 输入缓冲 · 事件分发）       │  ← 战斗逻辑层
+├─────────────────────────────────────────────────────────┤
+│  GE_Damage · GE_Cost · GE_Cooldown · Attribute Set     │  ← GAS 数值层
+├────────────┬────────────────────────────────────────────┤
+│  GameplayCue (VFX / SFX / Camera Shake / Hit Stop)     │  ← 打击感表现层
+├────────────┴────────────────────────────────────────────┤
+│  Lyra AnimBP · Distance Matching · Control Rig Foot IK │  ← 动画系统层
+│  Motion Warping (攻击吸附 · 根骨骼修正)                   │
+├─────────────────────────────────────────────────────────┤
+│  Behavior Tree · Blackboard · AI Perception · EQS      │  ← 敌人 AI 层
+└─────────────────────────────────────────────────────────┘
+```

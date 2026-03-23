@@ -1,8 +1,102 @@
 ---
 title: Motion Warping
-description: Echo Quest Motion Warping 文档
+description: 基于 UE5 Motion Warping 的近战攻击吸附系统，实现程序化根骨骼运动修正与自动追踪
 ---
 
-# Motion Warping
+import { Aside, Steps } from '@astrojs/starlight/components';
 
-占位页面。
+> 本章介绍 Motion Warping 的原理、技术选型理由，并以近战攻击吸附为完整案例，演示从数据构建到蒙太奇双轨协同的实现流程。
+
+## 5.1 什么是 Motion Warping？
+
+Motion Warping 是 UE5 的一项新功能，是一套用于动态修改根骨骼运动 (Root Motion) 的程序化动画系统。它允许我们将一段固定位移的动画扭曲 (Warp) 到游戏世界中的任意目标位置与朝向。能做到在不改变动画播放时长和动作姿态的前提下，动态拉伸或压缩角色的位移轨迹，以适配角色的实际运动。
+
+- **根骨骼接管**：Motion Warping 的本质是对 Root Motion（根骨骼运动）的实时数学修正。它不会改变手脚的 IK (Control Rig)，而是直接作用于角色的胶囊体。工作原理是计算当前位置与目标位置 (Warp Target) 的差值，并将这个差值平滑地分配到动画的每一帧中。
+
+- **基于时间窗口的控制**：Motion Warping 通过 Anim Notify State（动画通知状态）来定义一个生效窗口，只有在动画播放到这段窗口时（比如挥剑动作的起手到击中瞬间）扭曲才会生效。这确保了角色在不需要吸附的时候（比如攻击后摇阶段）保持自然的物理运动。
+
+如果说 Control Rig 是为了让脚适应地面、手去摸指定点的微观修正，那 Motion Warping 就是为了让身体适应目标的宏观位移。它解决了动作游戏中经典的攻击滑步和打不到人的问题，实现了角色与交互目标的精准对齐。
+
+## 5.2 为什么要用 Motion Warping？
+
+**设计维度**：项目定位为高速动作游戏，战斗系统的核心体验在于流畅的爽感，因此确认了弱空间维度、强时间维度的设计。通过 Motion Warping 配合自动索敌，只要玩家在合理范围内按下攻击键，角色就会自动通过位移修正，实现自动攻击吸附，大幅弱化空间维度的考验。而对玩家的挑战，主要在于发起战斗与闪避的时机，也就是时间维度。
+
+<Aside type="caution" title="传统技术的问题">
+在 Motion Warping 普及前，类似的吸附效果主要通过 `VInterpTo` / `MoveComponentTo` 强行拉动角色位置实现——这会导致攻击滑步，破坏视觉真实感；或者通过大量动画资源弥补，成本极高且容易出现混合问题。
+</Aside>
+
+**Motion Warping 的优势**：
+
+| 优势 | 说明 |
+|------|------|
+| **脚步自适应** | 程序化拉伸根骨骼曲线，配合 Stride Warping（见 [动画系统 4.3.3](/docs/echo-quest/animation/)），脚步跨度自动适配 |
+| **动态追踪** | 实时追踪移动中的目标，即便敌人在前摇期间移动，也能动态更新落点 |
+| **资源复用** | 一个标准攻击动作适配大部分情境，降低美术资源压力 |
+
+---
+
+## 5.3 以近战攻击吸附为例，讲解 Motion Warping 在项目中的实现
+
+### 5.3.1 目标数据的构建 - LightAttackMotionWarping 函数
+
+LightAttackWarping 函数位于角色主蓝图 BP_MainPlayer 中，用于计算轻攻击 Motion Warping 的吸附落点。
+
+Motion Warping 不负责计算敌人是谁，所以在逻辑开始时需要获取近战攻击索敌章节中提到的 Target Actor，并通过 Is Valid 节点判断其是否存在。这里分为两种情况：
+
+{/* ![LightAttackMotionWarping 函数蓝图](/images/echo-quest/motion-warping-function.png) */}
+
+**A. 存在目标时，计算落点**：这里的逻辑是计算一个"最佳攻击位置"（吸附目标点），而不是直接飞到敌人身体里造成穿模。
+
+- **朝向计算**：通过 Find Look at Rotation 计算自身到目标的旋转角度。这确保角色发动攻击时会强制面朝敌人。
+- **位置计算**：吸附位置 = 目标位置 + （朝向向量 × 攻击距离修正值）。首先获取角色朝向敌人的 Forward Vector，乘以 Attack Point Distance（通常为负数，项目中为 -150），会得到一个从敌人位置指向玩家的向量。通过将这个向量加到敌人坐标上，就得到了敌人身前 150cm 处的点位。
+- 这确保角色会吸附到敌人的正前方攻击范围内，并预留出武器挥砍的空间（即 Attack Point Distance）。
+- **提交数据**：调用 Motion Warping 的核心节点 Add or Update Warp Target from Location and Rotation，并将 Warp Target Name 设置为 `AttackWarping`。在后续的动画蒙太奇配置中，Motion Warping 系统会根据相同的名字找到 Warp 的目标。
+
+**B. 无目标时的移除**：当不存在 Target Actor 时，清理 AttackWarping 的数据。
+
+通过调用 Remove Warp Target，立即清除 AttackWarping 的目标数据。这防止系统意外使用上次攻击的残留数据，导致在没有索敌目标时，角色飞向刚才被攻击且已死掉的敌人位置。
+
+### 5.3.2 逻辑触发与生命周期 - ANS_AttackMotionWarping_Light
+
+{/* 注：项目中实际文件名为 ANS_AttackMotionWapring_Light（拼写偏差） */}
+
+为实现对吸附时机的精准控制，我创建了一个自定义的动画通知状态（Anim Notify State），负责管理 Motion Warping 的生命周期，确保数据在需要时会通过调用保持最新，在结束时被清理。
+
+{/* ![ANS_AttackMotionWarping_Light 通知状态蓝图](/images/echo-quest/ans-attack-warping.png) */}
+
+**激活瞬间：实时数据刷新（Received Notify Begin）**
+
+当动画播放进入该通知状态的起始帧时，读取当前锁定的 Target Enemy，并调用 Light Attack Motion Warping 函数更新 Warping 吸附位置。
+
+在这里调用是为了解决时间差问题——敌人可能在攻击动画的前摇期进行过移动，如果在 Notify Begin 时重新计算吸附落点，就能确保角色是朝着敌人当前的最新位置吸附，极大提升了命中的准确性。
+
+**结束瞬间：状态清理与重置（Received Notify End）**
+
+当动画播放离开该通知状态范围时，Received Notify End 被触发，并调用 Reset Warp Target 函数。
+
+通过 Reset Warp Target 函数，攻击段动作结束后，会立即解除锁定，同时会重置下一连段 Motion Warping 的目标数据。显式调用 Reset 保证了每次攻击的独立性和安全性。
+
+### 5.3.3 动画蒙太奇配置与轨道协同
+
+在动画蒙太奇中进行实际配置是实现 Motion Warping 的最后一步，也是将逻辑与视觉表现结合的环节。这一步主要通过在蒙太奇的通知轨道中添加特定的通知状态来定义扭曲发生的精确时间窗口。
+
+{/* ![蒙太奇轨道配置截图](/images/echo-quest/montage-warping-tracks.png) */}
+
+**内置运动扭曲通知（轨道 3：MotionWarping）**
+
+轨道 3 使用的是引擎内置的 MotionWarping 通知状态，它负责驱动实际的根骨骼运动扭曲（Root Motion Modifier）。
+
+在配置部分，其中的 Warp Target Name (`AttackWarping`) 是最关键的设置，必须与第 1 节中在蓝图里设置的目标名称完全一致，它充当了逻辑层与表现层之间的参数密钥。
+
+Root Motion Modifier 选择 Skew Warp（斜切扭曲），这种模式在 Lyra 架构中常用于处理具有平移和旋转复合需求的近战攻击。
+
+**自定义逻辑生命周期（轨道 4：ANS_AttackMotionWarping_Light）**
+
+轨道 4 放置的是第 2 节中编写的自定义通知状态 ANS_AttackMotionWarping_Light。
+
+该通知状态的窗口通常略早于或同步于轨道 3 的位移扭曲窗口，在 Notify Begin 时触发计算函数，并在动画更新期间持续刷新目标的最新坐标。这保证了轨道 3 在执行位移时，其 Warping 位置始终与敌人移动轨迹同步更新，并保持最优预判点。
+
+**双轨协同的优势（逻辑与执行解耦）**：
+
+- **实时与精准**：轨道 4 负责寻找目标并实时刷新坐标，轨道 3 负责平滑地将角色拉向该坐标。这种职责分离的设计让攻击吸附显得既有物理动量感，又极其精准。
+- **调试解耦**：通过在蒙太奇中设置这两个通知状态的起止位置，可以非常直观地调整吸附速度和时机，实现了表现调整与逻辑的解耦。

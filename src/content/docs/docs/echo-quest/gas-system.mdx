@@ -1,8 +1,114 @@
 ---
-title: GAS 系统
-description: Echo Quest GAS 系统文档
+title: GAS (Gameplay Ability System)
+description: Echo Quest 中 GAS 的核心组件、技术选型理由与闪避系统完整数据流实现
 ---
 
-# GAS 系统
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-占位页面。
+> 本章介绍 GAS 的核心组件与技术选型理由，并以闪避系统为完整案例，演示从玩家输入到技能结束的全数据流。
+
+## 1.1 GAS 核心组件解析
+
+| 组件 | 职责 | 示例 |
+|------|------|------|
+| **GameplayAbility (GA)** | 技能逻辑容器，满足触发条件（Tag / 输入）时激活，执行蓝图逻辑 | `GA_Dodge`、`GA_LightAttack` |
+| **GameplayCue (GC)** | 纯表现层——特效、音效、相机震动等，由 Tag 触发 | 闪避拖尾 VFX、受击溅血 |
+| **GameplayEffect (GE)** | 数值层——修改 Attribute、施加/移除 Tag、配置 Cost / Cooldown | `GE_Cost_Dodge`、`GE_Damage_Melee` |
+
+**GAS 相关插件**：GameplayAbilities（引擎内置模块）、ComboGraph、GAS Companion
+
+---
+
+## 1.2 为什么要使用 GAS？
+
+<Aside type="tip" title="核心价值">
+GAS 最大的意义在于将 **逻辑（GA）、数值（GE/Attribute）、表现（GC）** 三者彻底解耦，避免传统蓝图开发中逻辑、数值、表现混杂在一起的"意大利面"式架构。
+</Aside>
+
+- **模块化与解耦**：GA 只管逻辑流程与状态机，GE 只管数值变化与约束条件 (Cost / Cooldown)，GC 只管表现层，Attribute Set 只管角色基础属性数值；
+- **Tag-Based 的状态管理**：彻底告别 Bool 变量地狱，可以非常方便地管理不同状态间的触发、屏蔽逻辑关系；
+- **复杂的数值运算系统 (Attribute Set)**：可以通过 GE 随时添加角色基础属性的影响 (Add / Multiply / Override)，避免算法逻辑重构；
+- **网络同步与预测**：在联机游戏中可以很好地处理客户端预测，实现 Ability 激活、Attribute（血量/蓝量）和 Effect 的同步。
+
+---
+
+## 1.3 以闪避为例，说明 GAS 在项目中的使用
+
+<Aside type="note" title="闪避完整数据流">
+`玩家输入 → GSC_InputBinding → GA_Dodge → GE_Cost + GE_Cooldown → GameplayCue → Tag 管理 → GA 结束`
+</Aside>
+
+<Steps>
+
+1. **角色基础属性定义 — GAS Attributes**
+
+   闪避需要消耗耐力（角色基础属性）。Attribute Set 以数据表 (DataTable) 的形式存储玩家和敌人的基本信息，如生命值、耐力值、法力值。这样做非常便于维护与扩展，比如后面想再加入削韧值，便可在这里直接统一配置。
+
+   {/* ![GAS Attributes DataTable](/images/echo-quest/gas-attributes.png) */}
+
+2. **接管玩家输入 — GSC_InputBinding**
+
+   将玩家输入 (Player Input) 迁移至 GSC_InputBinding，实现对玩家输入的宏观统筹管理，并为每一个角色状态分配对应的 Gameplay Tag。
+
+   在玩家按下 Shift (IA_Dodge) 时，会运行 GA_Dodge (Gameplay Ability) 中的逻辑；可以理解为玩家的所有游戏性动作输入（如攻击、闪避、放技能等），都会激活一个对应的 Gameplay Ability，由 GA 统一接管具体的逻辑实现与状态判断。
+
+   {/* ![GSC_InputBinding 配置](/images/echo-quest/gsc-input-binding.png) */}
+
+3. **在 GA_Dodge 中执行闪避具体逻辑**
+
+   能力激活后，首先判断玩家当前是否有方向输入。若输入向量的 XY 轴长度 ≤ 0（无水平输入），则判断玩家是否在空中 (IsFalling)；若两者都为否，则认定角色静止在原地。若有方向输入，则计算最后输入方向（决定闪避朝向）。
+
+   <Tabs>
+     <TabItem label="有方向输入 → 向前闪避">
+       瞬间旋转玩家 Actor 到上一帧的输入向量方向（确保 Dodge 朝玩家期望方向执行），播放向前闪避蒙太奇，获取按下闪避时的位置并播放粒子特效（Gameplay Cue），通过 `Apply Root Motion Constant Force` 节点接管 CharacterMovementComponent，在设定持续时间内持续施加向前力。
+     </TabItem>
+     <TabItem label="静止原地 → 向后闪避">
+       直接播放向后闪避蒙太奇，获取按下闪避时的位置并播放粒子特效（Gameplay Cue），通过 `Apply Root Motion Constant Force` 节点接管 CharacterMovementComponent，在设定持续时间内持续施加向后力（向后闪避位移小于向前闪避，正是使用该节点接管的好处）。
+     </TabItem>
+   </Tabs>
+
+   {/* ![GA_Dodge 蓝图逻辑](/images/echo-quest/ga-dodge.png) */}
+
+4. **通过 Gameplay Cue 播放闪避粒子特效**
+
+   Gameplay Cue 负责所有表现相关逻辑，由 GameplayCue Tag 触发。
+
+   <Aside type="tip" title="为什么用 GC 而不是直接在蓝图里播特效？">
+   服务器只需发一个极其轻量的 Tag `GameplayCue.Character.Dodge.PrefectDodge`，客户端自己就知道该怎么播、在哪播——大幅节省带宽。
+   </Aside>
+
+   Gameplay Cue 分为两种：**GameplayCueNotify_Static**（一次性效果，如枪口火焰）和 **GameplayCueNotify_Actor**（持续存在、需要 Tick 的特效，如拖尾）。
+
+   闪避粒子特效的 GC 逻辑：执行时获取 GameplayCue 位置信息与执行者（玩家）位置信息，通过 `Spawn System Attached` 在玩家位置生成闪避 Niagara VFX，并持续获取 Actor 位置来实现粒子的拖尾跟随效果。
+
+   {/* ![Gameplay Cue 闪避特效](/images/echo-quest/gc-dodge-vfx.png) */}
+
+5. **GA_Dodge 执行时的 Tag 管理**
+
+   GA_Dodge 能力激活后，玩家会被添加 `Ability.Character.Dodge` Tag，GA 结束后自动移除。
+
+   在 `BlockAbilitiesWithTag` 中配置该 GA 激活期间禁止执行的 Tag（GA）：
+
+   | 被屏蔽的能力 | 效果 |
+   |-------------|------|
+   | 所有 `Ability.*` | 闪避期间不可攻击（近战、远程） |
+   | `Event.Character.Jump` | 闪避期间不可跳跃 |
+
+   {/* ![GA_Dodge Tag 配置](/images/echo-quest/ga-dodge-tags.png) */}
+
+6. **通过 GameplayEffect 添加耐力消耗和技能冷却**
+
+   技能激活时会触发两个 Gameplay Effect：
+
+   | GE | 类型 | 效果 |
+   |----|------|------|
+   | `GE_Cost_Dodge` | Instant | Stamina（耐力值）-5 |
+   | `GE_Cooldown_Dodge` | Duration (1s) | 添加 `Cooldown.Dodge` 标签，1 秒内不可再次触发 |
+
+   {/* ![GE_Cost 和 GE_Cooldown 配置](/images/echo-quest/ge-dodge-config.png) */}
+
+7. **技能结束**
+
+   闪避蒙太奇播放完成（播完/混出/被打断/取消）后，GA 结束。结束时移除所有关联 Tag，并启动 Cooldowns 中的冷却时间。
+
+</Steps>

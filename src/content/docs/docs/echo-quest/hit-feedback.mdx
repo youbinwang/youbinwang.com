@@ -1,8 +1,157 @@
 ---
-title: 打击反馈
-description: Echo Quest 打击反馈文档
+title: 打击感的构成与实现
+description: 动作游戏打击感的感官维度分类、近战攻击索敌与受击判定、玩家与敌人侧表现实现
 ---
 
-# 打击反馈
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-占位页面。
+> 本章从设计理论出发，梳理动作游戏打击感的感官维度分类，并以近战攻击为完整案例，演示索敌、受击判定与双侧表现的实现流程。
+
+## 3.1 动作游戏打击感的构成
+
+<Aside type="note" title="分类方式">
+个人习惯按感官维度分类，将打击感拆解为视觉、听觉、触觉与操控三大维度。
+</Aside>
+
+<Tabs>
+  <TabItem label="👁️ 视觉维度">
+    | 类别 | 具体手段 |
+    |------|---------|
+    | 角色动画 | 攻击前摇蓄力/剪影、攻击轨迹/刀光、攻击后摇/惯性 |
+    | 命中反馈 | 顿帧 Hit Stop / 卡肉（根据武器重量、锋利程度及力度决定） |
+    | 受击表现 | 受击位移、受击硬直（受击动画） |
+    | 视觉特效 | 接触点特效——溅血/火花/烟尘（方向通常与受击方向相反） |
+    | 环境互动 | 地面/草被扰动 |
+    | 屏幕特效 | 全屏暗角、后处理效果 |
+    | 相机 | 震屏（方向与攻击方向一致，幅度与伤害量相关）、镜头推拉/变焦/特殊镜头 |
+  </TabItem>
+  <TabItem label="👂 听觉维度">
+    | 类别 | 具体手段 |
+    |------|---------|
+    | 音效分层 | 挥动层、撞击层（材质区分 / 重击强低频）、残响层（空间回声） |
+    | 动态反馈 | 音调变化、暴击特殊处理 |
+  </TabItem>
+  <TabItem label="🎮 触觉与操控维度">
+    | 类别 | 具体手段 |
+    |------|---------|
+    | 手柄震动 | 震动层级区分——强度、方向性、阻尼 |
+    | 输入与时机 | 输入缓冲——当前动作结束前缓存玩家输入，按优先级无缝衔接下一动作 |
+    | 受击时停 | 顿帧 Hit Stop——改变玩家的按键输入节奏 |
+  </TabItem>
+</Tabs>
+
+---
+
+## 3.2 以近战攻击为例，说明索敌、受击判定与表现在项目中的实现
+
+### 3.2.1 攻击启动与目标捕获
+
+<Steps>
+
+1. **触发阶段**
+
+   玩家输入鼠标左键 (IA_LightAttack) 激活轻攻击 Ability，系统启动 LightAttack ComboGraph，并立即执行 `GetLightAttackTarget` 函数进行目标检索。
+
+2. **广域筛选**
+
+   以角色为圆心执行 Sphere Overlap（半径 x），获取范围内除自身外的所有 Pawn 类 Actor。若无结果则函数结束。
+
+3. **精细筛选**（三步过滤）
+
+   | 步骤 | 内容 |
+   |------|------|
+   | 标签检查 | 剔除不含 `Attackable` 标签的 Actor（过滤友军/非交互物），将未被剔除的加入 HitActors 数组 |
+   | 距离校验 | 剔除距离大于 `AttackAttachMinDist`（大吸附距离）的目标 |
+   | 最优择取 | 选择距离玩家最近的 Actor 作为最终 Target Actor |
+
+</Steps>
+
+{/* ![索敌逻辑蓝图](/images/echo-quest/target-acquisition.png) */}
+
+<Aside type="note" title="后续优化方向 — 索敌加权评分系统">
+`Score = (距离 × W₁) + (与相机画面中心的角度偏差 × W₂) + (推杆方向 × W₃) + (敌人特殊状态 × W₄)`
+
+最终索敌目标为分数最高者。
+</Aside>
+
+### 3.2.2 处理 OnHit 事件
+
+当 ComboGraphCollision 检测到武器判定框与物体重叠时，广播 `On Hit Registered` 事件，随即执行以下逻辑：
+
+<Steps>
+
+1. **目标筛选**
+
+   获取 Hit Result 中的 Hit Actor，检查其是否持有 `Attackable` 标签。只有持有该标签的 Actor（敌人）才触发后续逻辑，否则直接终止。
+
+2. **伤害与事件分发**
+
+   确认为合法目标后，调用 `Report Damage Event` 函数，传入受击者、施害者及伤害数值。
+
+3. **GAS 事件负载构建**
+
+   使用 `Make GameplayEventData` 构建事件数据包，通过 `Ability Target Data from Hit Result` 将物理碰撞结果转换为 GAS 可识别的数据格式。
+
+4. **发送 Gameplay Event**
+
+   向玩家自身 (Self) 发送带有 `Event.Montage` Tag 的事件，通知 GAS 系统攻击已命中，触发打击感表现层反馈。
+
+5. **资源回填（攻击回蓝）**
+
+   基于 `GE_Mana_Regen` 创建 GE Spec 实例，利用 `Assign Tag Set by Caller Magnitude` 节点通过 `SetByCaller.Mana` 标签动态设定恢复数值（避免在 GE 中写死数值，允许根据不同连段灵活调整）。
+
+6. **UI 更新**
+
+   调用 `Show Mana UI`，通知 UI 读取最新 Attribute 属性值，刷新 HUD 法力条。
+
+</Steps>
+
+{/* ![OnHit 事件处理蓝图](/images/echo-quest/on-hit-event.png) */}
+
+### 3.2.3 OnHit 后的数值与标签传递
+
+角色向自身发送 `Event.Montage` 标签后，ComboGraph 捕获该事件并执行对应逻辑：
+
+1. 激活 `GE_Damage_Melee`（GameplayEffect），其内部分别激活 `GE_HitReaction_Melee` 并修改 Health Attribute（数值为 Set by Caller，即 ComboGraph 中的 -5.0）
+2. 激活 `GE_Cost_LightAttack`，处理该段攻击的耐力值消耗
+
+**GE_HitReaction_Melee** 通过给目标 Actor（受击者）增加 `Event.Character.BeingHit.Melee` Tag，激活对方的受击 GameplayAbility。
+
+<Aside type="tip" title="这样设计的好处">
+- **动态伤害**：通过 SetByCaller 特性，单一 GE 实例处理动态伤害数值，便于后期修改
+- **攻击者与受击者解耦**：通过 Tags 触发受击反应（依赖倒置），受击表现由目标自身 GAS 逻辑决定，支持不同怪物的多态响应
+- **低耦合**：伤害、消耗与状态判定分离，便于后续 Buff 扩展
+</Aside>
+
+### 3.2.4 玩家侧打击感表现的实现
+
+玩家角色收到 `Event.Montage` 信号后，同时执行 GameplayCues，实现玩家侧打击感表现：
+
+| GameplayCue | 效果 |
+|-------------|------|
+| 受击溅血特效 | 命中点溅血 VFX |
+| 火花特效 | 武器碰撞火花 |
+| 击中点反馈特效 | Impact Point 视觉反馈 |
+| 打中音效 | 角色侧的命中声音反馈 |
+
+{/* ![玩家侧打击感 GameplayCue 配置](/images/echo-quest/player-hit-feedback.png) */}
+
+<Aside type="note">
+在 ComboGraph 中可以直观地根据每段不同的攻击动画，配置不同的玩家侧表现。
+</Aside>
+
+### 3.2.5 敌人侧打击感表现的实现
+
+目标角色收到 `Event.Character.BeingHit.Melee` 信号后，执行 `GA_HitReaction_Enemy_Melee`（由指定 Tag 触发）。
+
+目前 GA 中的打击感构成：
+
+| 效果 | 说明 |
+|------|------|
+| 相机震动 | Camera Shake |
+| 音效播放 | 受击音效 |
+| 慢镜头 | 短暂时间膨胀 |
+| 顿帧 (Hit Stop) | 帧冻结强化打击力度感 |
+| 受击动画 | 受击硬直/位移 |
+
+{/* ![敌人侧打击感实现](/images/echo-quest/enemy-hit-reaction.png) */}

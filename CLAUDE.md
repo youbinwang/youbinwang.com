@@ -49,7 +49,7 @@ Youbin Wang 的个人作品集网站，基于 Astro + Starlight + Cloudflare Pag
 
 | 类型 | 说明 | 当前项目 | 行为 |
 |---|---|---|---|
-| Tech Docs | 多页 Starlight 文档 | Echo Quest（6 章） | CTA 按钮跳转到 Starlight |
+| Tech Docs | 多页 Starlight 文档 | Echo Quest（6 章，中文已填充） | CTA 按钮跳转到 Starlight |
 | Key Features | 内联 MDX 内容 | 其余 10 个游戏 | 分割线后直接渲染 MDX 内容（无跳转） |
 
 ### 文档系统（`/docs/` 前缀）
@@ -355,3 +355,39 @@ Mobile-first，Tailwind 默认断点 (sm/md/lg/xl/2xl)。
 5. 内容来源：爬取每个 Squarespace 页面获取实际文案和图片 URL
 6. **Astro 6.x** 使用 `ClientRouter` 而非已弃用的 `ViewTransitions`
 7. **Tailwind CSS 4** 使用 `@import "tailwindcss"` + `@theme` 指令
+
+---
+
+## Echo Quest 技术文档规范
+
+### 文档结构（6 章 + Index）
+
+| 文件 | 章节 |
+|------|------|
+| `index.mdx` | 概览（metadata 表、技术架构图、CardGrid 目录） |
+| `gas-system.mdx` | GAS 核心组件 + 闪避完整数据流 |
+| `combat-system.mdx` | ComboGraph 连招 + 碰撞检测 |
+| `hit-feedback.mdx` | 打击感感官维度 + 索敌 + OnHit + 双侧表现 |
+| `animation.mdx` | Lyra 动画架构 + Distance Matching + Control Rig Foot IK |
+| `motion-warping.mdx` | Motion Warping 攻击吸附 + 双轨协同 |
+| `enemy-ai.mdx` | 敌人 AI 三层架构 + 行为树 + EQS |
+
+### Starlight 组件使用规范
+
+文档中使用了以下 Starlight 内置组件增强易读性：
+
+```mdx
+import { Aside, Steps, Tabs, TabItem, LinkCard, CardGrid } from '@astrojs/starlight/components';
+```
+
+- `<Aside type="tip|caution|note">` — 高亮重要信息
+- `<Tabs>` + `<TabItem>` — 分组对比内容
+- `<Steps>` — 有序流程
+- `<LinkCard>` + `<CardGrid>` — 文档目录卡片
+
+### MDX 注意事项
+
+- **禁止在 `<TabItem>` 或 JSX 上下文中使用裸 `<` `>` 字符**，必须用 `&lt;` `&gt;` 替代，否则 MDX 会将其解析为 JSX 标签导致 `AstroUserError`
+- 图片预留格式：`{/* ![Alt Text](/images/echo-quest/filename.png) */}`，准备好图片后去掉注释即可
+- 图片存放路径：`public/images/echo-quest/`
+- 内容源文件：项目根目录 `EchoQuest_Revised.md`

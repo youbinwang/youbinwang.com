@@ -1,8 +1,103 @@
 ---
-title: 战斗系统
-description: Echo Quest 战斗系统文档
+title: 战斗系统（ComboGraph）
+description: Echo Quest 战斗系统实现 — ComboGraph 技术选型、轻攻击 Combo、碰撞检测与 ANS 射线检测
 ---
 
-# 战斗系统
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-占位页面。
+> 本章介绍 ComboGraph 的技术选型理由、连招系统实现，以及基于动画通知的碰撞检测方案。
+
+## 2.1 为什么要使用 ComboGraph？
+
+ComboGraph 在项目中被定位为**表现层（动画/连招）**与**逻辑层 (GAS)** 间的桥梁。它集成了连招输入及缓冲 (Input Buffering) 与攻击动画播放管理，并负责与 GAS 系统对接，分发和执行核心攻击事件（伤害、技能消耗 Cost、Gameplay Cues 表现反馈）。
+
+**系统构成**：
+
+| 组件 | 职责 |
+|------|------|
+| **ComboGraphCollision** | 运行时碰撞检测逻辑（见 2.4 节） |
+| **Primary ComboGraphAsset** | 定义连招节点与流程的数据资产 |
+
+<Aside type="tip" title="为什么要与 GAS 对接？">
+**明确分工**：ComboGraph 管节奏——哪一帧可以取消后摇？哪一帧可以派生下一个攻击？GAS 管数值——扣多少属性、造成多少伤害、挂什么 Buff？当 ComboGraph 判定攻击命中时，它不直接修改血量，而是发送 GameplayEvent 给 GAS，或者直接 Apply GameplayEffect，保证逻辑的统一性。
+</Aside>
+
+### 为什么用 ComboGraph，而不用蓝图手搓连招逻辑？
+
+*上一个项目中踩过的坑：*
+
+| 维度 | 蓝图手搓 | ComboGraph |
+|------|---------|------------|
+| **可视化** | 巨大的 Switch on Int + 一堆 If 判断，分支设计时连线一团糟 | 树状节点结构，每个节点是一个动作，每条连线是一个分支条件 |
+| **输入缓冲** | 需要手写高精度 Input Buffering，是动作游戏"手感"的灵魂，蓝图很难写好 | 自带 InputBuffer，记录当前动作期间的输入并自动衔接下一动作 |
+| **后期迭代** | 断开一堆连线、重新接线甚至重写逻辑 | 数据驱动，编辑器拖拽节点、修改连线即可 |
+| **复杂派生** | 停顿/长按检测混在连招逻辑里，最终一团糟 | 连线上的一个不同转换条件 |
+
+---
+
+## 2.2 以轻攻击 Combo 为例，说明 ComboGraph 的使用
+
+{/* ![ComboGraph 轻攻击节点图](/images/echo-quest/combograph-light-attack.png) */}
+
+**节点图左侧 — 连招逻辑**：当玩家输入 LightCombo 按键（鼠标左键）后，在 PlayerBP 中执行该 ComboGraph（从 Entry 开始）并播放第一段蒙太奇。连线表示输入不同按键后按顺序播放对应蒙太奇（Combo 连段），轻攻击 Combo 共四段，最后一段支持左右键轻重击转换。
+
+**节点图右侧 — 执行内容**（从上到下）：
+
+| 轨道 | 内容 |
+|------|------|
+| **动画** | 播放对应蒙太奇（蒙太奇中的 AN/ANS 一同执行）并设置播放速率 |
+| **Gameplay Effects** | 为 OnHit 物体发送 `Event.Montage` 标签，激活 `GE_Damage_Melee`（伤害 -5.0），触发 `GE_Cost_LightAttack`（耐力消耗） |
+| **Gameplay Cues** | 收到 `Event.Montage` 标签后的表现层效果——受击位置的声音、粒子效果 |
+
+---
+
+## 2.3 动画蒙太奇的配置（AnimNotify）
+
+AnimNotify 用于在动画播放到某个时间节点时，发送信号通知或触发逻辑。
+
+{/* ![动画蒙太奇 AnimNotify 配置](/images/echo-quest/montage-anim-notify.png) */}
+
+目前一段攻击动画中，配置有以下几个 AnimNotify：
+
+| 通知 | 作用 |
+|------|------|
+| **Motion Warping** | 处理 Motion Warping 逻辑（详见 [Motion Warping 章节](/docs/echo-quest/motion-warping/)） |
+| **Collision Window** | 攻击碰撞判定（下文 2.4 & 2.5） |
+| **Niagara VFX / Sound Effects** | 武器拖尾特效 (Niagara VFX) 和脚步声/攻击音效 |
+
+---
+
+## 2.4 碰撞检测 ComboGraphCollision
+
+ComboGraphCollision 是挂载在发起攻击 Actor 上的组件，充当**碰撞管理器**角色。它解决了 UE 原生碰撞（Overlap / Hit）难以处理的两个痛点：
+
+<Aside type="caution" title="上一个项目的踩坑点">
+- **去重（Hit Deduping）**：一次挥剑持续 x 秒，每帧都在检测。如果前面已命中，后续帧不应再触发伤害，否则敌人会被秒杀。该组件维护 HitActors 列表，确保一次挥击每个敌人只受一次伤。
+- **数据封装**：直接把 HitResult 打包成 GAS 需要的 `FGameplayEventData`。
+</Aside>
+
+---
+
+## 2.5 基于动画通知状态的射线检测（ANS-based Trace）
+
+<Steps>
+
+1. **静态网格体设置**
+
+   在武器模型 (StaticMesh) 上添加数个 Socket（插槽），定义每个检测点的位置。
+
+2. **动画配置**
+
+   在攻击 Animation Sequence / Montage 的关键帧轨道上添加 AnimNotifyState (ANS)——即上文中的 **Collision Window**。起始点 (Notify Begin) 为攻击动作开始造成威胁的那帧，结束点 (Notify End) 为挥剑结束帧。定义了攻击的**判定窗口**。
+
+3. **运行时逻辑**
+
+   动画播到 Collision Window ANS 起始点时，组件开始工作：基于上一帧与当前帧的 Socket 位置差进行**形状扫掠**（支持 Line、Sphere、Box 或 Capsule），填补帧间空隙，形成连续、严密的扇面判定轨迹，完美解决低帧率下的穿模问题。
+
+</Steps>
+
+{/* ![碰撞检测可视化 - 攻击判定扇面](/images/echo-quest/collision-trace-visualization.png) */}
+
+<Aside type="note" title="判定可视化">
+紫色线框展示了攻击挥舞轨迹形成的连续扇面判定区域；当该区域与敌方碰撞体重叠时，绿色标记即为计算出的实际命中点 (Impact Point)。
+</Aside>

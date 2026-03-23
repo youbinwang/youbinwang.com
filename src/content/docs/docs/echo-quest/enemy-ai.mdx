@@ -1,8 +1,209 @@
 ---
-title: 敌人 AI
-description: Echo Quest 敌人 AI 文档
+title: 敌人 AI 与 EQS
+description: 基于行为树的模块化 AI 架构、感知系统、黑板驱动决策与 EQS 环境查询
 ---
 
-# 敌人 AI
+import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
-占位页面。
+> 本章介绍敌人 AI 的三层解耦架构（感知/逻辑/表现），并以近战敌人为完整案例，演示从感知触发到行为树决策再到攻击执行的全流程。
+
+## 6.1 敌人 AI 架构体系：控制器与基类的模块化解耦
+
+在构建动态且具有扩展性的 AI 系统时，逻辑与表现的分离是工业化开发的核心。项目通过 UE 经典的大脑（Controller）-宿主（Pawn/Character）架构，实现了敌人 AI 逻辑的解耦。
+
+{/* ![AI 系统文件夹结构总览](/images/echo-quest/ai-folder-structure.png) */}
+
+| 层级 | 资产 | 职责 |
+|------|------|------|
+| **核心基类** | BP_Enemy_Base / AIC_Enemy_Base | 敌人基本框架 |
+| **逻辑层** | BT_Enemy_Melee + 3 棵子树（Frozen / Investigating / Passive） | 决策的分层管理 |
+| **工具层** | Tasks (BTT) · Decorators (BTD) · EQS | 行为树的"子行为"积木 |
+
+**总体架构：感知 / 逻辑 / 表现三层解耦**
+
+| 层 | 载体 | 职责 |
+|----|------|------|
+| **感知层** | AIC_Enemy_Base | 挂载 AI Perception（视觉/听觉/伤害），启动行为树，初始化黑板 |
+| **逻辑层** | Behavior Tree & Blackboard | BB 存储记忆（AttackTarget/State），BT 根据状态变量决定行为 |
+| **表现层** | BP_Enemy_Base | 存储属性/资源，实现 BPI_EnemyAI 接口，执行动作指令 |
+
+<Aside type="tip" title="模块化设计的优势">
+- **逻辑复用**：AIC 作为公用基类可驱动不同外观/属性的敌人，也可运行时动态更换 Controller 改变战术风格
+- **原子化封装**：每个 BTT/BTD/Service 都是可复用的积木块
+- **并行开发**：逻辑优化（程序）与表现配置（美术）互不干扰
+- **低耦合通信**：BPI_EnemyAI 蓝图接口消除硬引用，Controller 无需感知具体角色类即可下达指令
+</Aside>
+
+---
+
+## 6.2 以近战敌人为例：AI 实现全流程详解
+
+> **敌人 AI 完整数据流**：`感知刺激 → AIC_Enemy_Base (Perception) → 更新黑板 (AttackTarget / State) → BT_Enemy_Melee (决策) → BTT/BTD (执行) → BP_Enemy_Melee (表现)`
+
+### 6.2.1 资源及表现层：敌人 Pawn 类与资源属性载体（BP_Enemy_Base / Melee）
+
+在 AI 系统的解耦架构中，Pawn 类（角色蓝图）是 AI 的身体，它不负责决策，而是作为资源和属性的载体，负责执行逻辑层的指令并存储表现所需的资源和逻辑。
+
+**BP_Enemy_Base** 确立了所有敌人的底层框架，定义了"什么是敌人"及它们应该具备哪些基础的、共有的能力：
+
+{/* ![BP_Enemy_Base 的 Components 面板截图](/images/echo-quest/bp-enemy-base-components.png) */}
+
+- **核心组件**：GAS 核心（确保敌人具备与玩家一致的战斗逻辑底层，共用 Attribute Set 数据表）、UI 与反馈（WB_EnemyHealthBar 实时呈现血量状态）、ComboGraphCollision（处理战斗中的攻击碰撞判定）；
+- **接口（Interfaces）**：实现 BPI_EnemyAI 蓝图接口，向 AI Controller 声明自己能够接收指令（如装备武器、设置移动速度、激活 ComboGraph 等），从而实现低耦合的接口通信；
+- **变量配置**：预留了 PatrolRoute（巡逻路径引用，关联 BP_PatrolRoute）和 BehaviorTree（行为树资产引用）的变量，支持在关卡编辑器中为不同位置的敌人实例单独配置巡逻路线和行为逻辑。
+
+**BP_Enemy_Melee** 作为 BP_Enemy_Base 的子类，专门负责填充近战敌人特有的资产和视觉表现逻辑：
+
+{/* ![BP_Enemy_Melee 的初始化蓝图逻辑](/images/echo-quest/bp-enemy-melee-init.png) */}
+
+- **初始化流程**：在 BeginPlay 中先后执行武器挂载（BP_EnemyWeapon_DualSword 绑定到手部 Socket）、ComboGraphCollision 碰撞处理、血条 Widget 创建和玩法部分的掉落物概率计算；
+- **视觉表现层**：加入了死亡动态溶解效果（DynamicEnemyDissolveMat，通过动态材质实例驱动溶解参数）、生成时随机材质选择（SetSwordMaterial，从预设材质数组中随机赋值），低成本增加敌人视觉多样性并丰富表现；
+
+{/* ![敌人视觉多样性效果对比](/images/echo-quest/enemy-visual-diversity.png) */}
+
+- **战斗状态管理**：声明了战斗状态变量，包括标记是否已进入战斗状态（用于触发拔刀等一次性逻辑）和 Boss 的特殊逻辑开关。
+
+### 6.2.2 感知层：感知驱动与外界信息获取（AIC_Enemy_Base）
+
+AIC_Enemy_Base 是所有敌人 AI 的控制器基类，作为 AI 系统的"大脑"，它承担了两个核心职责：**环境感知**与**行为启动**。
+
+**AI Perception Component 配置：**
+
+{/* ![AIC_Enemy_Base 的 AI Perception Component 配置面板](/images/echo-quest/ai-perception-config.png) */}
+
+控制器挂载了 AI Perception Component，配置了三种感知类型以覆盖不同的战斗场景：
+
+- **AI Sight（视觉感知）**：负责检测视野范围内的玩家。配置了感知半径、视野角度和失去视线后的记忆持续时间。这是敌人从 Passive 状态进入 Attacking 状态的主要触发源；
+- **AI Hearing（听觉感知）**：负责检测玩家产生的声音刺激（如攻击音效、脚步声）。当敌人尚未看见玩家但听到声响时，会进入 Investigating 状态前往声源位置调查；
+- **AI Damage（伤害感知）**：负责检测来自玩家的伤害事件。即使敌人背对玩家，受到攻击后也会立即感知到威胁源并切换至战斗状态，确保"偷袭"后敌人不会无动于衷。
+
+**感知事件处理 - On Target Perception Updated：**
+
+当任意感知通道检测到刺激源时，系统会触发 On Target Perception Updated 事件回调。在该回调中执行以下逻辑：
+
+{/* ![On Target Perception Updated 事件回调蓝图](/images/echo-quest/on-perception-updated.png) */}
+
+1. **感知类型判定**：通过 E_AISenses 枚举（None、Sight、Damage）识别本次感知的触发来源，以决定后续的状态切换策略；
+
+2. **黑板变量更新**：将感知到的目标 Actor 写入黑板的 `AttackTarget` 变量中，同时根据感知类型更新 `PointOfInterest`（兴趣点，用于 Investigating 状态的移动目标）；
+
+3. **AI 状态切换**：根据感知类型更新黑板中的 E_AIStates 状态变量：
+   - **Sight 感知**：直接将状态设为 `Attacking`，敌人立即进入战斗；
+   - **Damage 感知**：将状态设为 `Attacking`，同时将伤害来源设为 AttackTarget；
+   - **Hearing 感知**：将状态设为 `Investigating`，敌人前往声源位置调查；
+   - **失去感知（Unregister）**：当目标离开感知范围后，根据当前上下文决定是进入 `Investigating`（前往最后已知位置搜索）还是回退到 `Passive`。
+
+**行为树的启动与黑板初始化：**
+
+在 AIC_Enemy_Base 的 On Possess 事件中（即控制器接管 Pawn 的瞬间），执行以下初始化流程：
+
+1. 从 BP_Enemy_Base 中读取预配置的 BehaviorTree 资产引用，调用 Run Behavior Tree 启动行为树；
+2. 初始化黑板（BB_Enemy_Base）中的关键变量，包括 `State`（初始为 Passive）、`AttackTarget`（初始为空）、`DefendRadius`（理想攻击距离）、`PatrolRoute`（从 Pawn 上读取的巡逻路径引用）等。
+
+### 6.2.3 决策层：决策中枢与记忆存储（BT_Enemy_Melee & BB_Enemy_Base）
+
+**黑板 BB_Enemy_Base - 记忆与共享数据：**
+
+黑板是行为树的"短期记忆"，存储了 AI 在运行时需要读写的所有关键数据。项目中的核心黑板变量包括：
+
+| 变量名 | 类型 | 作用 |
+|--------|------|------|
+| `State` | E_AIStates (Enum) | 当前 AI 状态，驱动行为树顶层分支选择 |
+| `AttackTarget` | Object (Actor) | 当前锁定的攻击目标（玩家） |
+| `PointOfInterest` | Vector | 兴趣点坐标（调查目标位置/EQS 查询结果） |
+| `DefendRadius` | Float | 理想攻击距离，用于判断是否需要接近目标 |
+| `PatrolRoute` | Object | 巡逻路径引用，关联 BP_PatrolRoute |
+
+**E_AIStates 状态枚举**：定义了敌人的五种行为状态，分别是 `Passive`（被动巡逻）、`Attacking`（战斗攻击）、`BeingHit`（受击僵硬）、`Investigating`（调查搜索）和 `Dead`（死亡）。该枚举是整个行为树分支选择的根本依据。
+
+{/* ![BB_Enemy_Base 黑板变量定义](/images/echo-quest/blackboard-variables.png) */}
+
+**行为树 BT_Enemy_Melee - 决策主干：**
+
+BT_Enemy_Melee 采用顶层 Selector 节点的经典优先级架构，从左到右（优先级从高到低）分为四个核心分支。每个分支通过 Blackboard Decorator 检查 `State` 变量的值来决定是否激活：
+
+```
+Root (Selector)
+├── [1] BeingHit State（受击僵硬）   ← State == BeingHit  → SubTree_Frozen
+├── [2] Combat State（战斗状态）     ← State == Attacking  → 战斗逻辑序列
+├── [3] Investigating State（调查）  ← State == Investigating → SubTree_Investigating
+└── [4] Passive State（被动巡逻）    ← State == Passive    → SubTree_Passive
+```
+
+这种优先级设计确保了：受击反馈拥有最高响应优先级（打断一切行为），战斗逻辑次之，调查行为再次，巡逻为最低优先级的默认行为。
+
+{/* ![BT_Enemy_Melee 行为树全览](/images/echo-quest/behavior-tree-overview.png) */}
+
+<Tabs>
+  <TabItem label="⚡ [1] BeingHit（受击僵硬）">
+    当敌人被攻击命中，GAS 通过 `GE_HitReaction_Melee` 添加 `Event.Character.BeingHit.Melee` Tag，感知层将 State 切换为 `BeingHit`，行为树立即跳转至此分支。
+
+    **SubTree_Frozen 内部流程**：
+
+    | 步骤 | Task | 作用 |
+    |------|------|------|
+    | 1 | BTT_RotateToPlayer | 受击瞬间强制面向玩家，确保受击方向一致 |
+    | 2 | BTT_ClearFocus | 清除 Focus，防止僵硬期间不自然的头部追踪 |
+    | 3 | BTT_SetMovementSpeed(Idle) | 移速设为 0，确保受击不滑动 |
+    | 4 | Wait | 等待硬直恢复（匹配受击动画时长） |
+
+    等待结束后 State 重新设回 `Attacking`，形成 **受击 → 硬直 → 恢复战斗** 的完整闭环。
+
+    {/* ![SubTree_Frozen 行为子树](/images/echo-quest/subtree-frozen.png) */}
+  </TabItem>
+  <TabItem label="⚔️ [2] Combat（战斗状态）">
+    整个行为树中最复杂的分支，拆分为三个子阶段：
+
+    {/* ![Combat State 分支详细结构](/images/echo-quest/combat-state-branch.png) */}
+
+    **阶段 A — 装备检查**：BTD_IsEnemyHasSwords 判断是否已装备。若未装备则 BTT_FocusTarget → BTT_EquipWeapon（拔刀），仅首次进入战斗触发。
+
+    **阶段 B — 攻击执行**（Sequence）：
+
+    | 步骤 | Task | 作用 |
+    |------|------|------|
+    | 1 | BTT_SetMovementSpeed(Run) | 奔跑接近目标 |
+    | 2 | BTT_ClearFocus | 临时清除 Focus，避免奔跑时锁定不自然 |
+    | 3 | BTT_MoveToIdealRange | 移动至 DefendRadius 定义的理想攻击距离 |
+    | 4 | BTT_FocusTarget | 重新锁定玩家 |
+    | 5 | BTT_ActiveComboGraph | 通过 BPI_EnemyAI 接口激活 CG_Enemy_Combo |
+
+    {/* ![CG_Enemy_Combo 连招资产](/images/echo-quest/enemy-combo-graph.png) */}
+
+    **阶段 C — 战术走位（Strafe Selector）**：
+
+    | 条件 | 行为 |
+    |------|------|
+    | 超出理想距离 | ClearFocus → SetSpeed(Run) → MoveToIdealRange（重新接近） |
+    | 在理想距离内 | FocusTarget → SetSpeed(Walk) → **EQS_Strafe 查询** → Move to PointOfInterest（围绕玩家游走） |
+  </TabItem>
+  <TabItem label="🔍 [3] Investigating（调查）">
+    敌人通过 AI Hearing 感知到声音但未看到玩家时进入。
+
+    <Steps>
+    1. **Move to PointOfInterest** — 移动至声源世界坐标
+    2. **Wait** — 到达后原地等待，模拟搜索环视
+    3. **BTT_SetStateAsPassive** — 若无新感知事件，State 设回 `Passive`，恢复巡逻
+    </Steps>
+
+    <Aside type="note">
+    这种设计使敌人具备 **"警觉 → 搜索 → 放弃"** 的拟人化行为链，而非简单的"看到就打，看不到就站"。
+    </Aside>
+
+    {/* ![SubTree_Investigating 行为子树](/images/echo-quest/subtree-investigating.png) */}
+  </TabItem>
+  <TabItem label="🚶 [4] Passive（巡逻）">
+    敌人的默认空闲行为。
+
+    通过 **BTD_HasPatrolRoute** Decorator 判断 PatrolRoute 是否有效：
+
+    | 判断结果 | 行为 |
+    |---------|------|
+    | 有巡逻路径 | BTT_MoveAlongPatrolRoute — 沿 BP_PatrolRoute 的 Spline 路径循环移动 |
+    | 无巡逻路径 | 原地 Idle 等待，作为定点守卫 |
+
+    BP_PatrolRoute 通过在关卡中放置 Spline 点定义路径，支持不同敌人绑定不同路线。
+
+    {/* ![SubTree_Passive 行为子树与巡逻路径](/images/echo-quest/subtree-passive.png) */}
+  </TabItem>
+</Tabs>
