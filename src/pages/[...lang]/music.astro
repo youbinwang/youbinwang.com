@@ -17,7 +17,7 @@ const ostTracks = getMusicByCategory("ost");
 ---
 
 <BaseLayout title={uiEN("music.title")} lang={lang}>
-  <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <h1 class="text-3xl font-bold text-[var(--color-text)] mb-12 text-center">
       {ui("music.title", lang)}
     </h1>
@@ -29,7 +29,7 @@ const ostTracks = getMusicByCategory("ost");
       >
         {ui("music.production", lang)}
       </h2>
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {
           productionTracks.map((track) => (
             <div class="flex items-center gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors">
@@ -87,7 +87,7 @@ const ostTracks = getMusicByCategory("ost");
       >
         {ui("music.ost", lang)}
       </h2>
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {
           ostTracks.map((track) => (
             <div class="flex items-center gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors">

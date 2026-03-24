@@ -20,7 +20,7 @@ const lang = getLangFromSlug(Astro.params.lang);
 ---
 
 <BaseLayout title={t(exp.company, "en")} lang={lang}>
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <a
       href={getLocalizedPath("/experience/", lang)}
       class="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors mb-8"
@@ -40,35 +40,37 @@ const lang = getLangFromSlug(Astro.params.lang);
       {lang === "zh-cn" ? "返回工作经历" : "Back to Experience"}
     </a>
 
-    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
-      {t(exp.company, lang)}
-    </h1>
-    <p class="text-lg text-[var(--color-text-secondary)]">
-      {t(exp.title, lang)}
-    </p>
-    <p class="text-sm text-[var(--color-text-muted)] mt-1">
-      {t(exp.duration, lang)} &middot; {t(exp.location, lang)}
-    </p>
-
-    <hr class="border-[var(--color-border)] my-8" />
-
-    <div class="prose max-w-none">
-      <p class="text-[var(--color-text-secondary)] leading-relaxed">
-        {t(exp.description, lang)}
+    <div class="max-w-4xl">
+      <h1 class="text-3xl font-bold text-[var(--color-text)] mb-2">
+        {t(exp.company, lang)}
+      </h1>
+      <p class="text-lg text-[var(--color-text-secondary)]">
+        {t(exp.title, lang)}
       </p>
-    </div>
+      <p class="text-sm text-[var(--color-text-muted)] mt-1">
+        {t(exp.duration, lang)} &middot; {t(exp.location, lang)}
+      </p>
 
-    {
-      exp.responsibilities.length > 0 && (
-        <ul class="mt-6 space-y-2">
-          {exp.responsibilities.map((r) => (
-            <li class="flex items-start gap-2 text-[var(--color-text-secondary)]">
-              <span class="text-[var(--color-accent)] mt-1.5">-</span>
-              <span>{t(r, lang)}</span>
-            </li>
-          ))}
-        </ul>
-      )
-    }
+      <hr class="border-[var(--color-border)] my-8" />
+
+      <div class="prose max-w-none">
+        <p class="text-[var(--color-text-secondary)] leading-relaxed">
+          {t(exp.description, lang)}
+        </p>
+      </div>
+
+      {
+        exp.responsibilities.length > 0 && (
+          <ul class="mt-6 space-y-2">
+            {exp.responsibilities.map((r) => (
+              <li class="flex items-start gap-2 text-[var(--color-text-secondary)]">
+                <span class="text-[var(--color-accent)] mt-1.5">-</span>
+                <span>{t(r, lang)}</span>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
   </div>
 </BaseLayout>

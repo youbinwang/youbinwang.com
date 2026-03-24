@@ -68,6 +68,9 @@
 
 /* ─── Tailwind v4 theme extension ──────────────────────────────────── */
 @theme {
+    /* Override xl breakpoint so max-w-screen-xl = 1440px site-wide */
+    --breakpoint-xl: 90rem;
+
     --color-bg: var(--color-bg);
     --color-bg-secondary: var(--color-bg-secondary);
     --color-bg-tertiary: var(--color-bg-tertiary);

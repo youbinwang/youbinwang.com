@@ -33,13 +33,13 @@ Youbin Wang 的个人作品集网站，基于 Astro + Starlight + Cloudflare Pag
 - 色板参考 Apple Human Interface Guidelines（近黑 `#1D1D1F` / 近白 `#F5F5F7`，非纯黑白）
 - 所有组件使用 `var(--color-xxx)` 而非硬编码色值
 
-### 布局与宽度
+### 布局与宽度（两层统一规范）
 
-- **Portfolio 页面内容容器**：`max-w-screen-xl`（80rem = 1280px），居中
-- **正文/简介**：`max-w-4xl`（896px）保持可读性
+- **页面容器（外层）**：所有页面统一 `max-w-screen-xl`（90rem = 1440px），居中（通过 `@theme { --breakpoint-xl: 90rem }` 覆盖 Tailwind 默认值）。Navbar、Footer、每个页面的 section 外框均使用此宽度，确保页面切换时左右边缘不跳动
+- **正文段落（内层）**：纯阅读文字用 `max-w-4xl`（56rem = 896px），放在容器内部。适用于 About、Experience 详情、首页简介、电影详情描述等
 - **Hero/Banner**：全屏宽（`w-full`）
 - **Navbar**：透明→固定切换模式（有 Hero 的页面 Navbar 起初透明，滚动后变不透明毛玻璃）
-- **文档页 Header 宽度**：已统一为 `max-width: 80rem; margin: 0 auto`，与 Portfolio Navbar 一致（通过 `--sl-nav-pad-x: 0px` CSS 变量覆盖绕过 Starlight scoped CSS 优先级）
+- **文档页 Header 宽度**：已统一为 `max-width: 90rem; margin: 0 auto`，与 Portfolio Navbar 一致（通过 `--sl-nav-pad-x: 0px` CSS 变量覆盖绕过 Starlight scoped CSS 优先级）
 
 ### 游戏项目详情页布局
 

@@ -29,7 +29,7 @@ const titleEN = t(film.title, "en");
 <BaseLayout title={titleEN} lang={lang}>
   <HeroSection backgroundImage={film.coverImage} title={title} />
 
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <a
       href={getLocalizedPath("/films/", lang)}
       class="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors mb-8"
@@ -49,10 +49,12 @@ const titleEN = t(film.title, "en");
       {lang === "zh-cn" ? "返回电影列表" : "Back to Films"}
     </a>
 
-    <div class="space-y-2 mb-8">
-      <p class="text-sm text-[var(--color-text-muted)]">
-        {t(film.role, lang)} &middot; {film.year}
-      </p>
+    <div class="max-w-4xl">
+      <div class="space-y-2 mb-8">
+        <p class="text-sm text-[var(--color-text-muted)]">
+          {t(film.role, lang)} &middot; {film.year}
+        </p>
+      </div>
     </div>
 
     {/* Video */}
@@ -65,7 +67,7 @@ const titleEN = t(film.title, "en");
     }
 
     {/* Description */}
-    <div class="prose prose-invert max-w-none mb-10">
+    <div class="max-w-4xl mb-10">
       <p class="text-[var(--color-text-secondary)] text-base leading-relaxed">
         {t(film.description, lang)}
       </p>
