@@ -4,14 +4,32 @@
  * and injects Astro's ClientRouter for unified View Transitions
  * across portfolio pages and documentation pages.
  *
- * Also fixes theme flash: Starlight server-renders data-theme="dark",
- * but the StarlightThemeProvider IIFE doesn't re-run during View Transitions.
- * The astro:before-swap listener corrects data-theme on the incoming document.
+ * Also fixes:
+ * 1. Theme flash: Starlight server-renders data-theme="dark",
+ *    but the StarlightThemeProvider IIFE doesn't re-run during View Transitions.
+ * 2. CustomElements crash: Starlight defines custom elements (starlight-theme-select,
+ *    starlight-tabs, etc.) via inline scripts. When ClientRouter re-executes these
+ *    scripts on soft navigation, customElements.define() throws because the name
+ *    is already registered. We monkey-patch define() to be idempotent.
  */
 import type { Props } from "@astrojs/starlight/props";
 import Default from "@astrojs/starlight/components/Head.astro";
 import { ClientRouter } from "astro:transitions";
 ---
+
+<!-- Patch customElements.define to be idempotent.
+     Must run BEFORE Starlight's scripts that call customElements.define().
+     During ClientRouter soft navigation, Starlight's IIFE scripts may
+     re-execute and try to define already-registered custom elements,
+     which throws NotSupportedError. This patch silently skips duplicates. -->
+<script is:inline>
+    (function () {
+        const orig = customElements.define.bind(customElements);
+        customElements.define = function (name, ctor, opts) {
+            if (!customElements.get(name)) orig(name, ctor, opts);
+        };
+    })();
+</script>
 
 <Default {...Astro.props}><slot /></Default>
 <ClientRouter />
