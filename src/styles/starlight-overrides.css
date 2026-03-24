@@ -63,6 +63,9 @@ header.header {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border, var(--sl-color-hairline-shade));
+  /* Override the nav padding variable so our inner container controls it.
+     CSS custom properties cascade by DOM tree, bypassing Astro scoped selectors. */
+  --sl-nav-pad-x: 0px;
 }
 
 /* Prevent Starlight default link styles from leaking into our custom header */

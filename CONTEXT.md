@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-24 01:40 (UTC+8)
+> **更新时间**：2026-03-24 12:10 (UTC+8)
 
 ---
 
@@ -52,7 +52,7 @@
 | 9 | Tag 分类框架 | 4 个标准化 Tag（Genre/Engine/Discipline/Scope） |
 | 10 | 移除 itch.io 链接 | Navbar + Footer + MobileMenu 全部移除 |
 | 11 | 透明 Header | 有 Hero 的页面 Navbar 起初透明，滚动后变毛玻璃 |
-| 12 | 加宽内容区 | `max-w-7xl`(1280px) → `max-w-screen-xl`(1440px) |
+| 12 | 加宽内容区 | `max-w-7xl` → `max-w-screen-xl`（均为 80rem = 1280px，换用语义化 screen 断点类） |
 | 13 | 加大 Logo | `text-lg font-semibold` → `text-xl font-bold` |
 | 14 | 硬编码颜色修复 | `MobileMenu.tsx`、`ImageCarousel.tsx` 颜色变量化 |
 | 15 | 删除 34 个重复 MDX | 文档重构时遗留的旧文件（根级别 + en 根级别），125 页 → 91 页 |
@@ -60,6 +60,9 @@
 | 17 | Git Housekeeping | 从 git 移除 node_modules/dist/.astro，补全 .gitignore，filter-branch 清理历史 |
 | 18 | 删除 47 个冲突文件夹 | node_modules 中 " 2" 后缀的文件同步冲突副本 |
 | 19 | 文档页 Header 重写 | 独立 CSS（不依赖 Tailwind），修复 Logo 下划线、修复 header 上移 |
+| 20 | 文档页 Header 宽度修复 | 覆盖 `--sl-nav-pad-x: 0px`（绕过 Astro scoped CSS 优先级），`docs-header-inner` 设 `max-width: 80rem; margin: 0 auto` + 响应式 padding，与 Portfolio Navbar 完全对齐 |
+| 21 | 文档页桌面导航断点修复 | `@media (min-width: 50rem)` → `48rem`，与 Portfolio Navbar `hidden md:flex`（768px）一致 |
+| 22 | 移除冗余 fallback 颜色 | `Header.astro` 中 `var(--color-accent, #ff9300)` 等 4 处 fallback，变量已在 `starlight-overrides.css` 保证定义 |
 
 ---
 
@@ -67,7 +70,7 @@
 
 | # | 问题 | 原因 | 状态 |
 |---|---|---|---|
-| 1 | 文档页 Header 宽度与 Portfolio Navbar 不一致 | Starlight 的 `<header class="header">` 在 `@layer starlight.core` 中用 `padding: var(--sl-nav-pad-x)` 控制宽度，与 Portfolio 的 `max-w-screen-xl` 居中方案不同。尝试覆盖 Starlight header padding 会破坏 sidebar 和内容区布局 | ⏸️ 暂不处理 |
+| — | （无待处理已知 Bug） | — | — |
 
 ---
 
@@ -165,6 +168,8 @@ Docs 页面：http://localhost:4321/docs/
 - `Navbar` 使用 `transition:animate="none"` 而非 `transition:persist`
 - **文档文件位置**：`src/content/docs/docs/` 对应中文（`/docs/` URL），`src/content/docs/en/docs/` 对应英文（`/en/docs/` URL）——注意路径有两层 `docs`
 - **文档页 Header**：独立的 `Header.astro` 组件，不使用 Portfolio 的 `Navbar.astro`，使用 scoped CSS（不依赖 Tailwind），Starlight 的 `PageFrame.astro` 包裹在外层 `<header class="header">` 中
+- **`max-w-screen-xl` 实际值**：`--breakpoint-xl = 80rem = 1280px`（CLAUDE.md 历史记录中的"1440px"有误）
+- **Starlight header padding 覆盖技巧**：Starlight 用 Astro scoped CSS（带 `data-astro-cid-xxx` 属性），优先级高于普通选择器。正确覆盖方式：在 `header.header` 上设 CSS 变量 `--sl-nav-pad-x: 0px`，custom property 按 DOM 树继承而非 scoped 选择器，可绕过优先级限制。
 
 ---
 
@@ -172,48 +177,26 @@ Docs 页面：http://localhost:4321/docs/
 
 ### 已完成
 
-#### Echo Quest 技术文档内容填充（中文）
+#### Dev Server 修复
 
-从 `EchoQuest_Revised.md` 源文件填充了全部 6 章中文技术文档：
+- 清除 `.astro` 缓存并重装依赖（`npm install`），dev server 恢复正常访问
 
-| 章节 | 文件路径 | 内容 |
-|------|---------|------|
-| 概览 | `src/content/docs/docs/echo-quest/index.mdx` | 项目定位、技术栈 metadata、技术架构概览图、CardGrid 文档目录 |
-| GAS | `src/content/docs/docs/echo-quest/gas-system.mdx` | GAS 核心组件、技术选型、闪避系统 7 步完整数据流 |
-| 战斗系统 | `src/content/docs/docs/echo-quest/combat-system.mdx` | ComboGraph 选型、轻攻击 Combo、碰撞检测、ANS 射线检测 |
-| 打击感 | `src/content/docs/docs/echo-quest/hit-feedback.mdx` | 感官维度分类、索敌、OnHit 事件处理、玩家/敌人侧表现 |
-| 动画系统 | `src/content/docs/docs/echo-quest/animation.mdx` | Lyra 架构选型、线程安全更新、分层接口、Distance Matching、Control Rig Foot IK |
-| Motion Warping | `src/content/docs/docs/echo-quest/motion-warping.mdx` | Motion Warping 原理、攻击吸附实现、双轨协同配置 |
-| 敌人 AI | `src/content/docs/docs/echo-quest/enemy-ai.mdx` | 三层解耦架构、近战敌人全流程、行为树四分支、EQS |
+#### 文档页 Header 宽度对齐（Bug #20）
 
-#### 文档易读性优化
+Starlight `header.header` 使用 Astro scoped CSS，普通选择器无法覆盖其 `padding: var(--sl-nav-pad-x)`。正确方案：
+1. `starlight-overrides.css`：在 `header.header` 上设 `--sl-nav-pad-x: 0px`（CSS variable 按 DOM 继承，绕过 scoped 优先级）
+2. `Header.astro`：`docs-header-inner` 加 `max-width: 80rem; margin: 0 auto; padding: 0 1rem` + 响应式 padding（640px/1024px）
 
-为所有 7 个 Echo Quest 文档页面进行了排版优化，引入 Starlight 内置组件：
+关键教训：`max-w-screen-xl` = `var(--breakpoint-xl)` = **80rem = 1280px**，之前错误地写了 `max-width: 1440px`。
 
-- **`<Aside>`**：高亮技术亮点 (tip)、踩坑经验 (caution)、补充说明 (note)
-- **`<Tabs>` + `<TabItem>`**：分组对比内容（闪避有/无方向、状态机地面/空中/落地、行为树四分支）
-- **`<Steps>`**：流程性内容（GAS 闪避 7 步、碰撞检测 3 步、OnHit 事件 6 步）
-- **`<LinkCard>` + `<CardGrid>`**：Index 页文档目录卡片
-- **表格化**：技术选型对比、组件职责、状态机条件、黑板变量、Task 序列等
-- **导语 blockquote**：每页开头快速定位本章内容
-- **交叉引用**：Motion Warping 页面链接到动画系统 4.3.3
+#### Code Review 与修复（Bug #21 #22）
 
-#### MDX 语法错误修复
-
-- `animation.mdx` 第 127 行：`(Vz>0)` 和 `(Vz<0)` 中的 `<` `>` 被 MDX 解析器误认为 JSX 标签，导致 `AstroUserError`。已替换为 HTML 实体 `&gt;` `&lt;`
-- `npm run build` 确认零错误，91 页面正常生成
-
-### ⚠️ 明天需要优先处理
-
-1. **Dev Server 访问异常**：`npm run build` 成功但 `npm run dev` 本地浏览器无法访问。可能是端口占用或 Vite 缓存问题。明天开始时建议：
-   - 先删除 `.astro` 缓存目录：`rm -rf .astro`
-   - 重新安装依赖：`rm -rf node_modules && npm install`
-   - 重启 dev server：`npm run dev`
-
-2. **图片预留位**：所有文档中的图片引用以 MDX 注释形式预留：`{/* ![alt](/images/echo-quest/xxx.png) */}`。准备好截图后放入 `public/images/echo-quest/` 并去掉注释标记即可
+全站 Code Review，整体质量良好（8.5/10），修复两处问题：
+- `Header.astro` 桌面导航断点 `50rem`（800px）→ `48rem`（768px = Tailwind md），与 Portfolio Navbar `hidden md:flex` 一致
+- `Header.astro` 移除 4 处冗余 fallback 颜色（`var(--color-accent, #ff9300)` 等），变量已在 `starlight-overrides.css` 保证定义
 
 ### 下一步工作方向
 
-1. 修复 dev server 问题，确认文档页面易读性优化效果
-2. 填充其余 10 个 Key Features MDX 内容
-3. 填充游戏 gallery 截图、videoId、description 等数据
+1. 填充 10 个 Key Features MDX 内容（从 Squarespace 原站爬取文案）
+2. 填充游戏 gallery 截图、videoId、description 等数据
+3. 准备部署（Cloudflare Pages 配置）

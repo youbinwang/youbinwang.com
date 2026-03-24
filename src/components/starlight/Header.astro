@@ -187,6 +187,15 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         align-items: center;
         justify-content: space-between;
         height: 100%;
+        max-width: 80rem; /* matches Tailwind max-w-screen-xl (--breakpoint-xl) */
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    @media (min-width: 640px) {
+        .docs-header-inner { padding: 0 1.5rem; }
+    }
+    @media (min-width: 1024px) {
+        .docs-header-inner { padding: 0 2rem; }
     }
 
     /* Logo — no underline ever */
@@ -212,7 +221,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         align-items: center;
         gap: 0.25rem;
     }
-    @media (min-width: 50rem) {
+    @media (min-width: 48rem) {
         .docs-nav-desktop {
             display: flex;
         }
@@ -245,7 +254,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         left: 0.75rem;
         right: 0.75rem;
         height: 2px;
-        background: var(--color-accent, #ff9300);
+        background: var(--color-accent);
         border-radius: 1px;
     }
 
@@ -320,7 +329,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
     }
     .docs-dropdown-item.active {
         color: var(--color-text, var(--sl-color-white));
-        background-color: var(--color-accent-bg, rgba(255, 147, 0, 0.08));
+        background-color: var(--color-accent-bg);
     }
 
     /* Social Icons */
@@ -349,8 +358,8 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         text-decoration: none !important;
     }
     .docs-icon-link.active {
-        color: var(--color-accent, #ff9300);
-        box-shadow: 0 2px 0 0 var(--color-accent, #ff9300);
+        color: var(--color-accent);
+        box-shadow: 0 2px 0 0 var(--color-accent);
     }
     .docs-icon {
         width: 18px;
