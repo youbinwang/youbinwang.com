@@ -54,7 +54,7 @@ const isDocsActive =
 const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
 ---
 
-<div class="docs-header-inner">
+<div class="docs-header-inner max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Logo -->
     <a href={getLocalizedPath("/", lang)} class="docs-logo"> Youbin Wang </a>
 
@@ -182,20 +182,13 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
 
 <style>
     /* ── Docs Header (inside Starlight's fixed <header>) ────────────── */
+    /* Width & padding handled by Tailwind classes: max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8
+       — identical to Portfolio Navbar for pixel-perfect alignment */
     .docs-header-inner {
         display: flex;
         align-items: center;
         justify-content: space-between;
         height: 100%;
-        max-width: 90rem; /* matches Tailwind max-w-screen-xl (--breakpoint-xl = 1440px) */
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-    @media (min-width: 640px) {
-        .docs-header-inner { padding: 0 1.5rem; }
-    }
-    @media (min-width: 1024px) {
-        .docs-header-inner { padding: 0 2rem; }
     }
 
     /* Logo — no underline ever */
@@ -208,6 +201,9 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         border: none !important;
         white-space: nowrap;
         transition: opacity 0.15s ease;
+        /* Match Navbar's transition:name="logo" so View Transitions
+           morphs between them instead of separate fadeOut/fadeIn */
+        view-transition-name: logo;
     }
     .docs-logo:hover {
         opacity: 0.8;

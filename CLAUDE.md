@@ -114,6 +114,7 @@ src/
 │   │   ├── ImageGallery.tsx      # PhotoSwipe 5 砖石/网格 + Lightbox
 │   │   └── ImageCarousel.tsx     # Swiper 11 轮播 + 缩略图
 │   └── starlight/
+│       ├── Head.astro            # 覆盖 Starlight Head：注入 ClientRouter + 主题修正
 │       ├── Header.astro          # 覆盖 Starlight 导航统一风格
 │       └── Sidebar.astro         # 自定义侧边栏（智能过滤当前项目）
 ├── content/docs/

@@ -70,6 +70,23 @@ const canonicalUrl = new URL(
     </main>
     <Footer lang={lang} />
 
+    <!-- Fix Starlight theme during View Transitions.
+         Starlight server-renders data-theme="dark"; this ensures the correct
+         theme is applied to the incoming document before the swap. -->
+    <script is:inline>
+      document.addEventListener("astro:before-swap", (e) => {
+        const storedTheme =
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("starlight-theme");
+        const theme =
+          storedTheme ||
+          (window.matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark");
+        e.newDocument.documentElement.dataset.theme = theme;
+      });
+    </script>
+
     <!-- Scroll-driven entrance animation observer -->
     <script>
       function initScrollAnimations() {

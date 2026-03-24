@@ -1,0 +1,36 @@
+---
+/**
+ * Custom Starlight Head — extends default Starlight <head> content
+ * and injects Astro's ClientRouter for unified View Transitions
+ * across portfolio pages and documentation pages.
+ *
+ * Also fixes theme flash: Starlight server-renders data-theme="dark",
+ * but the StarlightThemeProvider IIFE doesn't re-run during View Transitions.
+ * The astro:before-swap listener corrects data-theme on the incoming document.
+ */
+import type { Props } from "@astrojs/starlight/props";
+import Default from "@astrojs/starlight/components/Head.astro";
+import { ClientRouter } from "astro:transitions";
+---
+
+<Default {...Astro.props}><slot /></Default>
+<ClientRouter />
+
+<!-- Fix theme mismatch during View Transitions.
+     Starlight server-renders data-theme="dark" (server can't detect user preference).
+     On normal load the StarlightThemeProvider IIFE corrects it, but during
+     ClientRouter swap the IIFE doesn't re-run. This listener patches the
+     incoming document's <html> before the swap so no flash occurs. -->
+<script is:inline>
+    document.addEventListener("astro:before-swap", (e) => {
+        const storedTheme =
+            typeof localStorage !== "undefined" &&
+            localStorage.getItem("starlight-theme");
+        const theme =
+            storedTheme ||
+            (window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light"
+                : "dark");
+        e.newDocument.documentElement.dataset.theme = theme;
+    });
+</script>

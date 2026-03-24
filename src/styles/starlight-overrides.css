@@ -46,6 +46,11 @@
   }
 }
 
+/* ─── Scrollbar gutter (match global.css) ──────────────────────────── */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* ─── Starlight color tokens ───────────────────────────────────────── */
 :root {
   --sl-color-accent-low: rgba(255, 147, 0, 0.1);

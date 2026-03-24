@@ -92,6 +92,9 @@
 html {
     scroll-behavior: smooth;
     color-scheme: light dark;
+    /* Reserve scrollbar space to prevent layout shift when navigating
+       between pages with/without scrollable content */
+    scrollbar-gutter: stable;
 }
 
 /* Custom scrollbar (webkit) */

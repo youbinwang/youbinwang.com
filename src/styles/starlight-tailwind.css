@@ -1,2 +1,7 @@
 @import "tailwindcss/utilities";
 @import "tailwindcss/theme";
+
+/* Override xl breakpoint to match portfolio pages (global.css @theme) */
+@theme {
+    --breakpoint-xl: 90rem;
+}
