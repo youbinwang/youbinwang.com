@@ -3,11 +3,10 @@
  * Designed for Elemental Realm's 34 design document slides.
  * React Island: use with client:visible for lazy loading.
  */
-import { useRef } from 'react';
+import { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Thumbs, Keyboard, A11y } from 'swiper/modules';
 import type { Swiper as SwiperType } from 'swiper';
-import { useState } from 'react';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -25,7 +24,6 @@ export default function ImageCarousel({
   altPrefix = 'Slide',
 }: ImageCarouselProps) {
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
-  const mainRef = useRef<SwiperType | null>(null);
 
   if (images.length === 0) return null;
 
@@ -39,7 +37,6 @@ export default function ImageCarousel({
         thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
         spaceBetween={0}
         slidesPerView={1}
-        onSwiper={(swiper) => { mainRef.current = swiper; }}
         className="mb-3 rounded-lg overflow-hidden"
         style={{
           '--swiper-navigation-color': 'var(--color-accent)',

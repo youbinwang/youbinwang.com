@@ -12,7 +12,6 @@ interface NavItem {
 }
 
 interface Props {
-  lang: string;
   navItems: NavItem[];
   langSwitchPath: string;
   langLabel: string;

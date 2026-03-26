@@ -226,7 +226,7 @@ uiEN(key: string): string              // 永远返回英文翻译
 | 5 | The Camera | 2D Narrative RPG | RPG Maker | Narrative Design | Personal Project |
 | 6 | On the Road | Board Game | Tabletop | System Design | Personal Thesis Project |
 | 7 | Aid Master | Educational Game | Unity | Gameplay & UX Design | Personal Project |
-| 8 | Baihua Pavilion | 3D Action | UE4 | Gameplay Design | Team Project |
+| 8 | Baihua Pavilion | 3D Action | Unity | Gameplay Design | Team Project |
 | 9 | Greedy Roots | 2.5D Action / Strategy | Unity | Gameplay Design | Game Jam |
 | 10 | Elliot Fig | 2.5D Narrative RPG | Unity | Gameplay & Narrative Design | Team Project |
 | 11 | Stars Chat | Narrative Mobile Game | Unity | Gameplay & Narrative Design | Team Project |
