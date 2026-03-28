@@ -19,6 +19,8 @@ interface Props {
   ogImage?: string;
   /** Navbar starts transparent over hero image */
   transparentNav?: boolean;
+  /** Force dark appearance regardless of system theme (e.g. gallery pages) */
+  forceDark?: boolean;
 }
 
 const {
@@ -27,6 +29,7 @@ const {
   lang,
   ogImage,
   transparentNav = false,
+  forceDark = false,
 } = Astro.props;
 const htmlLang = lang === "en" ? "en" : "zh-CN";
 const canonicalUrl = new URL(
@@ -62,7 +65,10 @@ const canonicalUrl = new URL(
     <ClientRouter />
   </head>
   <body
-    class="min-h-screen bg-bg text-foreground font-sans antialiased transition-colors duration-200"
+    class:list={[
+      "min-h-screen bg-bg text-foreground font-sans antialiased transition-colors duration-200",
+      forceDark && "force-dark",
+    ]}
   >
     <Navbar lang={lang} transparent={transparentNav} />
     <main>

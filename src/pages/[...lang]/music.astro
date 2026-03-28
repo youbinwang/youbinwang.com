@@ -1,9 +1,10 @@
 ---
 /**
- * Music page — sections for Music Production and Original Game Soundtrack.
- * Shows track cards with cover images and embed players (placeholders for now).
+ * Music page — two-column layout: description left, video/cover right.
+ * Sections: Music Production, Original Game Soundtrack.
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
+import VideoEmbed from "../../components/ui/VideoEmbed.astro";
 import { getLangFromSlug, ui, uiEN, t, getLocalizedPath } from "../../i18n";
 import { getMusicByCategory } from "../../data/music";
 
@@ -16,150 +17,149 @@ const productionTracks = getMusicByCategory("production");
 const ostTracks = getMusicByCategory("ost");
 ---
 
-<BaseLayout title={uiEN("music.title")} lang={lang}>
+<BaseLayout title={uiEN("music.title")} lang={lang} forceDark>
   <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-12 text-center">
-      {ui("music.title", lang)}
-    </h1>
+    {/* ── Music Production ────────────────────────────────────── */}
+    <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-12">
+      {ui("music.production", lang)}
+    </h2>
 
-    {/* Music Production */}
-    <div class="mb-16">
-      <h2
-        class="text-xl font-semibold text-[var(--color-text)] mb-6 pb-3 border-b border-[var(--color-border)]"
-      >
-        {ui("music.production", lang)}
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {
-          productionTracks.map((track) => (
-            <div class="flex items-center gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors">
-              {/* Cover placeholder */}
-              <div class="w-16 h-16 flex-shrink-0 bg-[var(--color-bg-secondary)] rounded-lg flex items-center justify-center">
-                {track.coverImage ? (
-                  <img
-                    src={track.coverImage}
-                    alt={t(track.title, lang)}
-                    class="w-full h-full object-cover rounded-lg"
+    {
+      productionTracks.map((track) => (
+        <div class="flex flex-col md:flex-row gap-8 md:gap-12 mb-12 items-center">
+          {/* Text */}
+          <div class="flex-1 min-w-0">
+            <h3 class="text-xl md:text-2xl font-bold italic text-[var(--color-text)] mb-6">
+              {t(track.title, lang)}
+            </h3>
+            <div
+              class="music-desc text-base italic text-[var(--color-text-secondary)] space-y-5 leading-relaxed"
+              set:html={t(track.description, lang)}
+            />
+            {track.relatedGameSlug && (
+              <a
+                href={getLocalizedPath(`/games/${track.relatedGameSlug}/`, lang)}
+                class="inline-flex items-center gap-1.5 mt-6 text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors"
+              >
+                {lang === "zh-cn" ? "查看游戏项目" : "View Game Project"}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            )}
+          </div>
+          {/* Video / Cover */}
+          <div class="w-full md:w-[400px] lg:w-[450px] flex-shrink-0">
+            {track.videoId ? (
+              <VideoEmbed videoId={track.videoId} title={t(track.title, lang)} />
+            ) : track.coverImage ? (
+              <img
+                src={track.coverImage}
+                alt={t(track.title, lang)}
+                class="w-full rounded-lg"
+              />
+            ) : (
+              <div class="aspect-video bg-[var(--color-bg-secondary)] rounded-lg flex items-center justify-center">
+                <svg
+                  class="w-12 h-12 text-[var(--color-text-muted)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
                   />
-                ) : (
-                  <svg
-                    class="w-8 h-8 text-[var(--color-text-muted)]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                    />
-                  </svg>
-                )}
+                </svg>
               </div>
-              {/* Track info */}
-              <div class="flex-1 min-w-0">
-                <h3 class="text-base font-medium text-[var(--color-text)] truncate">
-                  {t(track.title, lang)}
-                </h3>
-                <p class="text-sm text-[var(--color-text-muted)] mt-0.5">
-                  {t(track.description, lang)}
-                </p>
-              </div>
-              {/* Play button placeholder */}
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 rounded-full bg-[var(--color-bg-secondary)] flex items-center justify-center text-[var(--color-text-muted)]">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          ))
-        }
-      </div>
-    </div>
+            )}
+          </div>
+        </div>
+      ))
+    }
 
-    {/* Original Game Soundtrack */}
-    <div>
-      <h2
-        class="text-xl font-semibold text-[var(--color-text)] mb-6 pb-3 border-b border-[var(--color-border)]"
-      >
-        {ui("music.ost", lang)}
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {
-          ostTracks.map((track) => (
-            <div class="flex items-center gap-4 p-4 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-surface-hover)] transition-colors">
-              {/* Cover placeholder */}
-              <div class="w-16 h-16 flex-shrink-0 bg-[var(--color-bg-secondary)] rounded-lg flex items-center justify-center">
-                {track.coverImage ? (
-                  <img
-                    src={track.coverImage}
-                    alt={t(track.title, lang)}
-                    class="w-full h-full object-cover rounded-lg"
+    {/* ── Separator ───────────────────────────────────────────── */}
+    <hr class="border-[var(--color-border)] my-16" />
+
+    {/* ── Original Game Soundtrack ────────────────────────────── */}
+    <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-12">
+      {ui("music.ost", lang)}
+    </h2>
+
+    {
+      ostTracks.map((track, index) => (
+        <div
+          class:list={[
+            "flex flex-col md:flex-row gap-8 md:gap-12 items-center",
+            index < ostTracks.length - 1 ? "mb-16" : "",
+          ]}
+        >
+          {/* Text */}
+          <div class="flex-1 min-w-0">
+            <h3 class="text-xl md:text-2xl font-bold italic text-[var(--color-text)] mb-6">
+              {t(track.title, lang)}
+            </h3>
+            <div
+              class="music-desc text-base italic text-[var(--color-text-secondary)] space-y-5 leading-relaxed"
+              set:html={t(track.description, lang)}
+            />
+            {track.relatedGameSlug && (
+              <a
+                href={getLocalizedPath(`/games/${track.relatedGameSlug}/`, lang)}
+                class="inline-flex items-center gap-1.5 mt-6 text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors"
+              >
+                {lang === "zh-cn" ? "查看游戏项目" : "View Game Project"}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            )}
+          </div>
+          {/* Video / Cover */}
+          <div class="w-full md:w-[400px] lg:w-[450px] flex-shrink-0">
+            {track.videoId ? (
+              <VideoEmbed videoId={track.videoId} title={t(track.title, lang)} />
+            ) : track.coverImage ? (
+              <img
+                src={track.coverImage}
+                alt={t(track.title, lang)}
+                class="w-full rounded-lg"
+              />
+            ) : (
+              <div class="aspect-video bg-[var(--color-bg-secondary)] rounded-lg flex items-center justify-center">
+                <svg
+                  class="w-12 h-12 text-[var(--color-text-muted)]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
                   />
-                ) : (
-                  <svg
-                    class="w-8 h-8 text-[var(--color-text-muted)]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-                    />
-                  </svg>
-                )}
+                </svg>
               </div>
-              {/* Track info */}
-              <div class="flex-1 min-w-0">
-                <h3 class="text-base font-medium text-[var(--color-text)] truncate">
-                  {t(track.title, lang)}
-                </h3>
-                <p class="text-sm text-[var(--color-text-muted)] mt-0.5">
-                  {t(track.description, lang)}
-                </p>
-                {track.relatedGameSlug && (
-                  <a
-                    href={getLocalizedPath(
-                      `/games/${track.relatedGameSlug}/`,
-                      lang,
-                    )}
-                    class="inline-flex items-center gap-1 text-xs text-[var(--color-accent)] hover:text-[var(--color-accent-hover)] transition-colors mt-1"
-                  >
-                    {lang === "zh-cn" ? "查看游戏项目" : "View Game Project"}
-                    <svg
-                      class="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  </a>
-                )}
-              </div>
-              {/* Play button placeholder */}
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 rounded-full bg-[var(--color-bg-secondary)] flex items-center justify-center text-[var(--color-text-muted)]">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-          ))
-        }
-      </div>
-    </div>
+            )}
+          </div>
+        </div>
+      ))
+    }
   </section>
 </BaseLayout>
+
+<style>
+  /* Links inside music descriptions inherit italic + accent color */
+  .music-desc :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.2s;
+  }
+  .music-desc :global(a:hover) {
+    text-decoration-color: var(--color-accent);
+  }
+</style>

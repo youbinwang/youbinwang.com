@@ -66,6 +66,27 @@
     }
 }
 
+/* ─── Force-dark override (gallery / media pages) ─────────────────── */
+/* Locks dark-mode variables regardless of prefers-color-scheme */
+body.force-dark {
+    --color-bg: #121212;
+    --color-bg-secondary: #1C1C1E;
+    --color-bg-tertiary: #2C2C2E;
+    --color-surface: #1C1C1E;
+    --color-surface-hover: #2C2C2E;
+    --color-surface-overlay: rgba(18, 18, 18, 0.92);
+    --color-text: #F5F5F7;
+    --color-text-secondary: #A1A1A6;
+    --color-text-muted: #636366;
+    --color-text-inverse: #1D1D1F;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-border-strong: rgba(255, 255, 255, 0.15);
+    --color-scrollbar-track: #121212;
+    --color-scrollbar-thumb: #3A3A3C;
+    --color-scrollbar-thumb-hover: #636366;
+    --color-hero-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5), #121212);
+}
+
 /* ─── Tailwind v4 theme extension ──────────────────────────────────── */
 @theme {
     /* Override xl breakpoint so max-w-screen-xl = 1440px site-wide */

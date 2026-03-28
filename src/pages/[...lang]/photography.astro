@@ -16,7 +16,7 @@ const lang = getLangFromSlug(Astro.params.lang);
 const photos: string[] = [];
 ---
 
-<BaseLayout title={uiEN("photography.title")} lang={lang}>
+<BaseLayout title={uiEN("photography.title")} lang={lang} forceDark>
   <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     {/* Quote */}
     <blockquote class="text-center mb-16">
