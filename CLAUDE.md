@@ -141,6 +141,23 @@ src/
 
 ---
 
+## 字号规范（Typography Scale）
+
+用 Tailwind 类实现，不另定义 CSS 变量。执行层面保持 Tailwind 类，规范记在此处。
+
+| 层级 | 移动端 | 桌面端 | 使用场景 |
+|---|---|---|---|
+| **Hero h1** | `text-3xl` | `sm:text-4xl md:text-5xl lg:text-6xl` | Hero 区域大标题 |
+| **Page title**（无 Hero） | `text-3xl` | `text-3xl` | 独立页面标题（About、Experience 等） |
+| **Section heading（h2）** | `text-2xl` | `md:text-3xl` | 页面内分区标题（Games、Music Production 等） |
+| **Item heading（h3）** | `text-lg` | `md:text-xl` | 卡片/条目/曲目标题 |
+| **Body** | `text-base` | `text-base` | 正文描述、段落 |
+| **Caption / Meta** | `text-sm` | `text-sm` | 标签、元信息、辅助说明 |
+
+**规则**：h2 与 h3 之间至少保持一级差距（避免两者在同一断点下字号相同）。
+
+---
+
 ## 主题颜色系统
 
 ### CSS 变量（定义在 `global.css`）
