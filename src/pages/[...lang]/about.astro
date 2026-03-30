@@ -47,69 +47,64 @@ const lang = getLangFromSlug(Astro.params.lang);
           </div>
 
           <!-- Bio text — md:h-[420px] matches portrait height, flex-col spreads content evenly -->
-          <div class="max-w-3xl md:h-[420px] md:flex md:flex-col md:justify-between">
+          <div class="max-w-4xl md:h-[420px] md:flex md:flex-col md:justify-between">
             <div>
-              <h1 class="text-3xl sm:text-4xl md:text-[2.75rem] font-bold text-white leading-tight mb-6">
+              <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight mb-8">
                 {lang === "zh-cn"
-                  ? "很高兴认识你，我是王佑彬 (Robin)！"
+                  ? "你好，我是王佑彬 (Robin)"
                   : "Nice to Meet You, I\u2019m Youbin Wang (Robin)!"}
               </h1>
 
-              <div class="text-white/80 text-base leading-relaxed space-y-4">
+              <div class="text-white/80 text-base leading-relaxed space-y-5">
                 {lang === "zh-cn" ? (
                   <>
                     <p>
-                      我本科毕业于<span class="text-[var(--color-accent)]">中国传媒大学</span>
-                      <span class="text-[var(--color-accent)]">游戏设计</span>专业，
-                      研究生毕业于<span class="text-[var(--color-accent)]">南加州大学 (USC Games)</span>
-                      <span class="text-[var(--color-accent)]">游戏设计与开发</span>专业。
+                      我目前在<span class="text-[var(--color-accent)]">网易雷火</span>担任<span class="text-[var(--color-accent)]">玩法策划</span>，参与<span class="text-[var(--color-accent)]">《无限大》(ANANTA)</span> 项目的开发，专注于<span class="text-[var(--color-accent)]">玩法、关卡、战斗</span>与<span class="text-[var(--color-accent)]">任务设计</span>，同时负责<span class="text-[var(--color-accent)]">项目工具链</span>与<span class="text-[var(--color-accent)]">生产管线</span>的搭建与优化。
                     </p>
                     <p>
-                      来自北京的我，参与了<span class="text-[var(--color-accent)]">十余个不同类型的游戏项目</span>的开发，
-                      担任过<span class="text-[var(--color-accent)]">游戏总监</span>、
-                      <span class="text-[var(--color-accent)]">设计师</span>和
-                      <span class="text-[var(--color-accent)]">制作人</span>。
-                      此外，我也是一名<span class="text-[var(--color-accent)]">摄影师</span>和
-                      <span class="text-[var(--color-accent)]">电影制片人</span>，
-                      将多元的创作技能融入我的工作中。
+                      我本科毕业于<a href="https://animation.cuc.edu.cn/_upload/tpl/02/7a/634/template634/programmes-2/undergraduate/yi-zhu-yu-ke-ji-shu-zi-yu-le-fang-xiang.html" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">中国传媒大学游戏设计</a>专业，研究生毕业于<a href="https://games.usc.edu/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">南加州大学 (USC Games) 游戏设计与开发</a>专业。
                     </p>
                     <p>
-                      作为一个公路旅行的狂热爱好者，
-                      旅途中的经历让我领略了丰富多彩的叙事与观点。
-                      我相信游戏不仅能够<span class="text-[var(--color-accent)]">为玩家带来愉悦与刺激的体验</span>，
-                      更是一种强大的媒介，能够<span class="text-[var(--color-accent)]">讲述发人深省的故事</span>，
-                      并与玩家<span class="text-[var(--color-accent)]">建立深层的情感连接</span>。
-                      这是我所致力的使命。
+                      此前，我曾在 <span class="text-[var(--color-accent)]">EA Sports</span> 和<span class="text-[var(--color-accent)]">腾讯</span>任职，并参与过<span class="text-[var(--color-accent)]">十余个不同类型游戏项目</span>的开发，担任<span class="text-[var(--color-accent)]">游戏设计师</span>和<span class="text-[var(--color-accent)]">制作人</span>，积累了从<span class="text-[var(--color-accent)]">设计构思到引擎落地</span>的全链路能力及丰富的<span class="text-[var(--color-accent)]">跨职能协作</span>经验。此外，我在<span class="text-[var(--color-accent)]">摄影</span>和<span class="text-[var(--color-accent)]">电影制作</span>方面也有丰富经验，能够将多元的创作视角融入设计工作中。
+                    </p>
+                    <p>
+                      作为一个公路旅行的狂热爱好者，在路上的经历让我领略了丰富多彩的生活与叙事。我相信游戏不仅能够<span class="text-[var(--color-accent)]">为玩家带来愉悦与刺激的体验</span>，更是一种强大的媒介，能够<span class="text-[var(--color-accent)]">讲述发人深省的故事</span>，并与玩家<span class="text-[var(--color-accent)]">建立深层的情感连接</span>。
                     </p>
                   </>
                 ) : (
                   <>
                     <p>
-                      I earned my Bachelor's degree in <span class="text-[var(--color-accent)]">Game Design</span> from the{" "}
-                      <a href="https://en.cuc.edu.cn/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">Communication University of China (CUC)</a>{" "}
-                      and my Master's degree in the{" "}
-                      <a href="https://games.usc.edu/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">Game Design and Development (MS)</a>{" "}
+                      I'm currently a <span class="text-[var(--color-accent)]">Gameplay Designer</span> at{" "}
+                      <span class="text-[var(--color-accent)]">NetEase (Thunder Fire Studio)</span>, working on{" "}
+                      <span class="text-[var(--color-accent)]">ANANTA (无限大)</span>. I specialize in{" "}
+                      <span class="text-[var(--color-accent)]">Gameplay, Level, Combat, and Quest Design</span>, and am responsible for{" "}
+                      <span class="text-[var(--color-accent)]">building and optimizing toolchains and production pipelines</span>.
+                    </p>
+                    <p>
+                      I earned my Bachelor's degree in Game Design from the{" "}
+                      <a href="https://animation.cuc.edu.cn/_upload/tpl/02/7a/634/template634/programmes-2/undergraduate/art-and-technology-digital-entertainment.html" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">Communication University of China (CUC)</a>{" "}
+                      and my Master's in{" "}
+                      <a href="https://catalogue.usc.edu/preview_program.php?catoid=18&poid=26148&returnto=7464" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">Game Design and Development (MS)</a>{" "}
                       from the{" "}
                       <span class="text-[var(--color-accent)]">University of Southern California (USC Games)</span>.
                     </p>
                     <p>
-                      Originally from Beijing, China, I have been involved in the{" "}
-                      <span class="text-[var(--color-accent)]">development of over ten different types of game projects</span>,
-                      taking on roles as <span class="text-[var(--color-accent)]">Game Director</span>,{" "}
-                      <span class="text-[var(--color-accent)]">Designer</span>, and{" "}
-                      <span class="text-[var(--color-accent)]">Producer</span>.
-                      Additionally, I am a <span class="text-[var(--color-accent)]">Photographer</span> and{" "}
-                      <span class="text-[var(--color-accent)]">Film Producer</span>,
-                      bringing a diverse range of creative skills to my work.
+                      Previously, I worked at <span class="text-[var(--color-accent)]">EA Sports</span> and{" "}
+                      <span class="text-[var(--color-accent)]">Tencent</span>, contributing to{" "}
+                      <span class="text-[var(--color-accent)]">over ten game projects of diverse genres</span> as{" "}
+                      <span class="text-[var(--color-accent)]">Game Designer</span> and{" "}
+                      <span class="text-[var(--color-accent)]">Producer</span>, building{" "}
+                      <span class="text-[var(--color-accent)]">end-to-end capabilities from design concept to engine implementation</span> along with strong{" "}
+                      <span class="text-[var(--color-accent)]">cross-functional collaboration</span> experience. Additionally, I bring expertise in{" "}
+                      <span class="text-[var(--color-accent)]">Photography</span> and{" "}
+                      <span class="text-[var(--color-accent)]">Film Production</span>, enriching my design work with a multidisciplinary creative perspective.
                     </p>
                     <p>
-                      As a big fan of road trips, my experiences on the road have unveiled a tapestry of diverse narratives and perspectives.
-                      I believe that games are not just a way to{" "}
-                      <span class="text-[var(--color-accent)]">provide players with delightful and thrilling experiences</span>{" "}
-                      but also a powerful medium for{" "}
-                      <span class="text-[var(--color-accent)]">telling these thought-provoking stories</span> and{" "}
-                      <span class="text-[var(--color-accent)]">creating deep emotional connections with players</span>.
-                      This is the mission I'm dedicated to.
+                      As a road trip enthusiast, my journeys have exposed me to the richness of life and storytelling.
+                      I believe games can do more than{" "}
+                      <span class="text-[var(--color-accent)]">deliver thrilling experiences</span> — they are a powerful medium for{" "}
+                      <span class="text-[var(--color-accent)]">telling thought-provoking stories</span> and{" "}
+                      <span class="text-[var(--color-accent)]">forging deep emotional connections</span> with players.
                     </p>
                   </>
                 )}

@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-31 04:40 (UTC+8)
+> **更新时间**：2026-03-31 08:30 (UTC+8)
 
 ---
 
@@ -96,15 +96,26 @@
 | 54 | 电影封面本地化 | 3 张 coverImage 从 Squarespace CDN → `public/images/films/`（fibonacci-cover.png, an-ignorant-night-cover.png, meme-contaminate-cover.png） |
 | 55 | Footer 去除 mt-20 间距 | 全屏页面（Films/Photography/Music/Graphic Design）底部黑缝消除 |
 | 56 | Footer 改为两侧对齐 | 居中布局 → 左 Youbin Wang（`text-xl font-bold`）、右 邮箱 + Docs/GitHub/LinkedIn 图标；移除 tagline 和 copyright；移动端自动上下两行 |
-| 57 | About Me 页面重构 | 全屏背景图（`public/images/about/background.jpg`）+ 全页 `bg-black/50` 遮罩 + `transparentNav + forceDark`；左侧头像（`profile.jpg`，320×420px）+ 右侧简介文字（`max-w-3xl`），文本区与照片等高（`md:h-[420px] flex-col justify-between`）；关键词橙色高亮（`var(--color-accent)`）；中英文双语文案；背景 `object-[center_70%]` 保持公路可见 |
+| 57 | About Me profile 图片更新 | `profile.jpg` → `profile.jpeg`，修正引用路径 |
+| 58 | 删除未使用的 favicon.svg | 无任何文件引用，安全删除 |
+| 59 | 摄影文件倒序重命名 | photo-34→01, 01→34，photos 数组改为倒序展示，新照片（35+）在页面最上方 |
+| 60 | About Me 超链接更新 | 中英文页面分别添加 CUC 专业页和 USC 课程目录/USC Games 链接 |
+| 61 | 电影数据模型扩展 | `FilmProject` 新增 `heroImage`、`synopsis: Bilingual[]` 字段 |
+| 62 | 电影文案填充 | 三部电影从原站迁移完整文案（description + synopsis），含中英双语 |
+| 63 | 电影详情页布局重写 | Hero（heroImage）→ 返回链接 + 元信息 → 海报 + 大字 logline → Synopsis → Video → Gallery（PhotoSwipe）→ Links；⚠️ 布局问题较多，需要继续优化 |
+| 64 | About Me 文案全面重写 | 中英双语：开篇身份定位（网易雷火玩法策划）→ 学历 → EA/腾讯经历 + 技术能力 → 个性段落；标题改为"你好，我是王佑彬 (Robin)"；删除联机组标签 |
+| 65 | 主页介绍文案重写 | 中英双语：身份 + 经历 → 引擎能力 + AI 工作流 → 欢迎探索；精简为 2 段 + 收尾句 |
+| 66 | 高亮词"与"不加粗 | 主页和 About Me 中所有"与"保持普通文字，不加粗/高亮 |
+| 67 | About Me 删除 AI 工作流句 | "我将 AI 工作流深度整合至开发管线"仅保留在主页，About Me 中删除 |
 
 ---
 
 ## 四、已知 Bug
 
 | # | 问题 | 原因 | 状态 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | — | 暂无已知 Bug | — | ✅ |
+| 1 | 电影详情页布局需大幅优化 | 当前布局问题较多，需重新调整 | 🔴 第一优先级 |
 
 ---
 
@@ -155,7 +166,7 @@
 5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
 7. **音乐页面**：coverImage 全空（videoId 已配置）
-8. **电影**：gallery 全空，仅 Meme Contaminate 有 gdrive 链接，无 videoId；✅ coverImage 已本地化
+8. **电影**：gallery 全空，无 videoId；✅ coverImage 已本地化；✅ 文案已迁移（description + synopsis 中英双语）；heroImage 待提供（`fibonacci-hero.jpg`, `an-ignorant-night-hero.jpg`, `meme-contaminate-hero.jpg`）；⚠️ 详情页布局需优化
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
 ### 代码质量备注
