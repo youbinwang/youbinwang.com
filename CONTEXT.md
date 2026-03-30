@@ -89,6 +89,9 @@
 | 47 | 摄影页新增 PageHeader | 顶部加 PageHeader（副标题 "Landscape & Documentary Photography"），Kerouac 引言改为左对齐保留 |
 | 48 | 字号规范更新 | CLAUDE.md 新增 PageHeader 层级（居中，`text-3xl md:text-4xl`），明确「含 section h2 的非 Hero 页必须用 PageHeader 层级」规则；PageHeader 与 Section h2 比值约 1.2× |
 | 49 | 音乐页重构：category pill | 去掉 section heading + hr 分隔线，改用 `getMusicByOrder()` 单循环；每首曲目标题下方加 pill（border 样式，始终英文），pill 位于 标题→正文 之间；曲目间距 `space-y-20` |
+| 50 | 摄影页 photos 填充 | 34 张图片（photo-01~34，混合 .png/.jpg/.jpeg）放入 `public/images/photography/`，photos 数组全量填充 |
+| 51 | 摄影页画廊布局 | flex 交错分列（`i % 3`）：列1=01/04/07…，列2=02/05/08…，列3=03/06/09…，色调相似照片自动打散；hover 效果同平面设计（scale-[1.03] + 遮罩 + 放大镜） |
+| 52 | 摄影页引言优化 | 颜色 `text-[var(--color-text-secondary)]`（灰）→ `text-[var(--color-text)]`（近白）；保留 italic；blockquote 居中 + `max-w-2xl mx-auto`；`— Jack Kerouac` 改为 `text-right`，视觉上贴引言右边缘；`mb-16` → `mb-12` |
 
 ---
 
@@ -144,7 +147,7 @@
 2. **全部 11 个游戏缺 gallery**：截图数组为空
 3. **10 个 Key Features MDX**：均为 placeholder 内容（Squarespace JS 动态渲染，WebFetch 无法爬取，需手动迁移）
 4. ~~**6 章 Echo Quest Tech Docs**~~：✅ 中文内容已全部填充
-5. **摄影页面**：`photos` 数组为空
+5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
 7. **音乐页面**：coverImage 全空（videoId 已配置）
 8. **电影**：gallery 全空，仅 Meme Contaminate 有 gdrive 链接，无 videoId

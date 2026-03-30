@@ -12,7 +12,47 @@ export function getStaticPaths() {
 
 const lang = getLangFromSlug(Astro.params.lang);
 
-const photos: string[] = [];
+const NUM_COLS = 3;
+const photos: string[] = [
+  "/images/photography/photo-01.png",
+  "/images/photography/photo-02.jpg",
+  "/images/photography/photo-03.png",
+  "/images/photography/photo-04.jpg",
+  "/images/photography/photo-05.jpg",
+  "/images/photography/photo-06.jpg",
+  "/images/photography/photo-07.jpg",
+  "/images/photography/photo-08.png",
+  "/images/photography/photo-09.jpeg",
+  "/images/photography/photo-10.jpg",
+  "/images/photography/photo-11.png",
+  "/images/photography/photo-12.jpg",
+  "/images/photography/photo-13.jpg",
+  "/images/photography/photo-14.jpg",
+  "/images/photography/photo-15.png",
+  "/images/photography/photo-16.jpg",
+  "/images/photography/photo-17.png",
+  "/images/photography/photo-18.png",
+  "/images/photography/photo-19.jpg",
+  "/images/photography/photo-20.png",
+  "/images/photography/photo-21.png",
+  "/images/photography/photo-22.png",
+  "/images/photography/photo-23.png",
+  "/images/photography/photo-24.jpg",
+  "/images/photography/photo-25.png",
+  "/images/photography/photo-26.png",
+  "/images/photography/photo-27.jpg",
+  "/images/photography/photo-28.jpg",
+  "/images/photography/photo-29.png",
+  "/images/photography/photo-30.jpeg",
+  "/images/photography/photo-31.jpg",
+  "/images/photography/photo-32.jpeg",
+  "/images/photography/photo-33.png",
+  "/images/photography/photo-34.png",
+];
+
+const columns: string[][] = Array.from({ length: NUM_COLS }, (_, col) =>
+  photos.filter((_, i) => i % NUM_COLS === col)
+);
 ---
 
 <BaseLayout title={uiEN("photography.title")} lang={lang} forceDark>
@@ -23,35 +63,47 @@ const photos: string[] = [];
     />
 
     {/* Quote */}
-    <blockquote class="mb-16">
-      <p class="text-xl italic text-[var(--color-text-secondary)]">
+    <blockquote class="mb-12 max-w-2xl mx-auto text-center">
+      <p class="text-xl italic text-[var(--color-text)]">
         "We had longer ways to go. But no matter, the road is life."
       </p>
-      <cite class="mt-2 block text-sm text-[var(--color-text-muted)]"
+      <cite class="mt-3 block text-sm text-[var(--color-text-secondary)] text-right"
         >— Jack Kerouac</cite
       >
     </blockquote>
 
     {
       photos.length > 0 ? (
-        <div
-          id="photography-gallery"
-          class="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3"
-        >
-          {photos.map((src, i) => (
-            <a
-              href={src}
-              data-pswp-width="2000"
-              data-pswp-height="2000"
-              class="block overflow-hidden rounded-lg cursor-zoom-in mb-3"
-            >
-              <img
-                src={src}
-                alt={`Photography ${i + 1}`}
-                class="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
-                loading="lazy"
-              />
-            </a>
+        <div id="photography-gallery" class="flex gap-3">
+          {columns.map((col) => (
+            <div class="flex flex-col gap-3 flex-1 min-w-0">
+              {col.map((src) => (
+                <a
+                  href={src}
+                  data-pswp-width="2000"
+                  data-pswp-height="2000"
+                  class="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+                >
+                  <img
+                    src={src}
+                    alt="Photography"
+                    class="w-full h-auto object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                    <svg
+                      class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
           ))}
         </div>
       ) : (
