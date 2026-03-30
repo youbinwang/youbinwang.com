@@ -3,6 +3,7 @@
  * Graphic Design page — works grid with PhotoSwipe lightbox (native Astro script).
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
+import PageHeader from "../../components/ui/PageHeader.astro";
 import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
@@ -23,9 +24,10 @@ const works: string[] = [
 
 <BaseLayout title={uiEN("graphicDesign.title")} lang={lang} forceDark>
   <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-16 text-center">
-      {ui("graphicDesign.title", lang)}
-    </h1>
+    <PageHeader
+      title={ui("graphicDesign.title", lang)}
+      subtitle="Poster & Visual Design"
+    />
 
     {
       works.length > 0 ? (

@@ -3,6 +3,7 @@
  * Photography page — masonry photo grid with PhotoSwipe lightbox (native Astro script).
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
+import PageHeader from "../../components/ui/PageHeader.astro";
 import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
@@ -16,8 +17,13 @@ const photos: string[] = [];
 
 <BaseLayout title={uiEN("photography.title")} lang={lang} forceDark>
   <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <PageHeader
+      title={ui("photography.title", lang)}
+      subtitle="Landscape & Documentary Photography"
+    />
+
     {/* Quote */}
-    <blockquote class="text-center mb-16">
+    <blockquote class="mb-16">
       <p class="text-xl italic text-[var(--color-text-secondary)]">
         "We had longer ways to go. But no matter, the road is life."
       </p>

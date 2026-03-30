@@ -111,6 +111,7 @@ src/
 │   │   ├── ProjectMeta.astro
 │   │   ├── ExternalLinks.astro
 │   │   ├── VideoEmbed.astro      # lite-youtube-embed
+│   │   ├── PageHeader.astro      # Other Works 页统一页头（Music/Photography/Graphic Design）
 │   │   ├── ImageGallery.tsx      # PhotoSwipe 5 砖石/网格 + Lightbox
 │   │   └── ImageCarousel.tsx     # Swiper 11 轮播 + 缩略图
 │   └── starlight/
@@ -148,13 +149,18 @@ src/
 | 层级 | 移动端 | 桌面端 | 使用场景 |
 |---|---|---|---|
 | **Hero h1** | `text-3xl` | `sm:text-4xl md:text-5xl lg:text-6xl` | Hero 区域大标题 |
-| **Page title**（无 Hero） | `text-3xl` | `text-3xl` | 独立页面标题（About、Experience 等） |
+| **PageHeader**（Other Works 页） | `text-4xl` | `md:text-5xl` | Music / Photography / Graphic Design 页面标题（含 section h2 的非 Hero 页） |
+| **Page title**（无 Hero，无 section） | `text-3xl` | `text-3xl` | 独立页面标题（About、Experience 等，页内无 h2） |
 | **Section heading（h2）** | `text-2xl` | `md:text-3xl` | 页面内分区标题（Games、Music Production 等） |
 | **Item heading（h3）** | `text-lg` | `md:text-xl` | 卡片/条目/曲目标题 |
 | **Body** | `text-base` | `text-base` | 正文描述、段落 |
 | **Caption / Meta** | `text-sm` | `text-sm` | 标签、元信息、辅助说明 |
 
-**规则**：h2 与 h3 之间至少保持一级差距（避免两者在同一断点下字号相同）。
+**规则**：
+
+- h2 与 h3 之间至少保持一级差距（避免两者在同一断点下字号相同）。
+- 当页面同时有 Page title 和 Section h2 时，Page title 必须用 **PageHeader** 层级（`text-4xl md:text-5xl`）而非普通 `text-3xl`，否则桌面端两者字号相同，层级消失。
+- PageHeader 与 Section h2 的字号比约 **1.5～1.6×**（桌面 48px vs 30px），符合排版层级规范。
 
 ---
 
