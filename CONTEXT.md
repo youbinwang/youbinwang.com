@@ -77,6 +77,12 @@
 | 35 | Music 页面重构 | 两栏布局 + 真实文案 + videoId + 游戏跳转链接 |
 | 36 | 全站字号规范 | h2/h3 层级差距修复（music/games/homepage），CLAUDE.md 新增字号规范章节 |
 | 37 | VideoEmbed 换标准 iframe | lite-youtube-embed → 标准 YouTube `<iframe>`，显示原生 UI（标题/频道/前往平台观看） |
+| 38 | 平面设计页内容填充 | 6 张 PNG 图片（graphic-design-01~06），路径 `public/images/graphic-design/` |
+| 39 | PhotoSwipe 修复 | React Island `useEffect` 时序不稳定 → 改用 Astro 原生 `<script>` 初始化，支持 View Transitions |
+| 40 | Lightbox 比例修复 | 图片已加载时 `load` 事件不触发 → 改为先检查 `img.complete`，再按需绑定事件 |
+| 41 | 平面设计 hover 优化 | `scale-105` → `scale-[1.03]` + 半透明遮罩 + 中央放大镜图标，400ms 过渡 |
+| 42 | 平面设计 Title 间距 | `mb-12` → `mb-16`（48px → 64px） |
+| 43 | 摄影页 PhotoSwipe | 同步改为 Astro 原生 `<script>` 初始化，修复维度更新逻辑 |
 
 ---
 
@@ -133,7 +139,7 @@
 3. **10 个 Key Features MDX**：均为 placeholder 内容（Squarespace JS 动态渲染，WebFetch 无法爬取，需手动迁移）
 4. ~~**6 章 Echo Quest Tech Docs**~~：✅ 中文内容已全部填充
 5. **摄影页面**：`photos` 数组为空
-6. **平面设计页面**：`works` 数组为空
+6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
 7. **音乐页面**：coverImage 全空（videoId 已配置）
 8. **电影**：gallery 全空，仅 Meme Contaminate 有 gdrive 链接，无 videoId
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
@@ -188,7 +194,49 @@ Dev server 默认端口 4321，若被占用自动递增。
 
 ---
 
-## 九、下一步工作方向
+---
+
+## 十、图片 Lightbox 处理规范
+
+### PhotoSwipe 初始化方式
+
+**不使用 React Island**，统一改用 **Astro 原生 `<script>` 标签**初始化 PhotoSwipe。原因：React Island `useEffect` 与 Astro ClientRouter 的时序冲突导致 UI 按钮不渲染。
+
+```ts
+// 标准模板（两页均已采用）
+import PhotoSwipeLightbox from "photoswipe/lightbox";
+import PhotoSwipe from "photoswipe";
+
+function initGallery() {
+  const gallery = document.querySelector<HTMLElement>("#gallery-id");
+  if (!gallery) return;
+  const lightbox = new PhotoSwipeLightbox({ gallery, children: "a", pswpModule: PhotoSwipe });
+  // 维度更新：先检查是否已加载，再按需绑定 load 事件
+  gallery.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+    const img = link.querySelector("img");
+    if (!img) return;
+    const update = () => { if (img.naturalWidth > 0) { link.setAttribute("data-pswp-width", ...); link.setAttribute("data-pswp-height", ...); } };
+    img.complete && img.naturalWidth > 0 ? update() : img.addEventListener("load", update);
+  });
+  lightbox.init();
+  document.addEventListener("astro:before-swap", () => lightbox.destroy(), { once: true });
+}
+initGallery();
+document.addEventListener("astro:after-swap", initGallery);
+```
+
+### 各场景图片交互规范
+
+| 场景 | Lightbox | Hover 效果 | 说明 |
+| ---- | -------- | --------- | ---- |
+| **平面设计** | ✅ PhotoSwipe | `scale-[1.03]` + 遮罩 + 放大镜图标（400ms） | 海报是核心内容，明确提示可放大 |
+| **摄影** | ✅ PhotoSwipe | `scale-[1.03]` + 遮罩 + 放大镜图标（400ms） | 画廊式展示，同平面设计 |
+| **游戏截图** | ✅ PhotoSwipe | 仅 `cursor: zoom-in`，**不加遮罩/图标** | 截图是辅助内容，视觉保持克制 |
+| **文档图片**（Echo Quest 等） | ❌ 无 Lightbox | 无 hover 效果 | 文档内嵌图，仅作说明用途 |
+
+### PhotoSwipe CSS 加载位置
+
+`photoswipe/style.css` 通过 `global.css` 的 `@import` 全局加载（而非在组件内 import），确保样式在任何页面切换后立即可用。
 
 1. **内容填充**：10 个 Key Features MDX（需手动从原站迁移文案）
 2. 游戏 gallery 截图、videoId 填充

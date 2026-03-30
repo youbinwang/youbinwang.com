@@ -1,9 +1,8 @@
 ---
 /**
- * Photography page — quote + masonry photo grid with PhotoSwipe lightbox.
+ * Photography page — masonry photo grid with PhotoSwipe lightbox (native Astro script).
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
-import ImageGallery from "../../components/ui/ImageGallery.tsx";
 import { getLangFromSlug, ui, uiEN } from "../../i18n";
 
 export function getStaticPaths() {
@@ -12,7 +11,6 @@ export function getStaticPaths() {
 
 const lang = getLangFromSlug(Astro.params.lang);
 
-// Placeholder photos — will be populated with actual Squarespace CDN URLs
 const photos: string[] = [];
 ---
 
@@ -28,15 +26,28 @@ const photos: string[] = [];
       >
     </blockquote>
 
-    {/* Photo Grid with PhotoSwipe lightbox */}
     {
       photos.length > 0 ? (
-        <ImageGallery
-          client:visible
-          images={photos}
-          altPrefix="Photography"
-          layout="masonry"
-        />
+        <div
+          id="photography-gallery"
+          class="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3"
+        >
+          {photos.map((src, i) => (
+            <a
+              href={src}
+              data-pswp-width="2000"
+              data-pswp-height="2000"
+              class="block overflow-hidden rounded-lg cursor-zoom-in mb-3"
+            >
+              <img
+                src={src}
+                alt={`Photography ${i + 1}`}
+                class="w-full h-auto object-cover transition-transform duration-300 hover:scale-105"
+                loading="lazy"
+              />
+            </a>
+          ))}
+        </div>
       ) : (
         <p class="text-center text-[var(--color-text-muted)]">
           {lang === "zh-cn" ? "照片即将上线..." : "Photos coming soon..."}
@@ -45,3 +56,43 @@ const photos: string[] = [];
     }
   </section>
 </BaseLayout>
+
+<script>
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import PhotoSwipe from "photoswipe";
+
+  function initGallery() {
+    const gallery = document.querySelector<HTMLElement>("#photography-gallery");
+    if (!gallery) return;
+
+    const lightbox = new PhotoSwipeLightbox({
+      gallery,
+      children: "a",
+      pswpModule: PhotoSwipe,
+    });
+
+    gallery.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+      const img = link.querySelector("img");
+      if (!img) return;
+      const update = () => {
+        if (img.naturalWidth > 0) {
+          link.setAttribute("data-pswp-width", String(img.naturalWidth));
+          link.setAttribute("data-pswp-height", String(img.naturalHeight));
+        }
+      };
+      if (img.complete && img.naturalWidth > 0) {
+        update();
+      } else {
+        img.addEventListener("load", update);
+      }
+    });
+
+    lightbox.init();
+    document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
+      once: true,
+    });
+  }
+
+  initGallery();
+  document.addEventListener("astro:after-swap", initGallery);
+</script>

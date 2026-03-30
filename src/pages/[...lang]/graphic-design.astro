@@ -1,6 +1,6 @@
 ---
 /**
- * Graphic Design page — works grid with lightbox.
+ * Graphic Design page — works grid with PhotoSwipe lightbox (native Astro script).
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
 import { getLangFromSlug, ui, uiEN } from "../../i18n";
@@ -11,26 +11,51 @@ export function getStaticPaths() {
 
 const lang = getLangFromSlug(Astro.params.lang);
 
-// Placeholder — will be populated with actual images
-const works: string[] = [];
+const works: string[] = [
+  "/images/graphic-design/graphic-design-01.png",
+  "/images/graphic-design/graphic-design-02.png",
+  "/images/graphic-design/graphic-design-03.png",
+  "/images/graphic-design/graphic-design-04.png",
+  "/images/graphic-design/graphic-design-05.png",
+  "/images/graphic-design/graphic-design-06.png",
+];
 ---
 
 <BaseLayout title={uiEN("graphicDesign.title")} lang={lang} forceDark>
   <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-12 text-center">
+    <h1 class="text-3xl font-bold text-[var(--color-text)] mb-16 text-center">
       {ui("graphicDesign.title", lang)}
     </h1>
 
     {
       works.length > 0 ? (
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div id="graphic-design-gallery" class="grid gap-3 grid-cols-2 md:grid-cols-3">
           {works.map((src, i) => (
-            <img
-              src={src}
-              alt={`Graphic Design ${i + 1}`}
-              class="w-full rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-              loading="lazy"
-            />
+            <a
+              href={src}
+              data-pswp-width="2000"
+              data-pswp-height="2000"
+              class="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+            >
+              <img
+                src={src}
+                alt={`Graphic Design ${i + 1}`}
+                class="w-full h-auto object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+                loading="lazy"
+              />
+              {/* Hover overlay */}
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                <svg
+                  class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
+                </svg>
+              </div>
+            </a>
           ))}
         </div>
       ) : (
@@ -41,3 +66,44 @@ const works: string[] = [];
     }
   </section>
 </BaseLayout>
+
+<script>
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import PhotoSwipe from "photoswipe";
+
+  function initGallery() {
+    const gallery = document.querySelector<HTMLElement>("#graphic-design-gallery");
+    if (!gallery) return;
+
+    const lightbox = new PhotoSwipeLightbox({
+      gallery,
+      children: "a",
+      pswpModule: PhotoSwipe,
+    });
+
+    // Update real dimensions once each image loads
+    gallery.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+      const img = link.querySelector("img");
+      if (!img) return;
+      const update = () => {
+        if (img.naturalWidth > 0) {
+          link.setAttribute("data-pswp-width", String(img.naturalWidth));
+          link.setAttribute("data-pswp-height", String(img.naturalHeight));
+        }
+      };
+      if (img.complete && img.naturalWidth > 0) {
+        update();
+      } else {
+        img.addEventListener("load", update);
+      }
+    });
+
+    lightbox.init();
+    document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
+      once: true,
+    });
+  }
+
+  initGallery();
+  document.addEventListener("astro:after-swap", initGallery);
+</script>

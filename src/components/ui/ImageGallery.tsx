@@ -1,11 +1,12 @@
 /**
- * ImageGallery — masonry photo grid with PhotoSwipe 5 lightbox.
- * Used on photography page and game detail pages for screenshot galleries.
- * React Island: use with client:visible for lazy loading.
+ * ImageGallery — flexible masonry/grid photo gallery with PhotoSwipe 5 lightbox.
+ * React Island component used on game detail pages for screenshot galleries.
+ * Note: PhotoSwipe CSS is globally imported via global.css (not here).
+ * Use with client:visible for lazy hydration.
  */
 import { useCallback, useEffect, useRef } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
-import 'photoswipe/style.css';
+import PhotoSwipe from 'photoswipe';
 
 interface ImageGalleryProps {
   /** Array of image URLs */
@@ -32,7 +33,7 @@ export default function ImageGallery({
     const lightbox = new PhotoSwipeLightbox({
       gallery: galleryRef.current,
       children: 'a',
-      pswpModule: () => import('photoswipe'),
+      pswpModule: PhotoSwipe,
       bgOpacity: 0.92,
       padding: { top: 20, bottom: 20, left: 20, right: 20 },
     });
@@ -69,8 +70,6 @@ export default function ImageGallery({
           href={src}
           data-pswp-width="1600"
           data-pswp-height="1200"
-          target="_blank"
-          rel="noreferrer"
           className="block overflow-hidden rounded-lg cursor-zoom-in"
         >
           <img
