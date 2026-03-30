@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-30 (UTC+8)
+> **更新时间**：2026-03-30 22:00 (UTC+8)
 
 ---
 
@@ -92,6 +92,10 @@
 | 50 | 摄影页 photos 填充 | 34 张图片（photo-01~34，混合 .png/.jpg/.jpeg）放入 `public/images/photography/`，photos 数组全量填充 |
 | 51 | 摄影页画廊布局 | flex 交错分列（`i % 3`）：列1=01/04/07…，列2=02/05/08…，列3=03/06/09…，色调相似照片自动打散；hover 效果同平面设计（scale-[1.03] + 遮罩 + 放大镜） |
 | 52 | 摄影页引言优化 | 颜色 `text-[var(--color-text-secondary)]`（灰）→ `text-[var(--color-text)]`（近白）；保留 italic；blockquote 居中 + `max-w-2xl mx-auto`；`— Jack Kerouac` 改为 `text-right`，视觉上贴引言右边缘；`mb-16` → `mb-12` |
+| 53 | 电影列表页重写 | 全屏背景 + hover 切换交互：3 张封面图绝对定位叠放，hover 标题 700ms 淡入切换背景，非 active 标题 opacity 0.38 形成聚焦感；`transparentNav + forceDark`；径向渐变遮罩（左侧文字区较轻） |
+| 54 | 电影封面本地化 | 3 张 coverImage 从 Squarespace CDN → `public/images/films/`（fibonacci-cover.png, an-ignorant-night-cover.png, meme-contaminate-cover.png） |
+| 55 | Footer 去除 mt-20 间距 | 全屏页面（Films/Photography/Music/Graphic Design）底部黑缝消除 |
+| 56 | Footer 改为两侧对齐 | 居中布局 → 左 Youbin Wang（`text-xl font-bold`）、右 邮箱 + Docs/GitHub/LinkedIn 图标；移除 tagline 和 copyright；移动端自动上下两行 |
 
 ---
 
@@ -150,7 +154,7 @@
 5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
 7. **音乐页面**：coverImage 全空（videoId 已配置）
-8. **电影**：gallery 全空，仅 Meme Contaminate 有 gdrive 链接，无 videoId
+8. **电影**：gallery 全空，仅 Meme Contaminate 有 gdrive 链接，无 videoId；✅ coverImage 已本地化
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
 ### 代码质量备注

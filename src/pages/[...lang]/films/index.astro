@@ -1,10 +1,10 @@
 ---
 /**
- * Films list page — cover cards for each film project.
+ * Films list page — full-viewport cinematic experience.
+ * Background fills the screen; hovering a title crossfades to that film's image.
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
-import HeroSection from "../../../components/layout/HeroSection.astro";
-import { getLangFromSlug, ui, uiEN, t, getLocalizedPath } from "../../../i18n";
+import { getLangFromSlug, uiEN, t, getLocalizedPath } from "../../../i18n";
 import { getFilmsByOrder } from "../../../data/films";
 
 export function getStaticPaths() {
@@ -15,36 +15,90 @@ const lang = getLangFromSlug(Astro.params.lang);
 const films = getFilmsByOrder();
 ---
 
-<BaseLayout title={uiEN("films.title")} lang={lang}>
-  <HeroSection title={ui("films.title", lang)} />
+<BaseLayout
+  title={uiEN("films.title")}
+  lang={lang}
+  transparentNav={true}
+  forceDark={true}
+>
+  <div class="relative h-screen overflow-hidden" id="films-stage">
 
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {
-        films.map((film) => (
-          <a
-            href={getLocalizedPath(`/films/${film.slug}/`, lang)}
-            class="group block overflow-hidden rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] transition-transform hover:-translate-y-1"
-          >
-            <div class="relative aspect-[16/9] overflow-hidden">
-              <img
-                src={film.coverImage}
-                alt={t(film.title, lang)}
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-            </div>
-            <div class="p-4">
-              <h3 class="text-lg font-semibold text-[var(--color-text)] group-hover:text-[var(--color-accent)] transition-colors">
+    <!-- Background layers: stacked, crossfade on hover -->
+    {films.map((film, i) => (
+      <div
+        class="absolute inset-0 transition-[opacity] duration-700 ease-in-out"
+        style={i === 0 ? "opacity:1" : "opacity:0"}
+        data-film-bg={i}
+      >
+        <img
+          src={film.coverImage}
+          alt=""
+          class="w-full h-full object-cover"
+          loading={i === 0 ? "eager" : "lazy"}
+        />
+        <!-- Dark vignette: stronger at edges, lighter in centre -->
+        <div
+          class="absolute inset-0"
+          style="background: radial-gradient(ellipse at 30% 50%, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.6) 100%);"
+        />
+      </div>
+    ))}
+
+    <!-- Film titles — vertically centred, left-aligned -->
+    <div class="relative z-10 h-full flex items-center">
+      <div class="max-w-screen-xl mx-auto w-full px-8 sm:px-14 lg:px-20">
+        <div class="flex flex-col gap-8 md:gap-12">
+          {films.map((film, i) => (
+            <a
+              href={getLocalizedPath(`/films/${film.slug}/`, lang)}
+              class="block w-fit transition-opacity duration-300"
+              style={i === 0 ? "opacity:1" : "opacity:0.38"}
+              data-film-link={i}
+            >
+              <h2 class="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-white tracking-tight">
                 {t(film.title, lang)}
-              </h3>
-              <p class="mt-1 text-sm text-[var(--color-text-secondary)]">
-                {t(film.role, lang)} &middot; {film.year}
+              </h2>
+              <p class="mt-2 text-sm tracking-widest uppercase text-white/60">
+                {t(film.role, lang)}&ensp;·&ensp;{film.year}
               </p>
-            </div>
-          </a>
-        ))
-      }
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
+
   </div>
 </BaseLayout>
+
+<script>
+  function initFilmsStage() {
+    const stage = document.getElementById("films-stage");
+    if (!stage) return;
+
+    const bgs = Array.from(
+      stage.querySelectorAll<HTMLElement>("[data-film-bg]"),
+    );
+    const links = Array.from(
+      stage.querySelectorAll<HTMLElement>("[data-film-link]"),
+    );
+
+    function activate(index: number) {
+      bgs.forEach((bg, i) => {
+        bg.style.opacity = i === index ? "1" : "0";
+      });
+      links.forEach((link, i) => {
+        link.style.opacity = i === index ? "1" : "0.38";
+      });
+    }
+
+    links.forEach((link, i) => {
+      link.addEventListener("mouseenter", () => activate(i));
+    });
+
+    // Revert to first film on leaving the stage
+    stage.addEventListener("mouseleave", () => activate(0));
+  }
+
+  initFilmsStage();
+  document.addEventListener("astro:after-swap", initFilmsStage);
+</script>
