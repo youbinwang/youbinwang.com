@@ -149,7 +149,7 @@ src/
 | 层级 | 移动端 | 桌面端 | 使用场景 |
 |---|---|---|---|
 | **Hero h1** | `text-3xl` | `sm:text-4xl md:text-5xl lg:text-6xl` | Hero 区域大标题 |
-| **PageHeader**（Other Works 页） | `text-4xl` | `md:text-5xl` | Music / Photography / Graphic Design 页面标题（含 section h2 的非 Hero 页） |
+| **PageHeader**（Other Works 页，居中） | `text-3xl` | `md:text-4xl` | Music / Photography / Graphic Design 页面标题（含 section h2 的非 Hero 页，居中对齐） |
 | **Page title**（无 Hero，无 section） | `text-3xl` | `text-3xl` | 独立页面标题（About、Experience 等，页内无 h2） |
 | **Section heading（h2）** | `text-2xl` | `md:text-3xl` | 页面内分区标题（Games、Music Production 等） |
 | **Item heading（h3）** | `text-lg` | `md:text-xl` | 卡片/条目/曲目标题 |

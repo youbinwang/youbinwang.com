@@ -83,11 +83,12 @@
 | 41 | 平面设计 hover 优化 | `scale-105` → `scale-[1.03]` + 半透明遮罩 + 中央放大镜图标，400ms 过渡 |
 | 42 | 平面设计 Title 间距 | `mb-12` → `mb-16`（48px → 64px） |
 | 43 | 摄影页 PhotoSwipe | 同步改为 Astro 原生 `<script>` 初始化，修复维度更新逻辑 |
-| 44 | Other Works 页 PageHeader | 新建 `PageHeader.astro`：左对齐标题（`text-4xl md:text-5xl`）+ 英文副标题 + 底部分隔线，Music/Photography/Graphic Design 三页统一使用 |
+| 44 | Other Works 页 PageHeader | 新建 `PageHeader.astro`：**居中**对齐，标题 `text-3xl md:text-4xl`（居中时视觉重量更重，无需像左对齐那样用大字号）+ 英文副标题 + 底部分隔线，Music/Photography/Graphic Design 三页统一使用 |
 | 45 | 平面设计 Title 改为 PageHeader | 移除居中 h1，换用 PageHeader（副标题 "Poster & Visual Design"） |
-| 46 | 音乐页新增 PageHeader | 顶部加 PageHeader（"音乐"/"Music"，副标题 "Music Composition & Game OST"），原两个 section h2 保留 |
+| 46 | 音乐页新增 PageHeader | 顶部加 PageHeader（"音乐"/"Music"，副标题 "Music Composition & Game OST"） |
 | 47 | 摄影页新增 PageHeader | 顶部加 PageHeader（副标题 "Landscape & Documentary Photography"），Kerouac 引言改为左对齐保留 |
-| 48 | 字号规范更新 | CLAUDE.md 新增 PageHeader 层级（`text-4xl md:text-5xl`），明确「含 section h2 的非 Hero 页必须用 PageHeader 层级」规则 |
+| 48 | 字号规范更新 | CLAUDE.md 新增 PageHeader 层级（居中，`text-3xl md:text-4xl`），明确「含 section h2 的非 Hero 页必须用 PageHeader 层级」规则；PageHeader 与 Section h2 比值约 1.2× |
+| 49 | 音乐页重构：category pill | 去掉 section heading + hr 分隔线，改用 `getMusicByOrder()` 单循环；每首曲目标题下方加 pill（border 样式，始终英文），pill 位于 标题→正文 之间；曲目间距 `space-y-20` |
 
 ---
 
