@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-30 22:00 (UTC+8)
+> **更新时间**：2026-03-31 04:40 (UTC+8)
 
 ---
 
@@ -96,6 +96,7 @@
 | 54 | 电影封面本地化 | 3 张 coverImage 从 Squarespace CDN → `public/images/films/`（fibonacci-cover.png, an-ignorant-night-cover.png, meme-contaminate-cover.png） |
 | 55 | Footer 去除 mt-20 间距 | 全屏页面（Films/Photography/Music/Graphic Design）底部黑缝消除 |
 | 56 | Footer 改为两侧对齐 | 居中布局 → 左 Youbin Wang（`text-xl font-bold`）、右 邮箱 + Docs/GitHub/LinkedIn 图标；移除 tagline 和 copyright；移动端自动上下两行 |
+| 57 | About Me 页面重构 | 全屏背景图（`public/images/about/background.jpg`）+ 全页 `bg-black/50` 遮罩 + `transparentNav + forceDark`；左侧头像（`profile.jpg`，320×420px）+ 右侧简介文字（`max-w-3xl`），文本区与照片等高（`md:h-[420px] flex-col justify-between`）；关键词橙色高亮（`var(--color-accent)`）；中英文双语文案；背景 `object-[center_70%]` 保持公路可见 |
 
 ---
 

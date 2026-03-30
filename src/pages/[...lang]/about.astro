@@ -1,6 +1,8 @@
 ---
 /**
- * About Me page — bio, education, skills.
+ * About Me page — full-screen background with portrait + bio overlay.
+ * Layout: background image fills viewport, portrait left + text right (desktop),
+ * stacked on mobile. forceDark + transparentNav for cinematic look.
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
 import { getLangFromSlug, ui, uiEN } from "../../i18n";
@@ -12,67 +14,117 @@ export function getStaticPaths() {
 const lang = getLangFromSlug(Astro.params.lang);
 ---
 
-<BaseLayout title={uiEN("about.title")} lang={lang}>
-  <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="max-w-4xl">
-      <h1 class="text-3xl font-bold text-[var(--color-text)] mb-8">
-        {ui("about.title", lang)}
-      </h1>
+<BaseLayout
+  title={uiEN("about.title")}
+  lang={lang}
+  transparentNav={true}
+  forceDark={true}
+>
+  <!-- Full-viewport background -->
+  <div class="relative min-h-screen overflow-hidden">
+    <!-- Background image — object-position keeps road visible at bottom -->
+    <img
+      src="/images/about/background.jpg"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover object-[center_70%]"
+      loading="eager"
+    />
+    <!-- Dark overlay covering entire background -->
+    <div class="absolute inset-0 bg-black/50" />
 
-      <div
-        class="text-[var(--color-text-secondary)] text-base leading-relaxed space-y-4"
-      >
-        {
-          lang === "zh-cn" ? (
-            <>
-              <p>
-                Hi，我是王佑彬！我本科毕业于
-                <strong class="text-[var(--color-text)]">
-                  中国传媒大学游戏设计系
-                </strong>
-                ，研究生毕业于
-                <strong class="text-[var(--color-text)]">
-                  南加州大学互动媒体与游戏系 (USC Games)
-                </strong>
-                。
-              </p>
-              <p>
-                我广泛涉猎电子游戏，对市场中主流的游戏玩法均有了解与思考，并有着较丰富的游戏项目设计及行业实践经验，曾在腾讯、EA和网易雷火任职。
-              </p>
-              <p>
-                我可以熟练独立使用 Unity、Unreal
-                引擎完成游戏玩法和功能原型、战斗系统的引擎内实现，并使用 Blender
-                完成关卡原型的设计与搭建。
-              </p>
-            </>
-          ) : (
-            <>
-              <p>
-                I earned my Bachelor's degree in Game Design from the{" "}
-                <strong class="text-[var(--color-text)]">
-                  Communication University of China (CUC)
-                </strong>{" "}
-                and my Master's degree in Game Design and Development (MS) from
-                the{" "}
-                <strong class="text-[var(--color-text)]">
-                  University of Southern California (USC Games)
-                </strong>
-                .
-              </p>
-              <p>
-                Experienced in Game Design, Game Project Management, and Game
-                Technical Skills. My diverse experiences have taught me a broad
-                range of creative skills.
-              </p>
-              <p>
-                My ambition is to use gaming as a medium for storytelling, aiming
-                to tell thought-provoking stories and explore deep emotional
-                connections with players.
-              </p>
-            </>
-          )
-        }
+    <!-- Content -->
+    <div class="relative z-10 min-h-screen flex items-center justify-center">
+      <div class="px-6 sm:px-10 lg:px-16">
+        <div class="flex flex-col md:flex-row items-center md:items-start gap-10 lg:gap-16">
+
+          <!-- Portrait -->
+          <div class="shrink-0">
+            <img
+              src="/images/about/profile.jpg"
+              alt="Youbin Wang"
+              class="w-60 h-[310px] sm:w-64 sm:h-[340px] md:w-[320px] md:h-[420px] object-cover rounded-lg shadow-2xl"
+            />
+          </div>
+
+          <!-- Bio text — md:h-[420px] matches portrait height, flex-col spreads content evenly -->
+          <div class="max-w-3xl md:h-[420px] md:flex md:flex-col md:justify-between">
+            <div>
+              <h1 class="text-3xl sm:text-4xl md:text-[2.75rem] font-bold text-white leading-tight mb-6">
+                {lang === "zh-cn"
+                  ? "很高兴认识你，我是王佑彬 (Robin)！"
+                  : "Nice to Meet You, I\u2019m Youbin Wang (Robin)!"}
+              </h1>
+
+              <div class="text-white/80 text-base leading-relaxed space-y-4">
+                {lang === "zh-cn" ? (
+                  <>
+                    <p>
+                      我本科毕业于<span class="text-[var(--color-accent)]">中国传媒大学</span>
+                      <span class="text-[var(--color-accent)]">游戏设计</span>专业，
+                      研究生毕业于<span class="text-[var(--color-accent)]">南加州大学 (USC Games)</span>
+                      <span class="text-[var(--color-accent)]">游戏设计与开发</span>专业。
+                    </p>
+                    <p>
+                      来自北京的我，参与了<span class="text-[var(--color-accent)]">十余个不同类型的游戏项目</span>的开发，
+                      担任过<span class="text-[var(--color-accent)]">游戏总监</span>、
+                      <span class="text-[var(--color-accent)]">设计师</span>和
+                      <span class="text-[var(--color-accent)]">制作人</span>。
+                      此外，我也是一名<span class="text-[var(--color-accent)]">摄影师</span>和
+                      <span class="text-[var(--color-accent)]">电影制片人</span>，
+                      将多元的创作技能融入我的工作中。
+                    </p>
+                    <p>
+                      作为一个公路旅行的狂热爱好者，
+                      旅途中的经历让我领略了丰富多彩的叙事与观点。
+                      我相信游戏不仅能够<span class="text-[var(--color-accent)]">为玩家带来愉悦与刺激的体验</span>，
+                      更是一种强大的媒介，能够<span class="text-[var(--color-accent)]">讲述发人深省的故事</span>，
+                      并与玩家<span class="text-[var(--color-accent)]">建立深层的情感连接</span>。
+                      这是我所致力的使命。
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      I earned my Bachelor's degree in <span class="text-[var(--color-accent)]">Game Design</span> from the{" "}
+                      <a href="https://en.cuc.edu.cn/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">Communication University of China (CUC)</a>{" "}
+                      and my Master's degree in the{" "}
+                      <a href="https://games.usc.edu/" target="_blank" rel="noopener noreferrer" class="text-[var(--color-accent)] underline decoration-[var(--color-accent)]/40 hover:decoration-[var(--color-accent)] transition-colors">Game Design and Development (MS)</a>{" "}
+                      from the{" "}
+                      <span class="text-[var(--color-accent)]">University of Southern California (USC Games)</span>.
+                    </p>
+                    <p>
+                      Originally from Beijing, China, I have been involved in the{" "}
+                      <span class="text-[var(--color-accent)]">development of over ten different types of game projects</span>,
+                      taking on roles as <span class="text-[var(--color-accent)]">Game Director</span>,{" "}
+                      <span class="text-[var(--color-accent)]">Designer</span>, and{" "}
+                      <span class="text-[var(--color-accent)]">Producer</span>.
+                      Additionally, I am a <span class="text-[var(--color-accent)]">Photographer</span> and{" "}
+                      <span class="text-[var(--color-accent)]">Film Producer</span>,
+                      bringing a diverse range of creative skills to my work.
+                    </p>
+                    <p>
+                      As a big fan of road trips, my experiences on the road have unveiled a tapestry of diverse narratives and perspectives.
+                      I believe that games are not just a way to{" "}
+                      <span class="text-[var(--color-accent)]">provide players with delightful and thrilling experiences</span>{" "}
+                      but also a powerful medium for{" "}
+                      <span class="text-[var(--color-accent)]">telling these thought-provoking stories</span> and{" "}
+                      <span class="text-[var(--color-accent)]">creating deep emotional connections with players</span>.
+                      This is the mission I'm dedicated to.
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <p class="font-semibold text-white text-lg mt-6">
+              {lang === "zh-cn"
+                ? "欢迎来到我的创作世界 :)"
+                : "Welcome to My World of Creations :)"}
+            </p>
+          </div>
+
+        </div>
       </div>
     </div>
-  </section>
+  </div>
 </BaseLayout>
