@@ -14,11 +14,11 @@ const { videoId, title = "Video", poster } = Astro.props;
 ---
 
 {poster ? (
-  <div class="video-embed aspect-video rounded-lg overflow-hidden bg-[var(--color-bg-secondary)] relative cursor-pointer" data-video-id={videoId} data-title={title}>
+  <div class="video-embed aspect-video rounded-lg overflow-hidden bg-black relative cursor-pointer" data-video-id={videoId} data-title={title}>
     <img
       src={poster}
       alt={title}
-      class="w-full h-full object-cover"
+      class="absolute inset-0 w-full h-full object-cover"
       loading="lazy"
     />
     <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
