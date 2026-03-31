@@ -1,12 +1,13 @@
 ---
 /**
- * Film detail page — hero + poster/description + synopsis + gallery.
- * Layout mirrors the original Squarespace site design.
+ * Film detail page — matches original Squarespace layout:
+ * Hero (film still) → Poster + Description two-column → Video → Gallery (4-col) → Next/Prev nav
+ * heroImage = film still for hero bg; coverImage = poster shown in content area.
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
 import { getLangFromSlug, t, getLocalizedPath } from "../../../i18n";
-import { films } from "../../../data/films";
+import { films, getFilmsByOrder } from "../../../data/films";
 
 export function getStaticPaths() {
   const paths = [];
@@ -24,90 +25,76 @@ const { film } = Astro.props;
 const lang = getLangFromSlug(Astro.params.lang);
 const title = t(film.title, lang);
 const titleEN = t(film.title, "en");
+
+/* ── Prev / Next navigation ── */
+const ordered = getFilmsByOrder();
+const currentIndex = ordered.findIndex((f) => f.slug === film.slug);
+const prevFilm = currentIndex > 0 ? ordered[currentIndex - 1] : null;
+const nextFilm = currentIndex < ordered.length - 1 ? ordered[currentIndex + 1] : null;
 ---
 
 <BaseLayout title={titleEN} lang={lang} transparentNav>
-  {/* ═══════ Hero ═══════ */}
+  {/* ═══════ Hero — film still as background ═══════ */}
   <section
     class="relative w-full min-h-[50vh] flex items-end overflow-hidden"
     transition:name="hero"
     transition:animate="fade"
   >
-    {/* Background */}
-    {
-      film.heroImage ? (
-        <div class="absolute inset-0">
-          <img
-            src={film.heroImage}
-            alt=""
-            class="w-full h-full object-cover"
-            loading="eager"
-          />
-          <div
-            class="absolute inset-0"
-            style="background: var(--color-hero-overlay);"
-          />
-        </div>
-      ) : (
-        <div class="absolute inset-0 bg-bg" />
-      )
-    }
+    {/* heroImage (film still) with coverImage fallback */}
+    <div class="absolute inset-0">
+      <img
+        src={film.heroImage || film.coverImage}
+        alt=""
+        class="w-full h-full object-cover"
+        style="transform: translateY(-20%);"
+        loading="eager"
+      />
+      <div
+        class="absolute inset-0"
+        style="background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.65) 100%);"
+      />
+    </div>
 
-    {/* Title */}
     <div class="relative z-10 max-w-screen-xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-10">
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight drop-shadow-lg">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
         {title}
       </h1>
     </div>
   </section>
 
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-    {/* ═══════ Back link + Meta ═══════ */}
-    <div>
-      <a
-        href={getLocalizedPath("/films/", lang)}
-        class="inline-flex items-center gap-1 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors mb-4"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        {lang === "zh-cn" ? "返回电影列表" : "Back to Films"}
-      </a>
-      <p class="text-sm tracking-widest uppercase text-[var(--color-text-muted)]">
-        {lang === "zh-cn" ? "电影" : "Film"}&ensp;·&ensp;{film.year}&ensp;·&ensp;{t(film.role, lang)}
-      </p>
-    </div>
-
-    {/* ═══════ Featured: Poster + Description ═══════ */}
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    {/* ═══════ Poster + Description two-column ═══════ */}
     <section class="flex flex-col md:flex-row gap-8 md:gap-12 items-start">
-      {/* Poster */}
-      <div class="shrink-0 w-full md:w-72 lg:w-80">
+      {/* Poster + metadata */}
+      <div class="shrink-0 w-full max-w-[280px] mx-auto md:mx-0 md:w-64 lg:w-72">
         <img
-          src={film.coverImage}
+          src={film.posterImage}
           alt={`${titleEN} poster`}
-          class="w-full rounded-lg shadow-lg"
+          class="w-full"
           loading="eager"
         />
+        <div class="text-center mt-4 space-y-0.5">
+          <p class="text-sm text-[var(--color-text)]">
+            {titleEN}, Film, {film.year}
+          </p>
+          <p class="text-sm text-[var(--color-text)]">
+            {t(film.role, lang)}
+          </p>
+        </div>
       </div>
 
-      {/* Description — displayed as a prominent logline */}
-      <div class="flex-1 flex items-center">
-        <p class="text-xl md:text-2xl lg:text-[1.75rem] font-medium leading-relaxed text-[var(--color-text)]">
+      {/* Description + Synopsis */}
+      <div class="flex-1 space-y-6">
+        <p class="text-xl md:text-2xl font-semibold leading-relaxed text-[var(--color-text)]">
           {t(film.description, lang)}
         </p>
-      </div>
-    </section>
-
-    {/* ═══════ Synopsis ═══════ */}
-    {film.synopsis.length > 0 && (
-      <section class="max-w-4xl space-y-6">
         {film.synopsis.map((para) => (
           <p class="text-[var(--color-text-secondary)] text-base leading-relaxed">
             {t(para, lang)}
           </p>
         ))}
-      </section>
-    )}
+      </div>
+    </section>
 
     {/* ═══════ Video ═══════ */}
     {film.videoId && (
@@ -119,34 +106,20 @@ const titleEN = t(film.title, "en");
     {/* ═══════ Gallery ═══════ */}
     {film.gallery.length > 0 && (
       <section>
-        <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
-          {lang === "zh-cn" ? "剧照" : "Stills"}
-        </h2>
-        <div id="film-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <div id="film-gallery" class={`grid grid-cols-2 gap-1 ${film.gallery.length <= 12 ? 'md:grid-cols-3' : 'md:grid-cols-4'}`}>
           {film.gallery.map((src, i) => (
             <a
               href={src}
               data-pswp-width="2000"
               data-pswp-height="2000"
-              class="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+              class="block overflow-hidden cursor-zoom-in"
             >
               <img
                 src={src}
                 alt={`${titleEN} still ${i + 1}`}
-                class="w-full aspect-video object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+                class="w-full aspect-video object-cover"
                 loading="lazy"
               />
-              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
-                <svg
-                  class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
-                </svg>
-              </div>
             </a>
           ))}
         </div>
@@ -172,6 +145,37 @@ const titleEN = t(film.title, "en");
         </a>
       </section>
     )}
+
+    {/* ═══════ Prev / Next navigation ═══════ */}
+    <nav class="flex items-center justify-between pt-8">
+      {prevFilm ? (
+        <a
+          href={getLocalizedPath(`/films/${prevFilm.slug}/`, lang)}
+          class="group flex items-center gap-2 text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
+        >
+          <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span class="text-lg md:text-xl italic">{t(prevFilm.title, lang)}</span>
+        </a>
+      ) : (
+        <div />
+      )}
+
+      {nextFilm ? (
+        <a
+          href={getLocalizedPath(`/films/${nextFilm.slug}/`, lang)}
+          class="group flex items-center gap-2 text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
+        >
+          <span class="text-lg md:text-xl italic">{t(nextFilm.title, lang)}</span>
+          <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      ) : (
+        <div />
+      )}
+    </nav>
   </div>
 </BaseLayout>
 

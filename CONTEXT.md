@@ -107,6 +107,11 @@
 | 65 | 主页介绍文案重写 | 中英双语：身份 + 经历 → 引擎能力 + AI 工作流 → 欢迎探索；精简为 2 段 + 收尾句 |
 | 66 | 高亮词"与"不加粗 | 主页和 About Me 中所有"与"保持普通文字，不加粗/高亮 |
 | 67 | About Me 删除 AI 工作流句 | "我将 AI 工作流深度整合至开发管线"仅保留在主页，About Me 中删除 |
+| 68 | 电影详情页布局重写 | 复原原站结构：Hero（剧照背景）→ 海报+描述双栏 → 视频 → 画廊（4列/3列）→ Prev/Next 导航；新增 `posterImage` 字段区分海报与封面；补全 Fibonacci synopsis（黄金比例+向日葵段落） |
+| 69 | 电影内容填充 | 3 部电影：hero/cover/poster/gallery/videoId 全部填充；Fibonacci 20 张剧照，An Ignorant Night 24 张，Meme Contaminate 9 张（3×3 网格） |
+| 70 | 全站 Hero 高度统一 | 游戏详情页 40vh → 50vh，电影详情页 60vh → 50vh，HeroSection 组件 40vh → 50vh（fullHeight 80vh 不变） |
+| 71 | 电影 Hero 遮罩优化 | 电影详情页改用全程深色遮罩（不淡入背景色），避免 Light Mode 下白化过渡；游戏页和首页暂保持 `var(--color-hero-overlay)`，待游戏内容填充后再决定是否统一 |
+| 72 | 电影 Hero 取景偏移 | `transform: translateY(-20%)` 将画面整体上推，适配电影剧照构图 |
 
 ---
 
@@ -115,7 +120,6 @@
 | # | 问题 | 原因 | 状态 |
 | --- | --- | --- | --- |
 | — | 暂无已知 Bug | — | ✅ |
-| 1 | 电影详情页布局需大幅优化 | 当前布局问题较多，需重新调整 | 🔴 第一优先级 |
 
 ---
 
@@ -166,7 +170,7 @@
 5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
 7. **音乐页面**：coverImage 全空（videoId 已配置）
-8. **电影**：gallery 全空，无 videoId；✅ coverImage 已本地化；✅ 文案已迁移（description + synopsis 中英双语）；heroImage 待提供（`fibonacci-hero.jpg`, `an-ignorant-night-hero.jpg`, `meme-contaminate-hero.jpg`）；⚠️ 详情页布局需优化
+8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
 ### 代码质量备注
