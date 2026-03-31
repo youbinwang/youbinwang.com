@@ -116,6 +116,7 @@
 | 74 | 音乐页文案重写（中英双语） | Fall：重写为 Emo Pop-Punk 青春期感情独白（未曾开始却独自溃败）；The Camera OST：重写为场景配乐系列说明（Chiptune + 步进音序器）；Baihua Pavilion OST：重写强调现代与传统交织（古筝/琵琶/京胡/五声音阶） |
 | 75 | 音乐页分类重构 | pill 标签改为 Section Title 分组（原创歌曲/游戏原声）；去掉 section 分隔线，纯靠间距区分；标签 `text-sm tracking-widest uppercase text-secondary`；section 间距 `space-y-28` |
 | 76 | 全站 padding 统一 | Films 列表页 `px-8 sm:px-14 lg:px-20` → `px-4 sm:px-6 lg:px-8`；Footer 同步统一；与所有详情页左边缘对齐 |
+| 77 | 音乐页描述段落间距 | `space-y-5`（20px）→ `space-y-3`（12px），三段描述紧凑化 |
 
 ---
 
@@ -173,7 +174,7 @@
 4. ~~**6 章 Echo Quest Tech Docs**~~：✅ 中文内容已全部填充
 5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
-7. **音乐页面**：coverImage 全空（videoId 已配置，文案已完成中英双语重写）
+7. ~~**音乐页面**~~：✅ 已完成（videoId 已配置，文案已完成中英双语重写，无需 coverImage）
 8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
