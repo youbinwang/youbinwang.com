@@ -40,6 +40,14 @@ export function getLocalizedPath(path: string, lang: Lang): string {
 }
 
 /**
+ * Shared getStaticPaths for simple i18n pages (no per-item slugs).
+ * Returns zh-cn (default, no prefix) + English (/en/) variants.
+ */
+export function getI18nStaticPaths() {
+  return [{ params: { lang: undefined } }, { params: { lang: 'en' } }];
+}
+
+/**
  * Resolve a bilingual object to the correct language string.
  * @example t({ en: 'Games', cn: '游戏' }, 'zh-cn') → '游戏'
  */

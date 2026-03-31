@@ -380,12 +380,3 @@ export function getGamesByCategory(category: GameProject['category']): GameProje
   return games.filter((g) => g.category === category).sort((a, b) => a.order - b.order);
 }
 
-/** Get a single game by slug */
-export function getGameBySlug(slug: string): GameProject | undefined {
-  return games.find((g) => g.slug === slug);
-}
-
-/** Get featured games */
-export function getFeaturedGames(): GameProject[] {
-  return games.filter((g) => g.featured).sort((a, b) => a.order - b.order);
-}

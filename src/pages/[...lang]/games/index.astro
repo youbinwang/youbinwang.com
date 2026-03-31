@@ -7,14 +7,11 @@
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import HeroSection from "../../../components/layout/HeroSection.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
-import { getLangFromSlug, ui } from "../../../i18n";
-import { t, getLocalizedPath } from "../../../i18n/config";
+import { getLangFromSlug, getI18nStaticPaths, ui, t, getLocalizedPath } from "../../../i18n";
 import { getGamesByCategory } from "../../../data/games";
 import type { GameProject } from "../../../data/games";
 
-export function getStaticPaths() {
-  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getI18nStaticPaths;
 
 const lang = getLangFromSlug(Astro.params.lang);
 

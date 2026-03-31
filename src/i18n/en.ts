@@ -32,23 +32,18 @@ const en = {
   'game.duration': 'Duration',
   'game.viewTechDocs': '📖 View Tech Docs',
   'game.viewKeyFeatures': '🔍 View Details',
-  'game.gallery': 'Screenshots',
-  'game.video': 'Demo Video',
 
   // Films
   'films.title': 'Films',
 
   // Photography
   'photography.title': 'Photography',
-  'photography.quote': 'We had longer ways to go. But no matter, the road is life.',
 
   // Graphic Design
   'graphicDesign.title': 'Graphic Design',
 
   // Music
   'music.title': 'Music Production',
-  'music.production': 'Music Production',
-  'music.ost': 'Original Game Soundtrack',
 
   // About
   'about.title': 'About Me',

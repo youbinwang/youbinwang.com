@@ -4,12 +4,10 @@
  * Background fills the screen; hovering a title crossfades to that film's image.
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
-import { getLangFromSlug, uiEN, t, getLocalizedPath } from "../../../i18n";
+import { getLangFromSlug, getI18nStaticPaths, uiEN, t, getLocalizedPath } from "../../../i18n";
 import { getFilmsByOrder } from "../../../data/films";
 
-export function getStaticPaths() {
-  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getI18nStaticPaths;
 
 const lang = getLangFromSlug(Astro.params.lang);
 const films = getFilmsByOrder();

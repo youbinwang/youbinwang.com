@@ -32,23 +32,18 @@ const zhCN = {
   'game.duration': '开发周期',
   'game.viewTechDocs': '📖 查看技术文档',
   'game.viewKeyFeatures': '🔍 查看项目详情',
-  'game.gallery': '截图',
-  'game.video': '演示视频',
 
   // Films
   'films.title': '电影作品',
 
   // Photography
   'photography.title': '摄影',
-  'photography.quote': 'We had longer ways to go. But no matter, the road is life.',
 
   // Graphic Design
   'graphicDesign.title': '平面设计',
 
   // Music
   'music.title': '音乐制作',
-  'music.production': '音乐制作',
-  'music.ost': '原创游戏配乐',
 
   // About
   'about.title': '关于我',

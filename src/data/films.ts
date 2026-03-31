@@ -166,10 +166,6 @@ export const films: FilmProject[] = [
   },
 ];
 
-export function getFilmBySlug(slug: string): FilmProject | undefined {
-  return films.find((f) => f.slug === slug);
-}
-
 export function getFilmsByOrder(): FilmProject[] {
   return [...films].sort((a, b) => a.order - b.order);
 }

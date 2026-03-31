@@ -3,12 +3,10 @@
  * Work Experience list page.
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
-import { getLangFromSlug, ui, uiEN, t, getLocalizedPath } from "../../../i18n";
+import { getLangFromSlug, getI18nStaticPaths, ui, uiEN, t, getLocalizedPath } from "../../../i18n";
 import { getExperiencesByOrder } from "../../../data/experiences";
 
-export function getStaticPaths() {
-  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getI18nStaticPaths;
 
 const lang = getLangFromSlug(Astro.params.lang);
 const experiences = getExperiencesByOrder();

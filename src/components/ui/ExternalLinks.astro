@@ -14,28 +14,27 @@ interface Props {
 
 const { game, lang } = Astro.props;
 
-const links: { label: string; href: string; icon: string }[] = [];
+const links: { label: string; href: string }[] = [];
 
 if (game.links.itch) {
-  links.push({ label: "itch.io", href: game.links.itch, icon: "itch" });
+  links.push({ label: "itch.io", href: game.links.itch });
 }
 if (game.links.steam) {
-  links.push({ label: "Steam", href: game.links.steam, icon: "steam" });
+  links.push({ label: "Steam", href: game.links.steam });
 }
 if (game.links.youtube) {
-  links.push({ label: "YouTube", href: game.links.youtube, icon: "youtube" });
+  links.push({ label: "YouTube", href: game.links.youtube });
 }
 if (game.links.gdrive) {
   game.links.gdrive.forEach((url, i) => {
     links.push({
       label: `Google Drive${game.links.gdrive!.length > 1 ? ` ${i + 1}` : ""}`,
       href: url,
-      icon: "gdrive",
     });
   });
 }
 if (game.links.github) {
-  links.push({ label: "GitHub", href: game.links.github, icon: "github" });
+  links.push({ label: "GitHub", href: game.links.github });
 }
 
 // Docs CTA

@@ -2,7 +2,7 @@
  * i18n barrel export — re-exports everything from config + provides ui() helper.
  */
 
-export { LANGUAGES, DEFAULT_LANG, getLangFromSlug, getLocalizedPath, t } from './config';
+export { LANGUAGES, DEFAULT_LANG, getLangFromSlug, getLocalizedPath, getI18nStaticPaths, t } from './config';
 export type { Lang, Bilingual } from './config';
 
 import type { Lang } from './config';

@@ -5,12 +5,10 @@
 import BaseLayout from "../../components/layout/BaseLayout.astro";
 import HeroSection from "../../components/layout/HeroSection.astro";
 import ProjectCard from "../../components/ui/ProjectCard.astro";
-import { getLangFromSlug, ui, getLocalizedPath } from "../../i18n";
+import { getLangFromSlug, getI18nStaticPaths, ui, getLocalizedPath } from "../../i18n";
 import { games } from "../../data/games";
 
-export function getStaticPaths() {
-  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getI18nStaticPaths;
 
 const lang = getLangFromSlug(Astro.params.lang);
 

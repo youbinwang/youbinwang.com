@@ -90,10 +90,6 @@ export const experiences: Experience[] = [
   },
 ];
 
-export function getExperienceBySlug(slug: string): Experience | undefined {
-  return experiences.find((e) => e.slug === slug);
-}
-
 export function getExperiencesByOrder(): Experience[] {
   return [...experiences].sort((a, b) => a.order - b.order);
 }

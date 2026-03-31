@@ -6,13 +6,11 @@
 import BaseLayout from "../../components/layout/BaseLayout.astro";
 import PageHeader from "../../components/ui/PageHeader.astro";
 import VideoEmbed from "../../components/ui/VideoEmbed.astro";
-import { getLangFromSlug, ui, uiEN, t, getLocalizedPath } from "../../i18n";
+import { getLangFromSlug, getI18nStaticPaths, ui, uiEN, t, getLocalizedPath } from "../../i18n";
 import { getMusicByCategory } from "../../data/music";
 import type { MusicTrack } from "../../data/music";
 
-export function getStaticPaths() {
-  return [{ params: { lang: undefined } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getI18nStaticPaths;
 
 const lang = getLangFromSlug(Astro.params.lang);
 
