@@ -44,7 +44,7 @@ export const musicTracks: MusicTrack[] = [
         category: 'ost',
         description: {
             en: '<p>An original chiptune soundtrack tailored for each scene in the game, retro and soothing throughout. Powered by the GAME CHIP plugin and YMCK\'s 8-bit synthesizer; every bar hand-crafted note by note through a step sequencer, reviving the pure nostalgia of classic game audio.</p>',
-            cn: '<p>一组为游戏各场景量身定制的 Chiptune 原创配乐，整体基调复古且舒缓。以 GAME CHIP 插件配合 YMCK 的 8-bit 合成器为音色基底；编曲上，每一小节均通过步进音序器逐格手工打磨而成，还原纯粹的复古游戏记忆。</p>',
+            cn: '<p>一组为游戏各场景定制的 Chiptune 原创配乐，整体基调复古且舒缓。以 GAME CHIP 插件配合 YMCK 的 8-bit 合成器为音色基底；编曲上，每一小节均通过步进音序器逐格手工打磨而成，还原纯粹的复古游戏记忆。</p>',
         },
         coverImage: '',
         videoId: 'upFNk_RLnhk',

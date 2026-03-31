@@ -114,6 +114,8 @@
 | 72 | 电影 Hero 取景偏移 | `transform: translateY(-20%)` 将画面整体上推，适配电影剧照构图 |
 | 73 | 音乐页中文本地化 | `music.ts` 三首曲目 `cn` 字段全部填充中文；`music.astro` 分类 pill 语言感知（原创歌曲/游戏原声）；中文版移除 `italic`（中文无真正斜体字形） |
 | 74 | 音乐页文案重写（中英双语） | Fall：重写为 Emo Pop-Punk 青春期感情独白（未曾开始却独自溃败）；The Camera OST：重写为场景配乐系列说明（Chiptune + 步进音序器）；Baihua Pavilion OST：重写强调现代与传统交织（古筝/琵琶/京胡/五声音阶） |
+| 75 | 音乐页分类重构 | pill 标签改为 Section Title 分组（原创歌曲/游戏原声）；去掉 section 分隔线，纯靠间距区分；标签 `text-sm tracking-widest uppercase text-secondary`；section 间距 `space-y-28` |
+| 76 | 全站 padding 统一 | Films 列表页 `px-8 sm:px-14 lg:px-20` → `px-4 sm:px-6 lg:px-8`；Footer 同步统一；与所有详情页左边缘对齐 |
 
 ---
 
