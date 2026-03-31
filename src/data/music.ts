@@ -43,8 +43,8 @@ export const musicTracks: MusicTrack[] = [
         title: { en: 'The Camera (Original Soundtrack)', cn: 'The Camera (Original Soundtrack)' },
         category: 'ost',
         description: {
-            en: '<p>I craft an engaging melody using the GAME CHIP plugin along with YMCK\'s magical 8-bit plug to create distinctive 8-bit timbres. This melody is meticulously recorded into the sequencer. Following this, I employ a step sequencer to meticulously arrange and combine the notes within each bar in a specific sequence. This process involves fine-tuning the arrangement of different notes in each bar, enhancing the melody\'s variation.</p>',
-            cn: '<p>我使用 GAME CHIP 插件配合 YMCK 的 8-bit 音色插件，打造出富有特色的 8-bit 音色，并将旋律录入音序器。随后通过步进音序器，对每小节内的音符顺序进行精心排列与组合，不断微调各小节的音符搭配，丰富旋律的层次变化。</p>',
+            en: '<p>An original chiptune soundtrack tailored for each scene in the game, retro and soothing throughout. Powered by the GAME CHIP plugin and YMCK\'s 8-bit synthesizer; every bar hand-crafted note by note through a step sequencer, reviving the pure nostalgia of classic game audio.</p>',
+            cn: '<p>一组为游戏各场景量身定制的 Chiptune 原创配乐，整体基调复古且舒缓。以 GAME CHIP 插件配合 YMCK 的 8-bit 合成器为音色基底；编曲上，每一小节均通过步进音序器逐格手工打磨而成，还原纯粹的复古游戏记忆。</p>',
         },
         coverImage: '',
         videoId: 'upFNk_RLnhk',
@@ -56,8 +56,8 @@ export const musicTracks: MusicTrack[] = [
         title: { en: 'Baihua Pavilion (Original Soundtrack)', cn: 'Baihua Pavilion (Original Soundtrack)' },
         category: 'ost',
         description: {
-            en: '<p>The soundtrack artfully blends traditional elements with modernity, featuring delicate hammering sounds and the distinct tones of the Guzheng. In the melodic section, the Pipa and Jinghu, two instruments quintessential to Beijing opera, are skillfully used to play traditional Chinese pentatonic scales. This fusion endows the entire composition with a distinctive Chinese character.</p>',
-            cn: '<p>配乐将传统元素与现代风格巧妙融合，以细腻的敲击音效与古筝的独特音色为底色。旋律部分以琵琶和京胡——两种京剧的代表性乐器——演奏传统中国五声调式，为整首曲子注入鲜明的中国韵味。</p>',
+            en: '<p>The soundtrack opens with crisp percussion and the distinct voice of the Guzheng, blending modern production with traditional Chinese elements. Against a contemporary rhythmic backdrop, the Pipa and the Jinghu — the soul instrument of Beijing opera — come together to perform traditional pentatonic scales. The interweaving of old and new gives the entire piece a distinctly Chinese character.</p>',
+            cn: '<p>配乐巧妙融合了现代风格与传统元素，由清脆的敲击声与独特的古筝音色破题。随后，在现代编曲的律动中，琵琶与京剧灵魂乐器京胡相互配合，演绎中国传统五声音阶。现代与传统的交织，赋予了整首作品鲜明的国风韵味。</p>',
         },
         coverImage: '',
         videoId: 'aPBEo_9QOAE',
