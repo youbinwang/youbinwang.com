@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-03-31 08:30 (UTC+8)
+> **更新时间**：2026-04-01 10:15 (UTC+8)
 
 ---
 
@@ -126,6 +126,9 @@
 | 84 | 横版海报加宽 | 横版海报（无知的夜晚、模因污染）`md:w-80 lg:w-96`，竖版（斐波那契）保持 `md:w-64 lg:w-72` |
 | 85 | 电影描述间距优化 | 粗体描述与正文间 `mb-8`（32px），正文段落间 `space-y-5`（20px），层级更清晰 |
 | 86 | VideoEmbed 封面图 | 自定义 poster 覆盖图 + 播放按钮，点击后替换为 YouTube iframe 自动播放；三部电影封面图 `*-video-cover.png` |
+| 87 | 电影详情页间距优化 | `space-y-12` → `space-y-16`（64px），`py-12` → `pt-16 pb-12`；画廊区上方加 `<hr>` 分隔线（视频与画廊之间垂直居中） |
+| 88 | 全站返回顶部按钮 | `BaseLayout` 新增固定右下角圆形按钮，滚动 >500px 淡入，点击 smooth 滚回顶部；支持 View Transitions |
+| 89 | 三部电影文案全面重写 | 斐波那契：description + 3 段 synopsis（剧情→隐喻→制片职责），新增科研工作者身份细节；无知的夜晚：description + 2 段 synopsis（叙事→象征解读）；模因污染：description + 1 段 synopsis（心理惊悚 + 认知污染主题） |
 
 ---
 
@@ -184,7 +187,7 @@
 5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
 7. ~~**音乐页面**~~：✅ 已完成（videoId 已配置，文案已完成中英双语重写，无需 coverImage）
-8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段）
+8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段；三部电影 description + synopsis 中英双语文案全面重写）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
 ### 代码质量备注

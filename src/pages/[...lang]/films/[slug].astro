@@ -75,7 +75,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
     </div>
   </section>
 
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 space-y-16">
     {/* ═══════ Poster + Description two-column ═══════ */}
     <section class="flex flex-col md:flex-row gap-8 md:gap-12 items-start">
       {/* Poster + metadata */}
@@ -133,6 +133,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
 
     {/* ═══════ Gallery ═══════ */}
     {film.gallery.length > 0 && (
+      <hr class="border-t border-[var(--color-border)]" />
       <section>
         <div id="film-gallery" class={`grid grid-cols-2 gap-1 ${film.gallery.length <= 12 ? 'md:grid-cols-3' : 'md:grid-cols-4'}`}>
           {film.gallery.map((src, i) => (

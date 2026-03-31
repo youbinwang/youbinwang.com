@@ -76,6 +76,17 @@ const canonicalUrl = new URL(
     </main>
     <Footer lang={lang} />
 
+    <!-- Scroll-to-top button -->
+    <button
+      id="scroll-top-btn"
+      aria-label="Scroll to top"
+      class="fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] shadow-md flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--color-text)] opacity-0 pointer-events-none transition-all duration-300 cursor-pointer"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
+
     <!-- Fix Starlight theme during View Transitions.
          Starlight server-renders data-theme="dark"; this ensures the correct
          theme is applied to the incoming document before the swap. -->
@@ -120,6 +131,38 @@ const canonicalUrl = new URL(
 
       // Re-run after View Transition navigations
       document.addEventListener("astro:after-swap", initScrollAnimations);
+    </script>
+
+    <!-- Scroll-to-top button logic -->
+    <script>
+      function initScrollTopBtn() {
+        const btn = document.getElementById("scroll-top-btn");
+        if (!btn) return;
+
+        const onScroll = () => {
+          if (window.scrollY > 500) {
+            btn.classList.remove("opacity-0", "pointer-events-none");
+            btn.classList.add("opacity-100", "pointer-events-auto");
+          } else {
+            btn.classList.remove("opacity-100", "pointer-events-auto");
+            btn.classList.add("opacity-0", "pointer-events-none");
+          }
+        };
+
+        btn.addEventListener("click", () => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+
+        document.addEventListener("astro:before-swap", () => {
+          window.removeEventListener("scroll", onScroll);
+        }, { once: true });
+      }
+
+      initScrollTopBtn();
+      document.addEventListener("astro:after-swap", initScrollTopBtn);
     </script>
   </body>
 </html>
