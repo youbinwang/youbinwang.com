@@ -1,8 +1,8 @@
 ---
 /**
- * VideoEmbed — YouTube embed with custom poster overlay.
- * Shows a cover image with play button; clicking loads the iframe.
- * Pass `poster` for a custom thumbnail, otherwise falls back to YouTube's default.
+ * VideoEmbed — YouTube embed with optional custom poster overlay.
+ * When `poster` is provided: shows cover image with play button, click loads iframe.
+ * When no `poster`: renders standard YouTube iframe directly.
  */
 interface Props {
   videoId: string;
@@ -11,23 +11,34 @@ interface Props {
 }
 
 const { videoId, title = "Video", poster } = Astro.props;
-const fallbackPoster = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-const posterSrc = poster || fallbackPoster;
 ---
 
-<div class="video-embed aspect-video rounded-lg overflow-hidden bg-[var(--color-bg-secondary)] relative cursor-pointer" data-video-id={videoId} data-title={title}>
-  <img
-    src={posterSrc}
-    alt={title}
-    class="w-full h-full object-cover"
-    loading="lazy"
-  />
-  <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
-    <svg class="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 5v14l11-7z" />
-    </svg>
+{poster ? (
+  <div class="video-embed aspect-video rounded-lg overflow-hidden bg-[var(--color-bg-secondary)] relative cursor-pointer" data-video-id={videoId} data-title={title}>
+    <img
+      src={poster}
+      alt={title}
+      class="w-full h-full object-cover"
+      loading="lazy"
+    />
+    <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
+      <svg class="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    </div>
   </div>
-</div>
+) : (
+  <div class="aspect-video rounded-lg overflow-hidden bg-[var(--color-bg-secondary)]">
+    <iframe
+      src={`https://www.youtube.com/embed/${videoId}`}
+      title={title}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      loading="lazy"
+      class="w-full h-full"
+    ></iframe>
+  </div>
+)}
 
 <script>
   function initVideoEmbeds() {
