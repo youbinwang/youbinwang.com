@@ -39,12 +39,12 @@ export const films: FilmProject[] = [
     },
     synopsis: [
       {
-        en: 'After his wife\'s passing, the elderly man decided to fulfill her last wish. Along the way, he reminisced about their shared memories and felt an inexplicable calling from his wife and family. Deep within, he sensed their presence guiding him. With determination, he chose to let go of his attachments and return to his family.',
-        cn: '妻子离世后，老人决定完成她的遗愿。一路上，他追忆着两人的共同记忆，感受到来自妻子和家人的莫名召唤。在内心深处，他感到他们的存在正引领着自己。最终，他选择放下执念，回归家人身边。',
+        en: 'A stubborn old man has long been unable to reconcile with his son. After his wife\'s passing, he decides to fulfill her last wish. Along the way, he reminisces about his memories with her — the warmth he once overlooked. Through reflection and introspection, he finally lets go of years of obstinacy and chooses to return to his family.',
+        cn: '执拗的老人始终无法与儿子达成和解。在妻子离世后，他决定完成她的遗愿，一路上，他追忆着与妻子的种种回忆——那些他曾忽视的温情。在追忆与自省中，他终于放下了多年的执念，选择回归家人身边。',
       },
       {
-        en: 'The "Fibonacci sequence" is a mathematical sequence notable for its distinct characteristics, where each term in the sequence is the sum of the two preceding terms, creating a sense of accumulation and recurrence. The value of each term in the sequence approaches the golden ratio of 1.618 as it progresses. Additionally, the Fibonacci sequence has been observed in the arrangement of sunflower seeds. In this film, sunflowers serve as a significant symbol, connecting the emotions of the parents and subtly expressing the cycle of life, thereby enhancing the clarity of the theme.',
-        cn: '"斐波那契数列"是一个以独特性质著称的数学序列，其中每一项都是前两项之和，蕴含着积累与循环的意味。随着数列推进，每一项的比值趋近于黄金比例 1.618。此外，斐波那契数列也体现在向日葵种子的排列中。在本片中，向日葵作为重要的象征符号，串联起父母的情感，含蓄地表达生命循环的主题，使影片的表意更加清晰。',
+        en: 'Each term in the "Fibonacci sequence" is the sum of the two preceding terms, creating a sense of accumulation and recurrence. As the sequence progresses, the ratio of adjacent terms approaches the golden ratio of 1.618. Additionally, the Fibonacci sequence has been observed in the arrangement of sunflower seeds. In the film, sunflowers serve as a significant symbol, connecting the emotions of the parents and subtly expressing the cycle of life.',
+        cn: '"斐波那契数列"中的每一项都是前两项之和，蕴含着积累与循环的意味。随着数列推进，相邻两项的比值趋近于黄金比例 1.618。此外，斐波那契数列也体现在向日葵种子的排列中。在片中，向日葵作为重要的象征符号，串联起父母之间的情感，含蓄地表达了生命循环往复的主题。',
       },
     ],
     gallery: [
@@ -87,8 +87,8 @@ export const films: FilmProject[] = [
     },
     synopsis: [
       {
-        en: 'The rock band drummer developed a fondness for a girl at a live concert. A few days later, during a chance encounter, they shared their personal stories. Their similar experiences resonated with one another, and that night, the drummer had his first sexual experience. They agreed to meet again once the hickeys had faded. However, fate often has other plans, and the night marked with love\'s traces turned out to be their last meeting.',
-        cn: '摇滚乐队的鼓手在一场现场演出中对一个女孩心生好感。几天后的一次偶遇，两人分享了各自的故事。相似的经历让彼此产生了共鸣，那一夜，鼓手经历了他的第一次。他们约定等吻痕消退后再次相见。然而命运常有其他安排，那个留有爱痕的夜晚，竟成了他们的最后一面。',
+        en: 'The rock band drummer developed a fondness for a girl in the audience at a live concert. A few days later, an unexpected encounter gave them the chance to talk, and they shared their personal stories. Their similar experiences resonated deeply, and feelings quickly grew between them. That night, the drummer had his first sexual experience. They agreed to meet again once the hickeys had faded — but fate often has other plans, and the night marked with love\'s traces turned out to be their last meeting...',
+        cn: '摇滚乐队的鼓手在一场现场演出中对一个观众女孩心生好感。几天后的一次突然的偶遇带给了两人交流的机会，两人分享了各自的故事。相似的经历让彼此产生了共鸣，感情迅速升温。那一夜，鼓手经历了他的第一次。他们约定等吻痕消退后再次相见，然而命运常有其他安排，那个留有爱痕的夜晚，竟成了他们的最后一面...',
       },
     ],
     gallery: [
@@ -130,13 +130,17 @@ export const films: FilmProject[] = [
     heroImage: '/images/films/meme-contaminate-hero.png',
     posterImage: '/images/films/meme-contaminate-poster.png',
     description: {
-      en: 'Meme Contaminate is a short film that delves into pioneering narrative techniques. It tells the tale of a real-life lonely and empty girl who, upon a friend\'s suggestion, decides to immerse herself in a horror video game.',
-      cn: '《模因污染》是一部探索先锋叙事技巧的短片，讲述了一个现实中孤独空虚的女孩在朋友建议下沉浸于一款恐怖游戏的故事。',
+      en: 'Meme Contaminate is a short film that delves into pioneering narrative techniques.',
+      cn: '《模因污染》是一部探索先锋叙事技巧的短片。',
     },
     synopsis: [
       {
-        en: 'The game\'s pivotal rule is that players must avoid gazing at the demoness\'s face, as doing so invites misfortune. Despite her efforts, the girl inadvertently looks at the demoness\'s face, and they become "friends" in a wonderful dream world, feeling more comfortable than ever. However, are things really going to be so rosy?',
-        cn: '游戏的核心规则是玩家必须避免注视女妖的面容，否则将招致不幸。尽管女孩努力遵守，却还是不经意间看到了女妖的脸，两人在一个美妙的梦境世界中成为了"朋友"，感到前所未有的舒适。然而，事情真的会如此美好吗？',
+        en: 'The film tells the story of a lonely and empty girl who, upon a friend\'s suggestion, immerses herself in a horror video game. The game\'s pivotal rule is that players must avoid gazing at the demoness\'s face, as doing so invites misfortune. Despite her efforts, the girl inadvertently looks at the demoness\'s face, and they become "friends" in a wonderful dream world, feeling more comfortable than ever.',
+        cn: '影片讲述了一个现实中孤独空虚的女孩在朋友建议下沉浸于一款恐怖游戏，游戏的核心规则是玩家必须避免注视女妖的面容，否则将招致不幸。尽管女孩努力遵守，却还是不经意间看到了女妖的脸，两人在一个美妙的梦境世界中成为了"朋友"，感到前所未有的舒适。',
+      },
+      {
+        en: 'However, are things really going to be so rosy?',
+        cn: '然而，事情真的会如此美好吗？',
       },
     ],
     gallery: [

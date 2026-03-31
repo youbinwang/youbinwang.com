@@ -117,6 +117,15 @@
 | 75 | 音乐页分类重构 | pill 标签改为 Section Title 分组（原创歌曲/游戏原声）；去掉 section 分隔线，纯靠间距区分；标签 `text-sm tracking-widest uppercase text-secondary`；section 间距 `space-y-28` |
 | 76 | 全站 padding 统一 | Films 列表页 `px-8 sm:px-14 lg:px-20` → `px-4 sm:px-6 lg:px-8`；Footer 同步统一；与所有详情页左边缘对齐 |
 | 77 | 音乐页描述段落间距 | `space-y-5`（20px）→ `space-y-3`（12px），三段描述紧凑化 |
+| 78 | 电影详情页 Hero 标题留白 | `pb-10` → `pb-16 md:pb-20`，标题不贴底，留呼吸空间；游戏详情页同步统一 |
+| 79 | 电影详情页返回链接 | Hero 内标题上方加 `← Films` 半透明链接，`mb-4` 间距 |
+| 80 | 模因污染 Hero 居中 | `translateY(-20%)` 仅对非模因污染生效，模因污染保持 `object-cover` 双向居中 |
+| 81 | 电影文案核对与重写 | 斐波那契：重写简介（执拗→和解→追忆→放下执念），精简数列段落；无知的夜晚：断句优化，加"观众女孩""感情迅速升温"；模因污染：description/synopsis 分段修正，"然而"独立成段 |
+| 82 | View PDF 链接优化 | 从独立 section 移入描述区右下角；图标改为 Google Drive 品牌 SVG（`public/icons/google-drive.svg`）；文案改为「查看 PDF」/「View PDF」；`mt-8` 间距 |
+| 83 | 全站图标目录 | 新建 `src/icons/` + `public/icons/`，存放通用 SVG 图标 |
+| 84 | 横版海报加宽 | 横版海报（无知的夜晚、模因污染）`md:w-80 lg:w-96`，竖版（斐波那契）保持 `md:w-64 lg:w-72` |
+| 85 | 电影描述间距优化 | 粗体描述与正文间 `mb-8`（32px），正文段落间 `space-y-5`（20px），层级更清晰 |
+| 86 | VideoEmbed 封面图 | 自定义 poster 覆盖图 + 播放按钮，点击后替换为 YouTube iframe 自动播放；三部电影封面图 `*-video-cover.png` |
 
 ---
 
