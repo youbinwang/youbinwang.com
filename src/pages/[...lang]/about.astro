@@ -30,8 +30,8 @@ const lang = getLangFromSlug(Astro.params.lang);
     <!-- Dark overlay covering entire background -->
     <div class="absolute inset-0 bg-black/50" />
 
-    <!-- Content -->
-    <div class="relative z-10 min-h-screen flex items-center justify-center">
+    <!-- Content — pt-20 clears the transparent Navbar on mobile; md:items-center vertically centers on desktop -->
+    <div class="relative z-10 min-h-screen flex items-start md:items-center justify-center pt-20 md:pt-0">
       <div class="px-6 sm:px-10 lg:px-16">
         <div class="flex flex-col md:flex-row items-center md:items-start gap-10 lg:gap-16">
 
