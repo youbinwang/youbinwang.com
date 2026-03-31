@@ -78,22 +78,17 @@ const isPortraitPoster = film.slug === 'fibonacci';
   <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 space-y-16">
     {/* ═══════ Poster + Description two-column ═══════ */}
     <section class="flex flex-col md:flex-row gap-8 md:gap-12 items-start">
-      {/* Poster + metadata */}
-      <div class={`shrink-0 w-full mx-auto md:mx-0 ${isPortraitPoster ? 'max-w-[280px] md:w-64 lg:w-72' : 'max-w-[400px] md:w-80 lg:w-96'}`}>
+      {/* Poster + metadata — sticky so it stays visible while scrolling long descriptions */}
+      <div class={`shrink-0 w-full mx-auto md:mx-0 md:sticky md:top-24 ${isPortraitPoster ? 'max-w-[280px] md:w-64 lg:w-72' : 'max-w-[400px] md:w-80 lg:w-96'}`}>
         <img
           src={film.posterImage}
           alt={`${titleEN} poster`}
           class="w-full"
           loading="eager"
         />
-        <div class="text-center mt-4 space-y-0.5">
-          <p class="text-sm text-[var(--color-text)]">
-            {titleEN}, Film, {film.year}
-          </p>
-          <p class="text-sm text-[var(--color-text)]">
-            {t(film.role, lang)}
-          </p>
-        </div>
+        <p class="text-center mt-4 text-sm text-[var(--color-text-secondary)]">
+          {titleEN}, Film, {film.year}<br />{t(film.role, lang)}
+        </p>
       </div>
 
       {/* Description + Synopsis + Links */}

@@ -17,6 +17,9 @@ dist/
 Thumbs.db
 Desktop.ini
 
+# Claude Code
+.claude/
+
 # CodeMaker
 .codemaker/
 

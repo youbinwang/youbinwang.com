@@ -129,6 +129,11 @@
 | 87 | 电影详情页间距优化 | `space-y-12` → `space-y-16`（64px），`py-12` → `pt-16 pb-12`；画廊区上方加 `<hr>` 分隔线（视频与画廊之间垂直居中） |
 | 88 | 全站返回顶部按钮 | `BaseLayout` 新增固定右下角圆形按钮，滚动 >500px 淡入，点击 smooth 滚回顶部；支持 View Transitions |
 | 89 | 三部电影文案全面重写 | 斐波那契：description + 3 段 synopsis（剧情→隐喻→制片职责），新增科研工作者身份细节；无知的夜晚：description + 2 段 synopsis（叙事→象征解读）；模因污染：description + 1 段 synopsis（心理惊悚 + 认知污染主题） |
+| 90 | 全站代码审查 & Housekeeping | 删除 5 个未使用导出函数（getGameBySlug, getFeaturedGames, getFilmBySlug, getExperienceBySlug, getMusicByOrder）；移除 MusicTrack 的 coverImage/embedUrl 字段；移除 MobileMenu 多余 lang prop；移除 ExternalLinks 未使用 icon 字段；删除 5 个未使用翻译 key；删除 starlight-overrides.css 46 行重复主题变量；提取 `getI18nStaticPaths()` 工具函数（7 页统一使用）；卸载未使用的 lite-youtube-embed 依赖 |
+| 91 | 电影详情页海报 sticky | 海报加 `md:sticky md:top-24`，滚动长描述时海报保持可见；meta 信息合并为单行 `text-secondary` |
+| 92 | 音乐页 section label 加大 | `text-sm`（14px）→ `text-base`（16px），在 1440px 宽容器中更有存在感 |
+| 93 | About Me 移动端头像缩小 | `w-60 h-[310px]` → `w-48 h-[240px]`，首屏可见标题和第一段正文 |
+| 94 | 摄影页引言间距加大 | `mb-12`（48px）→ `mb-16`（64px），与 PageHeader 分隔线间距对称 |
 
 ---
 
