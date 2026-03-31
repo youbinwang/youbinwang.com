@@ -16,10 +16,9 @@ export function getStaticPaths() {
 const lang = getLangFromSlug(Astro.params.lang);
 const tracks = getMusicByOrder();
 
-const categoryLabel: Record<string, string> = {
-  production: "Original Song",
-  ost: "Game OST",
-};
+const categoryLabel: Record<string, string> = lang === "zh-cn"
+  ? { production: "原创歌曲", ost: "游戏原声" }
+  : { production: "Original Song", ost: "Game OST" };
 ---
 
 <BaseLayout title={uiEN("music.title")} lang={lang} forceDark>
@@ -35,14 +34,14 @@ const categoryLabel: Record<string, string> = {
           <div class="flex flex-col md:flex-row gap-8 md:gap-12 items-center">
             {/* Text */}
             <div class="flex-1 min-w-0">
-              <h3 class="text-lg md:text-xl font-bold italic text-[var(--color-text)] mb-3">
+              <h3 class={`text-lg md:text-xl font-bold text-[var(--color-text)] mb-3 ${lang === "en" ? "italic" : ""}`}>
                 {t(track.title, lang)}
               </h3>
               <span class="inline-block text-xs font-medium tracking-widest uppercase px-2.5 py-1 rounded-full border border-[var(--color-border)] text-[var(--color-text-muted)] mb-5">
                 {categoryLabel[track.category]}
               </span>
               <div
-                class="music-desc text-base italic text-[var(--color-text-secondary)] space-y-5 leading-relaxed"
+                class={`music-desc text-base text-[var(--color-text-secondary)] space-y-5 leading-relaxed ${lang === "en" ? "italic" : ""}`}
                 set:html={t(track.description, lang)}
               />
               {track.relatedGameSlug && (
