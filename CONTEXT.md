@@ -112,6 +112,8 @@
 | 70 | 全站 Hero 高度统一 | 游戏详情页 40vh → 50vh，电影详情页 60vh → 50vh，HeroSection 组件 40vh → 50vh（fullHeight 80vh 不变） |
 | 71 | 电影 Hero 遮罩优化 | 电影详情页改用全程深色遮罩（不淡入背景色），避免 Light Mode 下白化过渡；游戏页和首页暂保持 `var(--color-hero-overlay)`，待游戏内容填充后再决定是否统一 |
 | 72 | 电影 Hero 取景偏移 | `transform: translateY(-20%)` 将画面整体上推，适配电影剧照构图 |
+| 73 | 音乐页中文本地化 | `music.ts` 三首曲目 `cn` 字段全部填充中文；`music.astro` 分类 pill 语言感知（原创歌曲/游戏原声）；中文版移除 `italic`（中文无真正斜体字形） |
+| 74 | 音乐页文案重写（中英双语） | Fall：重写为 Emo Pop-Punk 青春期感情独白（未曾开始却独自溃败）；The Camera OST：重写为场景配乐系列说明（Chiptune + 步进音序器）；Baihua Pavilion OST：重写强调现代与传统交织（古筝/琵琶/京胡/五声音阶） |
 
 ---
 
@@ -169,7 +171,7 @@
 4. ~~**6 章 Echo Quest Tech Docs**~~：✅ 中文内容已全部填充
 5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
 6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
-7. **音乐页面**：coverImage 全空（videoId 已配置）
+7. **音乐页面**：coverImage 全空（videoId 已配置，文案已完成中英双语重写）
 8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 
