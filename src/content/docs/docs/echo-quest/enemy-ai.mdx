@@ -3,7 +3,7 @@ title: 敌人 AI 与 EQS
 description: 基于行为树的模块化 AI 架构、感知系统、黑板驱动决策与 EQS 环境查询
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 > 本章介绍敌人 AI 的三层解耦架构（感知/逻辑/表现），并以近战敌人为完整案例，演示从感知触发到行为树决策再到攻击执行的全流程。
 
@@ -180,11 +180,9 @@ Root (Selector)
   <TabItem label="🔍 [3] Investigating（调查）">
     敌人通过 AI Hearing 感知到声音但未看到玩家时进入。
 
-    <Steps>
     1. **Move to PointOfInterest** — 移动至声源世界坐标
     2. **Wait** — 到达后原地等待，模拟搜索环视
     3. **BTT_SetStateAsPassive** — 若无新感知事件，State 设回 `Passive`，恢复巡逻
-    </Steps>
 
     <Aside type="note">
     这种设计使敌人具备 **"警觉 → 搜索 → 放弃"** 的拟人化行为链，而非简单的"看到就打，看不到就站"。

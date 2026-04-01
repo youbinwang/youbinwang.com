@@ -3,7 +3,7 @@ title: 战斗系统（ComboGraph）
 description: Echo Quest 战斗系统实现 — ComboGraph 技术选型、轻攻击 Combo、碰撞检测与 ANS 射线检测
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 > 本章介绍 ComboGraph 的技术选型理由、连招系统实现，以及基于动画通知的碰撞检测方案。
 
@@ -80,8 +80,6 @@ ComboGraphCollision 是挂载在发起攻击 Actor 上的组件，充当**碰撞
 
 ## 2.5 基于动画通知状态的射线检测（ANS-based Trace）
 
-<Steps>
-
 1. **静态网格体设置**
 
    在武器模型 (StaticMesh) 上添加数个 Socket（插槽），定义每个检测点的位置。
@@ -93,8 +91,6 @@ ComboGraphCollision 是挂载在发起攻击 Actor 上的组件，充当**碰撞
 3. **运行时逻辑**
 
    动画播到 Collision Window ANS 起始点时，组件开始工作：基于上一帧与当前帧的 Socket 位置差进行**形状扫掠**（支持 Line、Sphere、Box 或 Capsule），填补帧间空隙，形成连续、严密的扇面判定轨迹，完美解决低帧率下的穿模问题。
-
-</Steps>
 
 {/* ![碰撞检测可视化 - 攻击判定扇面](/images/echo-quest/collision-trace-visualization.png) */}
 

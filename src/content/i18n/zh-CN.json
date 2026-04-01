@@ -1,0 +1,4 @@
+{
+  "$schema": "https://starlight.astro.build/schemas/i18n",
+  "tableOfContents.onThisPage": "本页导航"
+}

@@ -28,7 +28,7 @@ export default defineConfig({
 					label: 'Echo Quest',
 					collapsed: true,
 					items: [
-						{ slug: 'docs/echo-quest', label: '〇、概览' },
+						{ slug: 'docs/echo-quest', label: '概览' },
 						{ slug: 'docs/echo-quest/gas-system', label: '一、GAS 技能框架' },
 						{ slug: 'docs/echo-quest/combat-system', label: '二、战斗系统' },
 						{ slug: 'docs/echo-quest/hit-feedback', label: '三、打击感' },

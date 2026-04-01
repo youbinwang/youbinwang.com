@@ -3,7 +3,7 @@ title: 打击感的构成与实现
 description: 动作游戏打击感的感官维度分类、近战攻击索敌与受击判定、玩家与敌人侧表现实现
 ---
 
-import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 > 本章从设计理论出发，梳理动作游戏打击感的感官维度分类，并以近战攻击为完整案例，演示索敌、受击判定与双侧表现的实现流程。
 
@@ -46,8 +46,6 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 
 ### 3.2.1 攻击启动与目标捕获
 
-<Steps>
-
 1. **触发阶段**
 
    玩家输入鼠标左键 (IA_LightAttack) 激活轻攻击 Ability，系统启动 LightAttack ComboGraph，并立即执行 `GetLightAttackTarget` 函数进行目标检索。
@@ -64,8 +62,6 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
    | 距离校验 | 剔除距离大于 `AttackAttachMinDist`（大吸附距离）的目标 |
    | 最优择取 | 选择距离玩家最近的 Actor 作为最终 Target Actor |
 
-</Steps>
-
 {/* ![索敌逻辑蓝图](/images/echo-quest/target-acquisition.png) */}
 
 <Aside type="note" title="后续优化方向 — 索敌加权评分系统">
@@ -77,8 +73,6 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 ### 3.2.2 处理 OnHit 事件
 
 当 ComboGraphCollision 检测到武器判定框与物体重叠时，广播 `On Hit Registered` 事件，随即执行以下逻辑：
-
-<Steps>
 
 1. **目标筛选**
 
@@ -103,8 +97,6 @@ import { Aside, Steps, Tabs, TabItem } from '@astrojs/starlight/components';
 6. **UI 更新**
 
    调用 `Show Mana UI`，通知 UI 读取最新 Attribute 属性值，刷新 HUD 法力条。
-
-</Steps>
 
 {/* ![OnHit 事件处理蓝图](/images/echo-quest/on-hit-event.png) */}
 
