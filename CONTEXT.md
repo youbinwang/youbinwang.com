@@ -140,6 +140,11 @@
 | 98 | 游戏详情页返回链接 | Hero 内 Tags 上方加 `← Games` 半透明链接，样式与电影详情页 `← Films` 一致 |
 | 99 | Echo Quest keywords 更新 | cn: "战斗、关卡策划" → "战斗与关卡设计 Demo"；元素秘境 cn: Demo 前加空格 |
 | 100 | 中英文 Featured 顺序统一 | cnFeaturedSlugs 调整为与 enFeaturedSlugs 一致：echo-quest → elemental-realm → on-the-road → the-scholars-side-quest → shepherds |
+| 101 | Docs TOC 标签重命名 | "本页内容" → "本页导航"：新建 `src/content/i18n/zh-CN.json` Starlight i18n 覆盖；`content.config.ts` 补全 `i18n` 集合定义（之前缺失导致翻译不加载） |
+| 102 | Docs 正文加宽 | `--sl-content-width: 48rem` → `56rem`，与 Portfolio 正文宽度统一 |
+| 103 | Docs TOC 贴右边缘 | `.right-sidebar` 改为 `position: fixed; right: 0`，正文 `margin-inline: auto` 居中；首页 `tableOfContents: false` 移除 TOC |
+| 104 | Echo Quest Steps 修复 | 4 个章节（GAS/战斗/打击感/敌人AI）`<Steps>` 在 dev 模式崩溃——嵌套 JSX 导致 MDX 无法解析 `<ol>`；全部改为普通有序列表 |
+| 105 | 侧边栏概览标签 | "〇、概览" → "概览" |
 
 ---
 
