@@ -44,6 +44,8 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 ## 3.2 近战攻击：索敌、受击判定与双侧表现
 
+![近战攻击命中效果：命中点特效（紫色/蓝色 VFX）+ 法力值回复提示（+MANA!）](/images/docs/echo-quest/ch3-hit-feedback/hit-feedback-ingame.png)
+
 ### 3.2.1 攻击启动与目标捕获
 
 1. **触发阶段**
@@ -62,7 +64,7 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
    | 距离校验 | 剔除距离大于 `AttackAttachMinDist`（大吸附距离）的目标 |
    | 最优择取 | 选择距离玩家最近的 Actor 作为最终 Target Actor |
 
-{/* ![索敌逻辑蓝图](/images/echo-quest/target-acquisition.png) */}
+![索敌逻辑蓝图（Sphere Overlap 广域筛选 + 标签/距离三步过滤）](/images/docs/echo-quest/ch3-hit-feedback/target-acquisition.png)
 
 <Aside type="note" title="后续优化方向 — 索敌加权评分系统">
 `Score = (距离 × W₁) + (与相机画面中心的角度偏差 × W₂) + (推杆方向 × W₃) + (敌人特殊状态 × W₄)`
@@ -98,7 +100,7 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
    调用 `Show Mana UI`，通知 UI 读取最新 Attribute 属性值，刷新 HUD 法力条。
 
-{/* ![OnHit 事件处理蓝图](/images/echo-quest/on-hit-event.png) */}
+![OnHit 事件处理蓝图（Tag Check 标签筛选 + 伤害分发 + GAS 事件负载构建）](/images/docs/echo-quest/ch3-hit-feedback/on-hit-event.png)
 
 ### 3.2.3 OnHit 后的数值与标签传递
 
@@ -108,6 +110,12 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 2. 激活 `GE_Cost_LightAttack`，处理该段攻击的耐力值消耗
 
 **GE_HitReaction_Melee** 通过给目标 Actor（受击者）增加 `Event.Character.BeingHit.Melee` Tag，激活对方的受击 GameplayAbility。
+
+![ComboGraph 节点的 Gameplay Effects 配置（GE_Damage_Melee + Set by Caller 动态伤害值）](/images/docs/echo-quest/ch3-hit-feedback/combograph-ge-config.png)
+
+![GE_Damage_Melee Additional Effects 配置 — 内嵌激活 GE_HitReaction_Melee](/images/docs/echo-quest/ch3-hit-feedback/ge-damage-melee.png)
+
+![GE_HitReaction_Melee Target Tags 配置 — Grant Event.Character.BeingHit.Melee 给受击 Actor](/images/docs/echo-quest/ch3-hit-feedback/ge-hit-reaction-tags.png)
 
 <Aside type="tip" title="这样设计的好处">
 - **动态伤害**：通过 SetByCaller 特性，单一 GE 实例处理动态伤害数值，便于后期修改
@@ -126,7 +134,7 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 | 击中点反馈特效 | Impact Point 视觉反馈 |
 | 打中音效 | 角色侧的命中声音反馈 |
 
-{/* ![玩家侧打击感 GameplayCue 配置](/images/echo-quest/player-hit-feedback.png) */}
+![玩家侧 GameplayCue 配置（Event.Montage 触发：溅血 Niagara 粒子 + 音效分层）](/images/docs/echo-quest/ch3-hit-feedback/player-hit-feedback.png)
 
 <Aside type="note">
 在 ComboGraph 中可以直观地根据每段不同的攻击动画，配置不同的玩家侧表现。
@@ -146,4 +154,8 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 | 顿帧 (Hit Stop) | 帧冻结强化打击力度感 |
 | 受击动画 | 受击硬直/位移 |
 
-{/* ![敌人侧打击感实现](/images/echo-quest/enemy-hit-reaction.png) */}
+![GA_HitReaction_Enemy_Melee Tags 配置（Trigger Source: Event.Character.BeingHit.Melee）](/images/docs/echo-quest/ch3-hit-feedback/ga-hit-reaction-tags.png)
+
+![GA_HitReaction_Enemy_Melee 蓝图（相机震动 + 音效 + 慢镜头 + 顿帧 + 受击动画完整流程）](/images/docs/echo-quest/ch3-hit-feedback/enemy-hit-reaction.png)
+
+![PIE 运行时敌人受击效果 — 命中点橙色特效 + NavMesh 调试轮廓](/images/docs/echo-quest/ch3-hit-feedback/enemy-hit-ingame.png)

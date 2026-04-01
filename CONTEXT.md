@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-01 21:30 (UTC+8)
+> **更新时间**：2026-04-02 23:00 (UTC+8)
 
 ---
 
@@ -209,7 +209,7 @@
 8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段；三部电影 description + synopsis 中英双语文案全面重写）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 10. **Docs 首页封面图方案**：当前 LinkCard + 三行描述（引擎·性质 / 游戏类型 / 文档描述）为过渡方案，等 10 个 Key Features MDX 和游戏截图全部填充后，改用自定义卡片组件（含 coverImage 缩略图）。同时首个 section 与分割线间距问题暂留，一并在封面图方案中解决
-11. **Echo Quest 文档配图**：⏳ 进行中，见第九节
+11. **Echo Quest 文档配图**：✅ 完成，见第九节（ch1–ch6 共 74 张图，MDX 全部插入；EchoQuest_Revised.md 同步更新所有图位）
 
 ### 代码质量备注
 
@@ -326,11 +326,11 @@ document.addEventListener("astro:after-swap", initGallery);
 ```text
 H:\My Site\Projects\Echo Quest\文档截图\
 ├── GAS\               → ch1-gas        （11 张，✅ 已完成）
-├── Combo Graph\       → ch2-combat     （6 张，⏳ 待处理）
-├── 打击感\            → ch3-hit-feedback（10 张，⏳ 待处理）
+├── Combo Graph\       → ch2-combat     （6 张，✅ 已完成）
+├── 打击感\            → ch3-hit-feedback（10 张，✅ 已完成）
 ├── 角色动画系统\       → ch4-animation  （19 张，⏳ 待处理）
-├── Motion Warping\    → ch5-motion-warping（9 张，⏳ 待处理）
-└── 敌人 AI 与 EQS\    → ch6-enemy-ai   （24 张，⏳ 待处理）
+├── Motion Warping\    → ch5-motion-warping（9 张，✅ 已完成）
+└── 敌人 AI 与 EQS\    → ch6-enemy-ai   （19 张，✅ 已完成）
 ```
 
 ### 各章节完成状态
@@ -338,11 +338,11 @@ H:\My Site\Projects\Echo Quest\文档截图\
 | 章节 | 目标文件夹 | 截图数 | MDX 文件 | 状态 |
 | --- | --- | --- | --- | --- |
 | 第 1 章 GAS | ch1-gas | 11 | gas-system.mdx | ✅ 完成 |
-| 第 2 章 战斗系统 | ch2-combat | 6 | combat-system.mdx | ⏳ 待处理 |
-| 第 3 章 打击感 | ch3-hit-feedback | 10 | hit-feedback.mdx | ⏳ 待处理 |
-| 第 4 章 动画系统 | ch4-animation | 19 | animation.mdx | ⏳ 待处理 |
-| 第 5 章 Motion Warping | ch5-motion-warping | 9 | motion-warping.mdx | ⏳ 待处理 |
-| 第 6 章 敌人 AI | ch6-enemy-ai | 24 | enemy-ai.mdx | ⏳ 待处理 |
+| 第 2 章 战斗系统 | ch2-combat | 6 | combat-system.mdx | ✅ 完成 |
+| 第 3 章 打击感 | ch3-hit-feedback | 10 | hit-feedback.mdx | ✅ 完成 |
+| 第 4 章 动画系统 | ch4-animation | 19 | animation.mdx | ✅ 完成 |
+| 第 5 章 Motion Warping | ch5-motion-warping | 9 | motion-warping.mdx | ✅ 完成 |
+| 第 6 章 敌人 AI | ch6-enemy-ai | 19 | enemy-ai.mdx | ✅ 完成 |
 
 ### ch1-gas 图片命名对照（已完成）
 
