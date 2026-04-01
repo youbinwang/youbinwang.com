@@ -3,7 +3,7 @@ title: Motion Warping
 description: 基于 UE5 Motion Warping 的近战攻击吸附系统，实现程序化根骨骼运动修正与自动追踪
 ---
 
-import { Aside, Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 > 本章介绍 Motion Warping 的原理、技术选型理由，并以近战攻击吸附为完整案例，演示从数据构建到蒙太奇双轨协同的实现流程。
 
@@ -17,8 +17,6 @@ Motion Warping 是 UE5 的一项新功能，是一套用于动态修改根骨骼
 
 如果说 Control Rig 是为了让脚适应地面、手去摸指定点的微观修正，那 Motion Warping 就是为了让身体适应目标的宏观位移。它解决了动作游戏中经典的攻击滑步和打不到人的问题，实现了角色与交互目标的精准对齐。
 
-![BP_MainPlayer Components 面板 — MotionWarping 组件与 ComboGraphCollision、GAS 核心组件并列挂载](/images/docs/echo-quest/ch5-motion-warping/motion-warping-component.png)
-
 ## 5.2 为什么要用 Motion Warping？
 
 **设计维度**：项目定位为高速动作游戏，战斗系统的核心体验在于流畅的爽感，因此确认了弱空间维度、强时间维度的设计。通过 Motion Warping 配合自动索敌，只要玩家在合理范围内按下攻击键，角色就会自动通过位移修正，实现自动攻击吸附，大幅弱化空间维度的考验。而对玩家的挑战，主要在于发起战斗与闪避的时机，也就是时间维度。
@@ -31,13 +29,15 @@ Motion Warping 是 UE5 的一项新功能，是一套用于动态修改根骨骼
 
 | 优势 | 说明 |
 |------|------|
-| **脚步自适应** | 程序化拉伸根骨骼曲线，配合 Stride Warping（见 [动画系统 4.3.3](/docs/echo-quest/animation/)），脚步跨度自动适配 |
+| **脚步自适应** | 程序化拉伸根骨骼曲线，配合 Stride Warping（见 [动画系统 4.3.3](/docs/echo-quest/animation/#433-扩展实现与程序化修正逻辑驱动层---abp_itemlayerbase)），脚步跨度自动适配 |
 | **动态追踪** | 实时追踪移动中的目标，即便敌人在前摇期间移动，也能动态更新落点 |
 | **资源复用** | 一个标准攻击动作适配大部分情境，降低美术资源压力 |
 
 ---
 
 ## 5.3 Motion Warping 攻击吸附：项目实现
+
+![BP_MainPlayer Components 面板 — MotionWarping 组件与 ComboGraphCollision、GAS 核心组件并列挂载](/images/docs/echo-quest/ch5-motion-warping/motion-warping-component.png)
 
 ![PIE 运行时攻击吸附效果 — 玩家自动向目标位移对齐并发动攻击（+MANA! 回蓝反馈）](/images/docs/echo-quest/ch5-motion-warping/motion-warping-ingame.png)
 

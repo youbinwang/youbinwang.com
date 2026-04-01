@@ -55,6 +55,7 @@ nav.sidebar a[aria-current="page"] {
 
 /* ─── TOC (right sidebar) — pinned to far-right edge ─────────────── */
 @media (min-width: 72rem) {
+
   /* Container reserves exactly sidebar-width in the flex layout */
   .right-sidebar-container {
     width: var(--sl-sidebar-width);
@@ -72,6 +73,11 @@ nav.sidebar a[aria-current="page"] {
     width: calc(100% - var(--sl-sidebar-width));
     --sl-content-margin-inline: auto;
   }
+
+  /* TODO(Bug #2): docs index (tableOfContents: false) content not centered.
+     main-pane is 100% wide without right-sidebar-container, but
+     .sl-container margin-inline: auto doesn't visually center.
+     Needs DevTools investigation. */
 }
 
 starlight-toc {
@@ -148,7 +154,7 @@ starlight-toc a[aria-current="true"] {
 }
 
 /* More spacing between splash hero divider and first section */
-[data-page-type="splash"] .sl-markdown-content > :first-child {
+[data-page-type="splash"] .sl-markdown-content> :first-child {
   margin-top: 2rem;
 }
 

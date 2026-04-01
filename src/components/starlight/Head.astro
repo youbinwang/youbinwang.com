@@ -52,3 +52,75 @@ import { ClientRouter } from "astro:transitions";
         e.newDocument.documentElement.dataset.theme = theme;
     });
 </script>
+
+<!-- Scroll-to-top button for Starlight docs pages
+     (Portfolio pages get theirs from BaseLayout.astro) -->
+<script>
+    function initDocsScrollTopBtn() {
+        const ID = "scroll-top-btn";
+        // Skip if already present (e.g. navigated from a Portfolio page)
+        if (document.getElementById(ID)) return;
+
+        const btn = document.createElement("button");
+        btn.id = ID;
+        btn.setAttribute("aria-label", "Scroll to top");
+        btn.innerHTML = `<svg style="width:1.25rem;height:1.25rem" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>`;
+        Object.assign(btn.style, {
+            position: "fixed",
+            bottom: "1.5rem",
+            right: "1.5rem",
+            zIndex: "50",
+            width: "2.5rem",
+            height: "2.5rem",
+            borderRadius: "9999px",
+            background: "var(--color-surface, var(--sl-color-bg))",
+            border: "1px solid var(--color-border, var(--sl-color-hairline))",
+            boxShadow: "0 1px 3px rgba(0,0,0,.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "var(--color-text-secondary, var(--sl-color-gray-3))",
+            opacity: "0",
+            pointerEvents: "none",
+            transition: "all 300ms",
+            cursor: "pointer",
+        });
+        document.body.appendChild(btn);
+
+        const onScroll = () => {
+            if (window.scrollY > 500) {
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+            } else {
+                btn.style.opacity = "0";
+                btn.style.pointerEvents = "none";
+            }
+        };
+
+        btn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+        btn.addEventListener("mouseenter", () => {
+            btn.style.color = "var(--color-text, var(--sl-color-white))";
+        });
+        btn.addEventListener("mouseleave", () => {
+            btn.style.color =
+                "var(--color-text-secondary, var(--sl-color-gray-3))";
+        });
+
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+
+        document.addEventListener(
+            "astro:before-swap",
+            () => {
+                window.removeEventListener("scroll", onScroll);
+                btn.remove();
+            },
+            { once: true },
+        );
+    }
+
+    initDocsScrollTopBtn();
+    document.addEventListener("astro:after-swap", initDocsScrollTopBtn);
+</script>

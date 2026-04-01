@@ -401,17 +401,17 @@ Mobile-first，Tailwind 默认断点 (sm/md/lg/xl/2xl)。
 文档中使用了以下 Starlight 内置组件增强易读性：
 
 ```mdx
-import { Aside, Steps, Tabs, TabItem, LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { Aside, LinkCard, CardGrid } from '@astrojs/starlight/components';
 ```
 
 - `<Aside type="tip|caution|note">` — 高亮重要信息
-- `<Tabs>` + `<TabItem>` — 分组对比内容
-- `<Steps>` — 有序流程
 - `<LinkCard>` + `<CardGrid>` — 文档目录卡片
+
+> **已弃用**：`<Tabs>`/`<TabItem>` 和 `<Steps>` 因 Astro 6.x dev server 兼容性问题（HTML 编码错误），已全部改为普通 Markdown 格式（四级标题和有序列表）。
 
 ### MDX 注意事项
 
-- **禁止在 `<TabItem>` 或 JSX 上下文中使用裸 `<` `>` 字符**，必须用 `&lt;` `&gt;` 替代，否则 MDX 会将其解析为 JSX 标签导致 `AstroUserError`
+- **禁止在 JSX 上下文中使用裸 `<` `>` 字符**，必须用 `&lt;` `&gt;` 替代，否则 MDX 会将其解析为 JSX 标签导致 `AstroUserError`
 - 图片预留格式：`{/* ![Alt Text](/images/echo-quest/filename.png) */}`，准备好图片后去掉注释即可
 - 图片存放路径：`public/images/echo-quest/`
 - 内容源文件：项目根目录 `EchoQuest_Revised.md`

@@ -3,7 +3,7 @@ title: 打击感的构成与实现
 description: 动作游戏打击感的感官维度分类、近战攻击索敌与受击判定、玩家与敌人侧表现实现
 ---
 
-import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 > 本章从设计理论出发，梳理动作游戏打击感的感官维度分类，并以近战攻击为完整案例，演示索敌、受击判定与双侧表现的实现流程。
 
@@ -13,38 +13,38 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 个人习惯按感官维度分类，将打击感拆解为视觉、听觉、触觉与操控三大维度。
 </Aside>
 
-<Tabs>
-  <TabItem label="👁️ 视觉维度">
-    | 类别 | 具体手段 |
-    |------|---------|
-    | 角色动画 | 攻击前摇蓄力/剪影、攻击轨迹/刀光、攻击后摇/惯性 |
-    | 命中反馈 | 顿帧 Hit Stop / 卡肉（根据武器重量、锋利程度及力度决定） |
-    | 受击表现 | 受击位移、受击硬直（受击动画） |
-    | 视觉特效 | 接触点特效——溅血/火花/烟尘（方向通常与受击方向相反） |
-    | 环境互动 | 地面/草被扰动 |
-    | 屏幕特效 | 全屏暗角、后处理效果 |
-    | 相机 | 震屏（方向与攻击方向一致，幅度与伤害量相关）、镜头推拉/变焦/特殊镜头 |
-  </TabItem>
-  <TabItem label="👂 听觉维度">
-    | 类别 | 具体手段 |
-    |------|---------|
-    | 音效分层 | 挥动层、撞击层（材质区分 / 重击强低频）、残响层（空间回声） |
-    | 动态反馈 | 音调变化、暴击特殊处理 |
-  </TabItem>
-  <TabItem label="🎮 触觉与操控维度">
-    | 类别 | 具体手段 |
-    |------|---------|
-    | 手柄震动 | 震动层级区分——强度、方向性、阻尼 |
-    | 输入与时机 | 输入缓冲——当前动作结束前缓存玩家输入，按优先级无缝衔接下一动作 |
-    | 受击时停 | 顿帧 Hit Stop——改变玩家的按键输入节奏 |
-  </TabItem>
-</Tabs>
+#### 视觉维度
+
+| 类别 | 具体手段 |
+|------|---------|
+| 角色动画 | 攻击前摇蓄力/剪影、攻击轨迹/刀光、攻击后摇/惯性 |
+| 命中反馈 | 顿帧 Hit Stop / 卡肉（根据武器重量、锋利程度及力度决定） |
+| 受击表现 | 受击位移、受击硬直（受击动画） |
+| 视觉特效 | 接触点特效——溅血/火花/烟尘（方向通常与受击方向相反） |
+| 环境互动 | 地面/草被扰动 |
+| 屏幕特效 | 全屏暗角、后处理效果 |
+| 相机 | 震屏（方向与攻击方向一致，幅度与伤害量相关）、镜头推拉/变焦/特殊镜头 |
+
+#### 听觉维度
+
+| 类别 | 具体手段 |
+|------|---------|
+| 音效分层 | 挥动层、撞击层（材质区分 / 重击强低频）、残响层（空间回声） |
+| 动态反馈 | 音调变化、暴击特殊处理 |
+
+#### 触觉与操控维度
+
+| 类别 | 具体手段 |
+|------|---------|
+| 手柄震动 | 震动层级区分——强度、方向性、阻尼 |
+| 输入与时机 | 输入缓冲——当前动作结束前缓存玩家输入，按优先级无缝衔接下一动作 |
+| 受击时停 | 顿帧 Hit Stop——改变玩家的按键输入节奏 |
+
+![近战攻击命中效果：命中点特效（紫色/蓝色 VFX）+ 法力值回复提示（+MANA!）](/images/docs/echo-quest/ch3-hit-feedback/hit-feedback-ingame.png)
 
 ---
 
 ## 3.2 近战攻击：索敌、受击判定与双侧表现
-
-![近战攻击命中效果：命中点特效（紫色/蓝色 VFX）+ 法力值回复提示（+MANA!）](/images/docs/echo-quest/ch3-hit-feedback/hit-feedback-ingame.png)
 
 ### 3.2.1 攻击启动与目标捕获
 
@@ -71,6 +71,8 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 
 最终索敌目标为分数最高者。
 </Aside>
+
+![PIE 运行时敌人受击效果 — 命中点橙色特效 + NavMesh 调试轮廓](/images/docs/echo-quest/ch3-hit-feedback/enemy-hit-ingame.png)
 
 ### 3.2.2 处理 OnHit 事件
 
@@ -157,5 +159,3 @@ import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
 ![GA_HitReaction_Enemy_Melee Tags 配置（Trigger Source: Event.Character.BeingHit.Melee）](/images/docs/echo-quest/ch3-hit-feedback/ga-hit-reaction-tags.png)
 
 ![GA_HitReaction_Enemy_Melee 蓝图（相机震动 + 音效 + 慢镜头 + 顿帧 + 受击动画完整流程）](/images/docs/echo-quest/ch3-hit-feedback/enemy-hit-reaction.png)
-
-![PIE 运行时敌人受击效果 — 命中点橙色特效 + NavMesh 调试轮廓](/images/docs/echo-quest/ch3-hit-feedback/enemy-hit-ingame.png)

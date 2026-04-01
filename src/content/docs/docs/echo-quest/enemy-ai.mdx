@@ -3,7 +3,7 @@ title: 敌人 AI 与 EQS
 description: 基于行为树的模块化 AI 架构、感知系统、黑板驱动决策与 EQS 环境查询
 ---
 
-import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 > 本章介绍敌人 AI 的三层解耦架构（感知/逻辑/表现），并以近战敌人为完整案例，演示从感知触发到行为树决策再到攻击执行的全流程。
 
@@ -134,79 +134,80 @@ Root (Selector)
 
 ![BT_Enemy_Melee 行为树全览](/images/docs/echo-quest/ch6-enemy-ai/behavior-tree-overview.png)
 
-<Tabs>
-  <TabItem label="⚡ [1] BeingHit（受击僵硬）">
-    当敌人被攻击命中，GAS 通过 `GE_HitReaction_Melee` 添加 `Event.Character.BeingHit.Melee` Tag，感知层将 State 切换为 `BeingHit`，行为树立即跳转至此分支。
+#### ⚡ [1] BeingHit（受击僵硬）
 
-    **SubTree_Frozen 内部流程**：
+当敌人被攻击命中，GAS 通过 `GE_HitReaction_Melee` 添加 `Event.Character.BeingHit.Melee` Tag，感知层将 State 切换为 `BeingHit`，行为树立即跳转至此分支。
 
-    | 步骤 | Task | 作用 |
-    |------|------|------|
-    | 1 | BTT_RotateToPlayer | 受击瞬间强制面向玩家，确保受击方向一致 |
-    | 2 | BTT_ClearFocus | 清除 Focus，防止僵硬期间不自然的头部追踪 |
-    | 3 | BTT_SetMovementSpeed(Idle) | 移速设为 0，确保受击不滑动 |
-    | 4 | Wait | 等待硬直恢复（匹配受击动画时长） |
+**SubTree_Frozen 内部流程**：
 
-    等待结束后 State 重新设回 `Attacking`，形成 **受击 → 硬直 → 恢复战斗** 的完整闭环。
+| 步骤 | Task | 作用 |
+|------|------|------|
+| 1 | BTT_RotateToPlayer | 受击瞬间强制面向玩家，确保受击方向一致 |
+| 2 | BTT_ClearFocus | 清除 Focus，防止僵硬期间不自然的头部追踪 |
+| 3 | BTT_SetMovementSpeed(Idle) | 移速设为 0，确保受击不滑动 |
+| 4 | Wait | 等待硬直恢复（匹配受击动画时长） |
 
-    ![SubTree_Frozen 行为子树](/images/docs/echo-quest/ch6-enemy-ai/subtree-frozen.png)
-  </TabItem>
-  <TabItem label="⚔️ [2] Combat（战斗状态）">
-    整个行为树中最复杂的分支，拆分为三个子阶段：
+等待结束后 State 重新设回 `Attacking`，形成 **受击 → 硬直 → 恢复战斗** 的完整闭环。
 
-    ![Combat State 分支详细结构](/images/docs/echo-quest/ch6-enemy-ai/combat-state-branch.png)
+![SubTree_Frozen 行为子树](/images/docs/echo-quest/ch6-enemy-ai/subtree-frozen.png)
 
-    **阶段 A — 装备检查**：BTD_IsEnemyHasSwords 判断是否已装备。若未装备则 BTT_FocusTarget → BTT_EquipWeapon（拔刀），仅首次进入战斗触发。
+#### ⚔️ [2] Combat（战斗状态）
 
-    **阶段 B — 攻击执行**（Sequence）：
+整个行为树中最复杂的分支，拆分为三个子阶段：
 
-    | 步骤 | Task | 作用 |
-    |------|------|------|
-    | 1 | BTT_SetMovementSpeed(Run) | 奔跑接近目标 |
-    | 2 | BTT_ClearFocus | 临时清除 Focus，避免奔跑时锁定不自然 |
-    | 3 | BTT_MoveToIdealRange | 移动至 DefendRadius 定义的理想攻击距离 |
-    | 4 | BTT_FocusTarget | 重新锁定玩家 |
-    | 5 | BTT_ActiveComboGraph | 通过 BPI_EnemyAI 接口激活 CG_Enemy_Combo |
+![Combat State 分支详细结构](/images/docs/echo-quest/ch6-enemy-ai/combat-state-branch.png)
 
-    ![CG_Enemy_Combo 连招资产](/images/docs/echo-quest/ch6-enemy-ai/enemy-combo-graph.png)
+**阶段 A — 装备检查**：BTD_IsEnemyHasSwords 判断是否已装备。若未装备则 BTT_FocusTarget → BTT_EquipWeapon（拔刀），仅首次进入战斗触发。
 
-    **阶段 C — 战术走位（Strafe Selector）**：
+**阶段 B — 攻击执行**（Sequence）：
 
-    | 条件 | 行为 |
-    |------|------|
-    | 超出理想距离 | ClearFocus → SetSpeed(Run) → MoveToIdealRange（重新接近） |
-    | 在理想距离内 | FocusTarget → SetSpeed(Walk) → **EQS_Strafe 查询** → Move to PointOfInterest（围绕玩家游走） |
-  </TabItem>
-  <TabItem label="🔍 [3] Investigating（调查）">
-    敌人通过 AI Hearing 感知到声音但未看到玩家时进入。
+| 步骤 | Task | 作用 |
+|------|------|------|
+| 1 | BTT_SetMovementSpeed(Run) | 奔跑接近目标 |
+| 2 | BTT_ClearFocus | 临时清除 Focus，避免奔跑时锁定不自然 |
+| 3 | BTT_MoveToIdealRange | 移动至 DefendRadius 定义的理想攻击距离 |
+| 4 | BTT_FocusTarget | 重新锁定玩家 |
+| 5 | BTT_ActiveComboGraph | 通过 BPI_EnemyAI 接口激活 CG_Enemy_Combo |
 
-    1. **Move to PointOfInterest** — 移动至声源世界坐标
-    2. **Wait** — 到达后原地等待，模拟搜索环视
-    3. **BTT_SetStateAsPassive** — 若无新感知事件，State 设回 `Passive`，恢复巡逻
+![CG_Enemy_Combo 连招资产](/images/docs/echo-quest/ch6-enemy-ai/enemy-combo-graph.png)
 
-    <Aside type="note">
-    这种设计使敌人具备 **"警觉 → 搜索 → 放弃"** 的拟人化行为链，而非简单的"看到就打，看不到就站"。
-    </Aside>
+**阶段 C — 战术走位（Strafe Selector）**：
 
-    ![SubTree_Investigating 行为子树](/images/docs/echo-quest/ch6-enemy-ai/subtree-investigating.png)
-  </TabItem>
-  <TabItem label="🚶 [4] Passive（巡逻）">
-    敌人的默认空闲行为。
+| 条件 | 行为 |
+|------|------|
+| 超出理想距离 | ClearFocus → SetSpeed(Run) → MoveToIdealRange（重新接近） |
+| 在理想距离内 | FocusTarget → SetSpeed(Walk) → **EQS_Strafe 查询** → Move to PointOfInterest（围绕玩家游走） |
 
-    通过 **BTD_HasPatrolRoute** Decorator 判断 PatrolRoute 是否有效：
+#### 🔍 [3] Investigating（调查）
 
-    | 判断结果 | 行为 |
-    |---------|------|
-    | 有巡逻路径 | BTT_MoveAlongPatrolRoute — 沿 BP_PatrolRoute 的 Spline 路径循环移动 |
-    | 无巡逻路径 | 原地 Idle 等待，作为定点守卫 |
+敌人通过 AI Hearing 感知到声音但未看到玩家时进入。
 
-    BP_PatrolRoute 通过在关卡中放置 Spline 点定义路径，支持不同敌人绑定不同路线。
+1. **Move to PointOfInterest** — 移动至声源世界坐标
+2. **Wait** — 到达后原地等待，模拟搜索环视
+3. **BTT_SetStateAsPassive** — 若无新感知事件，State 设回 `Passive`，恢复巡逻
 
-    ![SubTree_Passive 行为子树与巡逻路径](/images/docs/echo-quest/ch6-enemy-ai/subtree-passive.png)
+<Aside type="note">
+这种设计使敌人具备 **"警觉 → 搜索 → 放弃"** 的拟人化行为链，而非简单的"看到就打，看不到就站"。
+</Aside>
 
-    ![SubTree_Passive 运行时调试截图：Passive 分支激活，敌人沿巡逻路径移动](/images/docs/echo-quest/ch6-enemy-ai/subtree-passive-ingame.png)
-  </TabItem>
-</Tabs>
+![SubTree_Investigating 行为子树](/images/docs/echo-quest/ch6-enemy-ai/subtree-investigating.png)
+
+#### 🚶 [4] Passive（巡逻）
+
+敌人的默认空闲行为。
+
+通过 **BTD_HasPatrolRoute** Decorator 判断 PatrolRoute 是否有效：
+
+| 判断结果 | 行为 |
+|---------|------|
+| 有巡逻路径 | BTT_MoveAlongPatrolRoute — 沿 BP_PatrolRoute 的 Spline 路径循环移动 |
+| 无巡逻路径 | 原地 Idle 等待，作为定点守卫 |
+
+BP_PatrolRoute 通过在关卡中放置 Spline 点定义路径，支持不同敌人绑定不同路线。
+
+![SubTree_Passive 行为子树与巡逻路径](/images/docs/echo-quest/ch6-enemy-ai/subtree-passive.png)
+
+![SubTree_Passive 运行时调试截图：Passive 分支激活，敌人沿巡逻路径移动](/images/docs/echo-quest/ch6-enemy-ai/subtree-passive-ingame.png)
 
 ### 6.2.4 执行层：任务节点与条件判断（BTT & BTD）
 
