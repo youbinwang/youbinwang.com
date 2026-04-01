@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-01 10:15 (UTC+8)
+> **更新时间**：2026-04-01 13:00 (UTC+8)
 
 ---
 
@@ -134,6 +134,12 @@
 | 92 | 音乐页 section label 加大 | `text-sm`（14px）→ `text-base`（16px），在 1440px 宽容器中更有存在感 |
 | 93 | About Me 移动端头像缩小 | `w-60 h-[310px]` → `w-48 h-[240px]`，首屏可见标题和第一段正文 |
 | 94 | 摄影页引言间距加大 | `mb-12`（48px）→ `mb-16`（64px），与 PageHeader 分隔线间距对称 |
+| 95 | 主页布局重构 | Hero 内嵌 bio 文案（左对齐，橙色高亮词），去掉独立 Introduction section；背景图本地化 `public/images/home/hero.png`；Hero 高度用 `aspect-[16/5]` 锁定图片原始比例；遮罩改为底部极轻 `from-black/30` |
+| 96 | 主页 Game Works 2+3 网格 | 上排 2 大卡（YouTube iframe）+ 下排 3 小卡（封面图）；标题行 "游戏作品" 左 + "+ More" 右；副标题按 scope 分流：个人类 **genre - scopeLabel**，团队/职业类 **keywords - genre** |
+| 97 | 主页卡片 hover 效果 | `scale-[1.03]` + 半透明遮罩 `bg-black/35` + 400ms 过渡，无放大镜图标（与摄影/海报页统一但区分） |
+| 98 | 游戏详情页返回链接 | Hero 内 Tags 上方加 `← Games` 半透明链接，样式与电影详情页 `← Films` 一致 |
+| 99 | Echo Quest keywords 更新 | cn: "战斗、关卡策划" → "战斗与关卡设计 Demo"；元素秘境 cn: Demo 前加空格 |
+| 100 | 中英文 Featured 顺序统一 | cnFeaturedSlugs 调整为与 enFeaturedSlugs 一致：echo-quest → elemental-realm → on-the-road → the-scholars-side-quest → shepherds |
 
 ---
 
@@ -232,6 +238,7 @@ Dev server 默认端口 4321，若被占用自动递增。
 ## 八、技术备忘
 
 - **Navbar 透明模式**：`BaseLayout` 传 `transparentNav` → `Navbar` 的 `transparent` prop → JS 监听 `scrollY > 80` 切换样式
+- **主页 Featured Games 副标题**：数据来自 `games.ts`，格式按 `tags.scope` 分流——个人类项目（Technical Showcase / Personal Project / Personal Thesis Project）显示 **genre - scopeLabel**，团队/职业类显示 **keywords - genre**。如 `games.ts` 中 `genre`、`keywords`、`tags.scope` 有变更需同步检查主页展示
 - **游戏详情页 inline MDX**：`getEntry('docs', 'docs/slug')` + `render()` + `<DetailsContent />`
 - **游戏详情页 Hero Tags**：直接读取 `game.tags.*`，不使用 categoryLabels 映射
 - **ProjectCard Tags**：在游戏名/类型和 Role 之间显示 4 个 pill 标签

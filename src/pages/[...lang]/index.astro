@@ -3,9 +3,8 @@
  * Homepage — Hero + intro bio + featured game project cards grid.
  */
 import BaseLayout from "../../components/layout/BaseLayout.astro";
-import HeroSection from "../../components/layout/HeroSection.astro";
-import ProjectCard from "../../components/ui/ProjectCard.astro";
-import { getLangFromSlug, getI18nStaticPaths, ui, getLocalizedPath } from "../../i18n";
+import VideoEmbed from "../../components/ui/VideoEmbed.astro";
+import { getLangFromSlug, getI18nStaticPaths, ui, t, getLocalizedPath } from "../../i18n";
 import { games } from "../../data/games";
 
 export const getStaticPaths = getI18nStaticPaths;
@@ -14,10 +13,10 @@ const lang = getLangFromSlug(Astro.params.lang);
 
 // Featured games order differs by language (per original site)
 const cnFeaturedSlugs = [
-  "elemental-realm",
   "echo-quest",
-  "the-scholars-side-quest",
+  "elemental-realm",
   "on-the-road",
+  "the-scholars-side-quest",
   "shepherds",
 ];
 const enFeaturedSlugs = [
@@ -32,93 +31,150 @@ const featuredGames = featuredSlugs
   .map((slug) => games.find((g) => g.slug === slug))
   .filter(Boolean) as typeof games;
 
-const heroImage =
-  "https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/fdc01711-6ce1-41a5-9e9c-13e8a6277954/Main+Page.png";
+const heroImage = "/images/home/hero.png";
+
+// Subtitle format: personal projects show genre-scope, team/professional show keywords-genre
+const personalScopes = new Set(['Technical Showcase', 'Personal Project', 'Personal Thesis Project']);
+const scopeLabels: Record<string, { en: string; cn: string }> = {
+  'Technical Showcase': { en: 'Personal Project', cn: '个人作品' },
+  'Personal Project': { en: 'Personal Project', cn: '个人作品' },
+  'Personal Thesis Project': { en: 'Personal Thesis Project', cn: '本科毕业设计' },
+};
+const getScopeLabel = (scope: string) => scopeLabels[scope]?.[lang === 'en' ? 'en' : 'cn'] ?? scope;
 ---
 
 <BaseLayout title={ui("nav.home", lang)} lang={lang} transparentNav>
-  {/* Hero */}
-  <HeroSection
-    backgroundImage={heroImage}
-    title="Youbin Wang"
-    subtitle="GAMEPLAY / COMBAT / LEVEL DESIGNER"
-    fullHeight
-  />
+  {/* Hero with bio */}
+  <section
+    class="relative w-full aspect-[16/5] flex items-center overflow-hidden"
+    transition:name="hero"
+    transition:animate="fade"
+  >
+    {/* Background */}
+    <div class="absolute inset-0">
+      <img src={heroImage} alt="" class="w-full h-full object-cover" loading="eager" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+    </div>
 
-  {/* Introduction */}
-  <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="max-w-4xl mx-auto">
-    {
-      lang === "zh-cn" ? (
-        <div class="text-[var(--color-text-secondary)] text-base leading-relaxed space-y-4">
-          <p>
-            我是王佑彬 (Robin)，目前在<strong class="text-[var(--color-text)]">网易雷火</strong>任<strong class="text-[var(--color-text)]">玩法策划</strong>，专注于<strong class="text-[var(--color-text)]">玩法、关卡、战斗</strong>与<strong class="text-[var(--color-text)]">任务设计</strong>，同时负责<strong class="text-[var(--color-text)]">项目工具链</strong>与<strong class="text-[var(--color-text)]">生产管线</strong>的搭建与优化。我曾在 <strong class="text-[var(--color-text)]">EA Sports</strong> 和<strong class="text-[var(--color-text)]">腾讯</strong>任职，参与过<strong class="text-[var(--color-text)]">十余个不同类型游戏项目</strong>的设计与开发。
-          </p>
-          <p>
-            我拥有丰富的<strong class="text-[var(--color-text)]">跨职能协作经验</strong>，能够熟练使用 <strong class="text-[var(--color-text)]">Unreal、Unity 引擎</strong>完成<strong class="text-[var(--color-text)]">玩法原型</strong>与<strong class="text-[var(--color-text)]">核心系统</strong>的落地实现，并使用 <strong class="text-[var(--color-text)]">Blender</strong> 进行<strong class="text-[var(--color-text)]">关卡原型</strong>的设计与搭建。此外，我将 <strong class="text-[var(--color-text)]">AI 工作流</strong>深度整合至开发管线，大幅提升项目开发与生产效率。
-          </p>
-          <p class="text-lg mt-6 text-[var(--color-text)]">
-            欢迎探索我的作品 :D
-          </p>
-        </div>
-      ) : (
-        <div class="text-[var(--color-text-secondary)] text-base leading-relaxed space-y-4">
-          <p>
-            I'm Youbin Wang (Robin), currently a <strong class="text-[var(--color-text)]">Gameplay Designer</strong> at{" "}
-            <strong class="text-[var(--color-text)]">NetEase (Thunder Fire Studio)</strong>, specializing in{" "}
-            <strong class="text-[var(--color-text)]">Gameplay, Level, Combat, and Quest Design</strong>, while also responsible for{" "}
-            <strong class="text-[var(--color-text)]">building and optimizing toolchains and production pipelines</strong>.
-            Previously, I worked at <strong class="text-[var(--color-text)]">EA Sports</strong> and{" "}
-            <strong class="text-[var(--color-text)]">Tencent</strong>, contributing to{" "}
-            <strong class="text-[var(--color-text)]">over ten game projects of diverse genres</strong>.
-          </p>
-          <p>
-            I bring strong <strong class="text-[var(--color-text)]">cross-functional collaboration</strong> experience, and am proficient in{" "}
-            <strong class="text-[var(--color-text)]">Unreal and Unity</strong> for implementing{" "}
-            <strong class="text-[var(--color-text)]">gameplay prototypes and core systems</strong>, as well as{" "}
-            <strong class="text-[var(--color-text)]">Blender</strong> for{" "}
-            <strong class="text-[var(--color-text)]">level prototype</strong> design and blockout.
-            I also deeply integrate <strong class="text-[var(--color-text)]">AI workflows</strong> into development pipelines to significantly boost project productivity.
-          </p>
-          <p class="text-lg mt-6 text-[var(--color-text)]">
-            Welcome to explore my works :D
-          </p>
-        </div>
-      )
-    }
+    {/* Content */}
+    <div class="relative z-10 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-14 w-full">
+      <div class="max-w-4xl">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-8">
+          GAMEPLAY / COMBAT / LEVEL DESIGNER
+        </h1>
+
+        {lang === "zh-cn" ? (
+          <div class="text-white/70 text-sm md:text-base leading-relaxed space-y-4">
+            <p>
+              我是王佑彬 (Robin)，目前在<strong class="text-[var(--color-accent)]">网易雷火</strong>任<strong class="text-[var(--color-accent)]">玩法策划</strong>，专注于<strong class="text-[var(--color-accent)]">玩法、关卡、战斗</strong>与<strong class="text-[var(--color-accent)]">任务设计</strong>，同时负责<strong class="text-[var(--color-accent)]">项目工具链</strong>与<strong class="text-[var(--color-accent)]">生产管线</strong>的搭建与优化。我曾在 <strong class="text-[var(--color-accent)]">EA Sports</strong> 和<strong class="text-[var(--color-accent)]">腾讯</strong>任职，参与过<strong class="text-[var(--color-accent)]">十余个不同类型游戏项目</strong>的设计与开发。
+            </p>
+            <p>
+              我拥有丰富的<strong class="text-[var(--color-accent)]">跨职能协作经验</strong>，能够熟练使用 <strong class="text-[var(--color-accent)]">Unreal、Unity 引擎</strong>完成<strong class="text-[var(--color-accent)]">玩法原型</strong>与<strong class="text-[var(--color-accent)]">核心系统</strong>的落地实现，并使用 <strong class="text-[var(--color-accent)]">Blender</strong> 进行<strong class="text-[var(--color-accent)]">关卡原型</strong>的设计与搭建。此外，我将 <strong class="text-[var(--color-accent)]">AI 工作流</strong>深度整合至开发管线，大幅提升项目开发与生产效率。
+            </p>
+            <p class="text-base md:text-lg text-white font-semibold mt-6">
+              欢迎探索我的作品 :D
+            </p>
+          </div>
+        ) : (
+          <div class="text-white/70 text-sm md:text-base leading-relaxed space-y-4">
+            <p>
+              I'm Youbin Wang (Robin), currently a <strong class="text-[var(--color-accent)]">Gameplay Designer</strong> at{" "}
+              <strong class="text-[var(--color-accent)]">NetEase (Thunder Fire Studio)</strong>, specializing in{" "}
+              <strong class="text-[var(--color-accent)]">Gameplay, Level, Combat, and Quest Design</strong>, while also responsible for{" "}
+              <strong class="text-[var(--color-accent)]">building and optimizing toolchains and production pipelines</strong>.
+              Previously, I worked at <strong class="text-[var(--color-accent)]">EA Sports</strong> and{" "}
+              <strong class="text-[var(--color-accent)]">Tencent</strong>, contributing to{" "}
+              <strong class="text-[var(--color-accent)]">over ten game projects of diverse genres</strong>.
+            </p>
+            <p>
+              I bring strong <strong class="text-[var(--color-accent)]">cross-functional collaboration</strong> experience, and am proficient in{" "}
+              <strong class="text-[var(--color-accent)]">Unreal and Unity</strong> for implementing{" "}
+              <strong class="text-[var(--color-accent)]">gameplay prototypes and core systems</strong>, as well as{" "}
+              <strong class="text-[var(--color-accent)]">Blender</strong> for{" "}
+              <strong class="text-[var(--color-accent)]">level prototype</strong> design and blockout.
+              I also deeply integrate <strong class="text-[var(--color-accent)]">AI workflows</strong> into development pipelines to significantly boost project productivity.
+            </p>
+            <p class="text-base md:text-lg text-white font-semibold mt-6">
+              Welcome to explore my works :D
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   </section>
 
-  {/* Featured Games */}
-  <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-    <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-8">
-      {lang === "zh-cn" ? "游戏作品" : "Game Works"}
-    </h2>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {featuredGames.map((game) => <ProjectCard game={game} lang={lang} />)}
-    </div>
-
-    {/* View All CTA */}
-    <div class="text-center mt-10">
+  {/* Featured Games — 2 large (video) + 3 small (image) grid */}
+  <section class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    {/* Header: title left + "More" right */}
+    <div class="flex items-baseline justify-between mb-10">
+      <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)]">
+        {lang === "zh-cn" ? "游戏作品" : "Game Works"}
+      </h2>
       <a
         href={getLocalizedPath("/games/", lang)}
-        class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-[var(--color-text)] bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] rounded-lg border border-[var(--color-border)] transition-colors"
+        class="text-lg md:text-xl font-medium text-[var(--color-text)] hover:text-[var(--color-accent)] underline underline-offset-4 transition-colors"
       >
-        {lang === "zh-cn" ? "查看所有游戏作品" : "View All Game Works"}
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-        </svg>
+        + More
       </a>
+    </div>
+
+    {/* Top row: 2 large video cards */}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
+      {featuredGames.slice(0, 2).map((game) => (
+        <div class="text-center">
+          {game.videoId ? (
+            <VideoEmbed videoId={game.videoId} title={t(game.title, lang)} />
+          ) : (
+            <a href={getLocalizedPath(`/games/${game.slug}/`, lang)} class="group block aspect-video rounded-lg overflow-hidden relative">
+              <img src={game.coverImage} alt={t(game.title, lang)} class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]" loading="lazy" />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms]"></div>
+            </a>
+          )}
+          <a
+            href={getLocalizedPath(`/games/${game.slug}/`, lang)}
+            class="inline-block mt-4 text-lg font-semibold text-[var(--color-text)] hover:text-[var(--color-accent)] underline underline-offset-4 transition-colors"
+          >
+            {t(game.title, lang)}
+          </a>
+          <p class="text-sm text-[var(--color-text-secondary)] mt-1">
+            {personalScopes.has(game.tags.scope) ? (
+              <><strong>{t(game.genre, lang)}</strong> - {getScopeLabel(game.tags.scope)}</>
+            ) : (
+              <><strong>{t(game.keywords, lang)}</strong> - {t(game.genre, lang)}</>
+            )}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    {/* Bottom row: 3 smaller image cards */}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {featuredGames.slice(2, 5).map((game) => (
+        <div class="text-center">
+          <a href={getLocalizedPath(`/games/${game.slug}/`, lang)} class="group block aspect-[16/9] rounded-lg overflow-hidden relative">
+            <img
+              src={game.coverImage}
+              alt={t(game.title, lang)}
+              class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+              loading="lazy"
+            />
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms]"></div>
+          </a>
+          <a
+            href={getLocalizedPath(`/games/${game.slug}/`, lang)}
+            class="inline-block mt-4 text-lg font-semibold text-[var(--color-text)] hover:text-[var(--color-accent)] underline underline-offset-4 transition-colors"
+          >
+            {t(game.title, lang)}
+          </a>
+          <p class="text-sm text-[var(--color-text-secondary)] mt-1">
+            {personalScopes.has(game.tags.scope) ? (
+              <><strong>{t(game.genre, lang)}</strong> - {getScopeLabel(game.tags.scope)}</>
+            ) : (
+              <><strong>{t(game.keywords, lang)}</strong> - {t(game.genre, lang)}</>
+            )}
+          </p>
+        </div>
+      ))}
     </div>
   </section>
 </BaseLayout>
