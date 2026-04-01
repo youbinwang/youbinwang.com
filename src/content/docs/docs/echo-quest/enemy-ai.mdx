@@ -205,3 +205,93 @@ Root (Selector)
     {/* ![SubTree_Passive 行为子树与巡逻路径](/images/echo-quest/subtree-passive.png) */}
   </TabItem>
 </Tabs>
+
+### 6.2.4 执行层：任务节点与条件判断（BTT & BTD）
+
+行为树的叶节点由自定义的 BTTask（任务节点）和 BTDecorator（条件装饰器）构成。它们是整个 AI 系统的"原子操作"——每个节点只做一件事，通过组合实现复杂行为。
+
+**自定义任务节点（BTTask）清单：**
+
+| 任务节点 | 职责 | 关键实现 |
+|----------|------|----------|
+| **BTT_FocusTarget** | 锁定注视目标 | 调用 AI Controller 的 Set Focus，使敌人持续面朝 AttackTarget |
+| **BTT_ClearFocus** | 清除注视锁定 | 调用 Clear Focus，解除头部/身体的强制追踪 |
+| **BTT_SetMovementSpeed** | 设置移动速度 | 通过 BPI_EnemyAI 接口设置 E_MovementSpeed（Idle / Walk / Run） |
+| **BTT_MoveToIdealRange** | 移动至理想距离 | 使用 Move To 节点接近 AttackTarget，到达 DefendRadius 时完成 |
+| **BTT_EquipWeapon** | 装备武器 | 通过 BPI_EnemyAI 接口触发拔刀蒙太奇，将武器从背部 Socket 切换到手部 Socket |
+| **BTT_RotateToPlayer** | 转向玩家 | 强制旋转 Pawn 朝向 AttackTarget，用于受击瞬间的方向校正 |
+| **BTT_ActiveComboGraph** | 激活攻击连招 | 通过 BPI_EnemyAI 接口激活 CG_Enemy_Combo，执行攻击动画及 GAS 伤害逻辑 |
+| **BTT_MoveAlongPatrolRoute** | 沿路径巡逻 | 读取 PatrolRoute 中的路径点，依次移动并循环 |
+| **BTT_SetStateAsPassive** | 重置为被动状态 | 将黑板 State 设为 Passive，用于调查超时后的状态回退 |
+| **BTT_DefaultAttack** | 默认攻击（备用） | 简化版攻击逻辑，作为无 ComboGraph 时的回退方案 |
+
+**自定义条件装饰器（BTDecorator）清单：**
+
+| 装饰器节点 | 职责 | 判断逻辑 |
+|------------|------|----------|
+| **BTD_HasPatrolRoute** | 是否有巡逻路径 | 检查黑板 PatrolRoute 变量是否有效（非 null） |
+| **BTD_IsEnemyHasSwords** | 是否已装备武器 | 通过 BPI_EnemyAI 接口查询敌人的武器挂载状态 |
+| **BTD_IsWithinIdealRange** | 是否在理想攻击距离内 | 计算敌人与 AttackTarget 的距离，与黑板 DefendRadius 比较 |
+
+<Aside type="tip" title="原子化设计的优势">
+每个节点职责单一、接口统一、可独立测试。通过在行为树中的不同组合，即可构建出从简单巡逻到复杂战术的各种 AI 行为，无需为每种敌人编写定制逻辑。
+</Aside>
+
+{/* ![BPI_EnemyAI 蓝图接口定义 — 接口函数列表（SetMovementSpeed / EquipWeapon / ActiveComboGraph 等）](/images/docs/echo-quest/ch6-enemy-ai/bpi-enemy-ai-interface.png) */}
+
+{/* ![BTT 任务节点内部逻辑示例 — BTT_ActiveComboGraph 通过 BPI_EnemyAI 接口调用 Pawn 函数的蓝图逻辑](/images/docs/echo-quest/ch6-enemy-ai/btt-active-combo-graph.png) */}
+
+---
+
+## 6.3 空间智能：环境查询系统（EQS）的原理与实践
+
+### 6.3.1 什么是 EQS？
+
+环境查询系统（Environment Query System，EQS）是 UE 提供的一套空间推理工具，它允许 AI 在世界中生成一组候选位置点，并通过一系列可配置的测试（Test）对这些点进行评分和排序，最终选出"最优位置"供行为树使用。
+
+在本项目中，EQS 主要用于解决敌人的**战术走位**问题——攻击完成后，敌人需要选择一个合理的位置进行游走或重新走位，而不是呆板地站在原地等待下一次攻击。
+
+### 6.3.2 EQS_Strafe 的具体实现
+
+**查询上下文 - EQS_Context_AttackTarget：**
+
+在执行 EQS 查询前，首先需要定义查询的参考点。EQS_Context_AttackTarget 是一个自定义的 EQS Context，它从行为树的黑板中读取 `AttackTarget` 变量（即玩家），并将其世界坐标作为生成器的中心参考点。
+
+**生成器 - Points: Circle（环形点生成）：**
+
+EQS_Strafe 使用 Points: Circle 生成器，以 EQS_Context_AttackTarget（玩家位置）为圆心，在半径 **400** 的圆周上均匀生成 **5 个**候选位置点。这些点构成了敌人可能的走位落点。
+
+选择环形生成器而非网格生成器的原因是：近战敌人的战术走位本质上是围绕玩家做弧形运动，环形点天然契合这种运动模式，且只需 5 个点即可覆盖玩家周围的主要方向，查询开销极低。
+
+{/* ![EQS_Strafe 查询资产编辑器（Generator: Points:Circle，Center=玩家，Radius=400，Points=5；Tests: Distance + PathExist）](/images/docs/echo-quest/ch6-enemy-ai/eqs-strafe-editor.png) */}
+
+**测试配置（Tests）：**
+
+生成器产生候选点后，通过以下两个 Test 进行评分筛选：
+
+1. **Distance Test（距离测试）**：评估每个候选点与 Querier（敌人自身）之间的距离；配置筛选范围为 **150 ~ 500**，即过近（&lt; 150）或过远（&gt; 500）的点会被直接剔除。这确保敌人不会走位到离玩家太近（容易被连招覆盖）或太远（脱离战斗节奏）的位置。
+
+2. **Path Exists Test（路径可达性测试）**：从 Querier（敌人自身）到候选点执行导航路径检测；剔除所有无法通过 NavMesh 到达的点（如被墙壁、障碍物阻挡的位置）。这是一个硬性筛选条件，确保敌人不会尝试移动到物理上不可达的位置，避免 AI 卡在障碍物上。
+
+**查询结果的使用：**
+
+EQS 查询返回的最优位置点会被写入黑板的 `PointOfInterest` 变量。随后，行为树的 Combat State 中的 Strafe 分支会执行 Move to PointOfInterest，驱动敌人移动至该点。整个流程形成了：攻击 → EQS 查询最优走位点 → 移动至走位点 → 重新评估距离 → 再次攻击的战术循环。
+
+{/* ![EQS 运行时调试可视化（绿色=高分可选，红色=被剔除，蓝色=最终选中的最优点）](/images/docs/echo-quest/ch6-enemy-ai/eqs-strafe-debug.png) */}
+
+{/* ![PIE 运行时敌人战术走位效果 — 敌人在攻击后沿 EQS 查询结果环绕走位](/images/docs/echo-quest/ch6-enemy-ai/eqs-strafe-ingame.png) */}
+
+### 6.3.3 EQS 在项目中的设计考量
+
+**为什么不直接随机移动？**
+
+简单的随机移动会导致两个问题：敌人可能移动到墙壁后方或不可达区域导致卡死，或者移动到离玩家极远的位置破坏战斗节奏。EQS 通过 Distance Test 和 Path Exists Test 的双重约束，确保走位点始终在合理的战斗范围内且物理可达。
+
+**为什么只用 5 个点？**
+
+EQS 查询存在性能开销，候选点越多，每帧的测试计算量越大。对于近战敌人的走位需求，5 个等距环形点已足够覆盖玩家周围的前、后、左、右及侧后方，在保证战术多样性的前提下将查询开销降到最低。
+
+**后续扩展方向：**
+
+- **Dot Product Test（方向偏好）**：加入与敌人面朝方向的点乘测试，使敌人倾向于选择侧面或背面的走位点，模拟"包抄"战术；
+- **多敌人协同**：当场景中存在多个敌人时，加入 Distance to Other Queriers 测试，使不同敌人之间保持距离，避免扎堆站在同一位置，实现群体 AI 的基础分散站位。

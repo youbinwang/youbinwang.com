@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-01 13:00 (UTC+8)
+> **更新时间**：2026-04-01 21:30 (UTC+8)
 
 ---
 
@@ -145,14 +145,17 @@
 | 103 | Docs TOC 贴右边缘 | `.right-sidebar` 改为 `position: fixed; right: 0`，正文 `margin-inline: auto` 居中；首页 `tableOfContents: false` 移除 TOC |
 | 104 | Echo Quest Steps 修复 | 4 个章节（GAS/战斗/打击感/敌人AI）`<Steps>` 在 dev 模式崩溃——嵌套 JSX 导致 MDX 无法解析 `<ol>`；全部改为普通有序列表 |
 | 105 | 侧边栏概览标签 | "〇、概览" → "概览" |
+| 106 | Echo Quest 文档标题精简 | 6 章中 5 处过长 h2 标题缩短（"以X为例，说明Y在项目中的实现" → 简洁动宾短语）；英文版标题已精简，无需改动 |
+| 107 | Echo Quest 文档图片系统建立 | 图片路径从 `/images/echo-quest/` 迁移至 `/images/docs/echo-quest/ch{n}-{slug}/`，按章节分文件夹；GAS 章节（ch1）已完成：11 张截图复制重命名 + gas-system.mdx 全部图位更新（10 处插入，1 处无截图保留注释） |
+| 108 | Echo Quest 文档内容修正（以 EchoQuest_Revised.md 为准） | gas-system.mdx：注释掉缺失的 gsc-input-binding.png（后恢复，图片存在）；1.3 节从有序列表改为 `### 1.3.1`—`### 1.3.8` 子标题结构（TOC 现可显示所有子节点）；`ga-dodge-cost-cooldown.png` 移至 1.3.6，`ga-dodge-montage.png` 移至 1.3.8；补充 GE_Cooldown_Dodge「在当前技能结束后」关键时序；enemy-ai.mdx：补写完整的 6.2.4 节（BTT/BTD 原子节点清单，10 个 BTTask + 3 个 BTDecorator）和 6.3 节（EQS 系统：原理 + EQS_Strafe 实现 + 设计考量） |
 
 ---
 
-## 四、已知 Bug
+## 四、已知 Bug / 已知行为
 
 | # | 问题 | 原因 | 状态 |
 | --- | --- | --- | --- |
-| — | 暂无已知 Bug | — | ✅ |
+| 1 | **Docs `<Tabs>` 在 dev server 显示为原始 HTML 文本** | Astro 6.x dev server 中 `Astro.slots.render()` 对 Starlight `<Tabs>` 内容做了错误 HTML 编码，导致 `processPanels()` 将内容解析为文本节点而非 HTML 元素，tab 按钮不生成，内容以实体字符显示。**生产构建（`astro build`）完全正常**。查看文档效果请始终使用 preview server（`astro preview`），不要以 dev server 为准 | ⚠️ Dev-only，不修复 |
 
 ---
 
@@ -206,6 +209,7 @@
 8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段；三部电影 description + synopsis 中英双语文案全面重写）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
 10. **Docs 首页封面图方案**：当前 LinkCard + 三行描述（引擎·性质 / 游戏类型 / 文档描述）为过渡方案，等 10 个 Key Features MDX 和游戏截图全部填充后，改用自定义卡片组件（含 coverImage 缩略图）。同时首个 section 与分割线间距问题暂留，一并在封面图方案中解决
+11. **Echo Quest 文档配图**：⏳ 进行中，见第九节
 
 ### 代码质量备注
 
@@ -306,3 +310,65 @@ document.addEventListener("astro:after-swap", initGallery);
 2. 游戏 gallery 截图、videoId 填充
 3. Photography / Graphic Design 页面内容
 4. 部署（Cloudflare Pages 配置）
+
+---
+
+## 九、Echo Quest 文档配图工作流
+
+### 图片路径规范
+
+- **目标目录**：`public/images/docs/echo-quest/ch{n}-{slug}/`
+- **URL 路径**：`/images/docs/echo-quest/ch{n}-{slug}/filename.png`
+- **命名**：全小写 kebab-case，清晰描述内容，支持 .png / .jpg / .jpeg
+
+### 截图源文件位置（公司 Windows）
+
+```text
+H:\My Site\Projects\Echo Quest\文档截图\
+├── GAS\               → ch1-gas        （11 张，✅ 已完成）
+├── Combo Graph\       → ch2-combat     （6 张，⏳ 待处理）
+├── 打击感\            → ch3-hit-feedback（10 张，⏳ 待处理）
+├── 角色动画系统\       → ch4-animation  （19 张，⏳ 待处理）
+├── Motion Warping\    → ch5-motion-warping（9 张，⏳ 待处理）
+└── 敌人 AI 与 EQS\    → ch6-enemy-ai   （24 张，⏳ 待处理）
+```
+
+### 各章节完成状态
+
+| 章节 | 目标文件夹 | 截图数 | MDX 文件 | 状态 |
+| --- | --- | --- | --- | --- |
+| 第 1 章 GAS | ch1-gas | 11 | gas-system.mdx | ✅ 完成 |
+| 第 2 章 战斗系统 | ch2-combat | 6 | combat-system.mdx | ⏳ 待处理 |
+| 第 3 章 打击感 | ch3-hit-feedback | 10 | hit-feedback.mdx | ⏳ 待处理 |
+| 第 4 章 动画系统 | ch4-animation | 19 | animation.mdx | ⏳ 待处理 |
+| 第 5 章 Motion Warping | ch5-motion-warping | 9 | motion-warping.mdx | ⏳ 待处理 |
+| 第 6 章 敌人 AI | ch6-enemy-ai | 24 | enemy-ai.mdx | ⏳ 待处理 |
+
+### ch1-gas 图片命名对照（已完成）
+
+| 文件名 | 内容 |
+| --- | --- |
+| gas-folder-structure.png | UE5 GAS Blueprint 文件夹结构（Attributes/GA/GC/GE/GrantedEffect） |
+| gas-attributes-datatable.png | AttributeSet DataTable 数值行 |
+| ga-dodge-blueprint.png | GA_Dodge 完整蓝图逻辑（大图总览） |
+| ga-dodge-montage.png | PlayMontageAndWait 节点配置 |
+| gc-dodge-spawn-blueprint.png | Gameplay Cue Spawn System Attached 蓝图 |
+| gc-dodge-tag-config.png | GameplayCue Tag 配置面板（PrefectDodge） |
+| gc-dodge-vfx-preview.png | 闪避拖尾粒子特效视口预览 |
+| ga-dodge-tags.png | GA_Dodge Tag 配置（Ability Tags / Block Abilities） |
+| ga-dodge-cost-cooldown.png | GA 中 Cost/Cooldown GameplayEffect 类指定 |
+| ge-cost-dodge.png | GE_Cost_Dodge（Stamina -5，Instant） |
+| ge-cooldown-dodge.png | GE_Cooldown_Dodge（Duration 1s + Cooldown.Dodge Tag） |
+
+> 注：GSC_InputBinding 截图（步骤 2）本批次未提供，对应图位保留注释 `{/* ... */}`。
+
+### 标准执行流程（每章节）
+
+1. AI 查看源文件夹所有图片（Read 工具）
+2. 输出「文件名 → 内容描述 → 建议命名」映射表
+3. 用户确认后，AI 执行：
+   - `mkdir -p public/images/docs/echo-quest/ch{n}-{slug}/`
+   - `cp` 批量复制并重命名
+4. AI 读取对应 MDX，在正确位置插入 `![alt](/images/docs/echo-quest/...)` 语法（解注释旧占位 + 新增超出占位的图）
+5. `astro build` 验证零错误
+6. 验证生产 HTML 中图片路径正确
