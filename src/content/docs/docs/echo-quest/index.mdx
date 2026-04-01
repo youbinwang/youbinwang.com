@@ -3,32 +3,26 @@ title: Echo Quest 技术实现文档
 description: Echo Quest 3D ARPG 技术实现文档 — 涵盖 GAS、战斗系统、打击感、动画系统、Motion Warping 与敌人 AI
 ---
 
-import { LinkCard, CardGrid, Aside, Badge } from '@astrojs/starlight/components';
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
 
-<Aside type="tip" title="项目定位">
-Echo Quest 是一个 **3D 动作 RPG 技术展示项目**，基于 **Unreal Engine 5** 开发，聚焦于战斗系统与角色动作的工业化实现方案。
-</Aside>
-
-| 属性 | 信息 |
-|------|------|
-| **引擎** | Unreal Engine 5.3 |
-| **类型** | 3D Action RPG（技术 Demo） |
-| **核心技术** | GAS · ComboGraph · Lyra Animation · Motion Warping · Behavior Tree · EQS |
-| **开发规模** | 个人独立开发 |
+Echo Quest 是一个基于 **Unreal Engine 5.3** 的 **3D 动作 RPG 技术展示项目**，个人独立开发，聚焦战斗系统与角色动作的工业化实现方案。本文档涵盖六大核心系统，按从底层框架到上层表现的顺序组织。
 
 ---
 
-## 文档目录
-
-本文档涵盖六大核心系统，按照从底层框架到上层表现的顺序组织：
+### 底层框架
 
 <CardGrid>
-  <LinkCard title="1. GAS (Gameplay Ability System)" href="/docs/echo-quest/gas-system/" description="GAS 核心组件解析、技术选型理由，以闪避为例说明完整数据流" />
+  <LinkCard title="1. GAS (Gameplay Ability System)" href="/docs/echo-quest/gas-system/" description="核心组件解析、技术选型理由，以闪避为例说明完整数据流" />
   <LinkCard title="2. 战斗系统（ComboGraph）" href="/docs/echo-quest/combat-system/" description="ComboGraph 技术选型、轻攻击 Combo 实现、碰撞检测与射线检测" />
-  <LinkCard title="3. 打击感的构成与实现" href="/docs/echo-quest/hit-feedback/" description="动作游戏打击感的感官维度分类、索敌与受击判定、玩家与敌人侧表现" />
-  <LinkCard title="4. 角色动画系统" href="/docs/echo-quest/animation/" description="Lyra 动画蓝图架构、线程安全更新、分层动画接口、Distance Matching 与 Foot IK" />
-  <LinkCard title="5. Motion Warping" href="/docs/echo-quest/motion-warping/" description="Motion Warping 原理与技术选型、近战攻击吸附实现、双轨协同配置" />
-  <LinkCard title="6. 敌人 AI 与 EQS" href="/docs/echo-quest/enemy-ai/" description="敌人 AI 三层架构、近战敌人全流程详解、环境查询系统（EQS）" />
+  <LinkCard title="3. 打击感的构成与实现" href="/docs/echo-quest/hit-feedback/" description="感官维度分类、索敌与受击判定、玩家侧与敌人侧表现" />
+</CardGrid>
+
+### 表现与 AI
+
+<CardGrid>
+  <LinkCard title="4. 角色动画系统" href="/docs/echo-quest/animation/" description="Lyra 动画蓝图架构、线程安全更新、Distance Matching 与 Foot IK" />
+  <LinkCard title="5. Motion Warping" href="/docs/echo-quest/motion-warping/" description="Motion Warping 原理与技术选型、近战攻击吸附、双轨协同配置" />
+  <LinkCard title="6. 敌人 AI 与 EQS" href="/docs/echo-quest/enemy-ai/" description="三层架构、近战敌人全流程详解、环境查询系统（EQS）" />
 </CardGrid>
 
 ---

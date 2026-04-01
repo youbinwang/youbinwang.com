@@ -1,10 +1,7 @@
 ---
 /**
- * Custom Starlight Sidebar — only shows:
- * 1. "📚 Docs Home" link (always visible)
- * 2. The sidebar group matching the current page's project
- *
- * This replaces the default Sidebar which shows ALL projects.
+ * Custom Starlight Sidebar — shows all projects.
+ * Auto-expands the group matching the current page's project.
  */
 import MobileMenuFooter from "virtual:starlight/components/MobileMenuFooter";
 import SidebarPersister from "@astrojs/starlight/components/SidebarPersister.astro";
@@ -14,55 +11,22 @@ const { sidebar } = Astro.locals.starlightRoute;
 const currentPath = Astro.url.pathname;
 
 // Determine which project the current page belongs to
-// URLs: /docs/echo-quest/gas-system/ → project = "echo-quest"
-//       /en/docs/the-camera/ → project = "the-camera"
 const pathMatch = currentPath.match(/\/docs\/([^/]+)/);
 const currentProject = pathMatch ? pathMatch[1] : null;
 
-// Filter sidebar: keep "Docs Home" link + only the matching project group
-const filteredSidebar = sidebar.filter((entry: any) => {
-    // Always show the Docs Home link
-    if (
-        entry.type === "link" &&
-        entry.href?.includes("/docs/") &&
-        !entry.href?.match(/\/docs\/[^/]+/)
-    ) {
-        return true;
-    }
-    // For the /docs/ index page itself, show all items
-    if (!currentProject) {
-        return true;
-    }
-    // Show the group whose items contain a link matching the current project
+// Auto-expand only the matching project group, collapse others
+sidebar.forEach((entry: any) => {
     if (entry.type === "group") {
-        const hasMatchingItem = entry.entries?.some((sub: any) => {
-            if (sub.type === "link" && sub.href) {
-                return sub.href.includes(`/docs/${currentProject}`);
-            }
-            return false;
-        });
-        return hasMatchingItem;
-    }
-    // Show any top-level link matching the current project
-    if (
-        entry.type === "link" &&
-        entry.href?.includes(`/docs/${currentProject}`)
-    ) {
-        return true;
-    }
-    return false;
-});
-
-// Auto-expand the matching group
-filteredSidebar.forEach((entry: any) => {
-    if (entry.type === "group") {
-        entry.collapsed = false;
+        const hasMatchingItem = entry.entries?.some((sub: any) =>
+            sub.type === "link" && sub.href?.includes(`/docs/${currentProject}`)
+        );
+        entry.collapsed = !hasMatchingItem;
     }
 });
 ---
 
 <SidebarPersister>
-    <SidebarSublist sublist={filteredSidebar} />
+    <SidebarSublist sublist={sidebar} />
 </SidebarPersister>
 
 <div class="md:sl-hidden">

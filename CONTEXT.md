@@ -200,6 +200,7 @@
 7. ~~**音乐页面**~~：✅ 已完成（videoId 已配置，文案已完成中英双语重写，无需 coverImage）
 8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段；三部电影 description + synopsis 中英双语文案全面重写）
 9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
+10. **Docs 首页封面图方案**：当前 LinkCard + 三行描述（引擎·性质 / 游戏类型 / 文档描述）为过渡方案，等 10 个 Key Features MDX 和游戏截图全部填充后，改用自定义卡片组件（含 coverImage 缩略图）。同时首个 section 与分割线间距问题暂留，一并在封面图方案中解决
 
 ### 代码质量备注
 

@@ -250,7 +250,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         left: 0.75rem;
         right: 0.75rem;
         height: 2px;
-        background: var(--color-accent);
+        background: var(--color-accent, var(--sl-color-accent));
         border-radius: 1px;
     }
 
@@ -354,8 +354,8 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         text-decoration: none !important;
     }
     .docs-icon-link.active {
-        color: var(--color-accent);
-        box-shadow: 0 2px 0 0 var(--color-accent);
+        color: var(--color-accent, var(--sl-color-accent));
+        box-shadow: 0 2px 0 0 var(--color-accent, var(--sl-color-accent));
     }
     .docs-icon {
         width: 18px;
