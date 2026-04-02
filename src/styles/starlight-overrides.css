@@ -14,7 +14,8 @@ html {
   --sl-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans SC', 'PingFang SC',
     'Microsoft YaHei', sans-serif;
-  --sl-content-width: 56rem;
+  --sl-content-width: 43rem;
+  /* 688px — VitePress default, optimal line length */
 }
 
 /* ─── Custom Starlight header overrides ────────────────────────────── */
@@ -33,9 +34,21 @@ header.header a {
   text-decoration: none !important;
 }
 
-/* ─── Sidebar polish ───────────────────────────────────────────────── */
+/* ─── Sidebar polish (VitePress-inspired) ─────────────────────────── */
+
+/* Left sidebar background — subtle tint to distinguish from content */
+.sidebar-pane {
+  background-color: var(--sl-color-bg-sidebar, rgba(128, 128, 128, 0.03)) !important;
+}
+
 nav.sidebar {
   padding-top: 1rem;
+}
+
+/* Top-level sidebar groups — divider line between each */
+ul.top-level>li+li {
+  border-top: 1px solid var(--sl-color-hairline-shade, rgba(128, 128, 128, 0.12));
+  padding-top: 0.75rem;
 }
 
 nav.sidebar a {
@@ -53,63 +66,172 @@ nav.sidebar a[aria-current="page"] {
   font-weight: 600;
 }
 
-/* ─── TOC (right sidebar) — pinned to far-right edge ─────────────── */
-@media (min-width: 72rem) {
+/* ─── Three-column layout — cap & centre on wide screens ─────────── */
+/* Inspired by DDT docs: entire page layout lives inside a centred    */
+/* max-width container so sidebars don't fly to viewport edges.       */
 
-  /* Container reserves exactly sidebar-width in the flex layout */
-  .right-sidebar-container {
-    width: var(--sl-sidebar-width);
-  }
+/* Cap the whole page wrapper and centre it */
+.page {
+  max-width: 90rem;
+  /* 1440px */
+  margin-inline: auto;
+}
 
-  /* Fixed TOC panel pinned to viewport right edge */
-  .right-sidebar {
-    right: 0;
-    left: auto;
-    width: var(--sl-sidebar-width);
-  }
-
-  /* Main pane fills the rest; content centers with margin-inline: auto */
-  [data-has-sidebar][data-has-toc] .main-pane {
-    width: calc(100% - var(--sl-sidebar-width));
-    --sl-content-margin-inline: auto;
-  }
-
-  /* Bug #2 fix: no-TOC pages (e.g. docs index) — constrain main-pane to the
-     same width as with-TOC pages so the content left edge aligns consistently.
-     Without this, main-pane is 100% wide and sl-container centering shifts
-     the content ~106px right at 1440px, creating a jarring jump when navigating
-     between the docs index and regular docs pages. */
-  [data-has-sidebar]:not([data-has-toc]) .main-pane {
-    width: calc(100% - var(--sl-sidebar-width));
+/* The left sidebar's fixed pane must be constrained to the centred   */
+/* container rather than the full viewport.                            */
+@media (min-width: 50rem) {
+  [data-has-sidebar] .sidebar-pane {
+    /* Override Starlight's inset-inline-start: 0 so it follows the   */
+    /* centred container. We use left: max(0px, ...) to pin to the    */
+    /* container's left edge.                                          */
+    inset-inline-start: max(0px, calc((100vw - 90rem) / 2)) !important;
   }
 }
 
+/* The right sidebar (TOC) panel needs the same treatment.             */
+@media (min-width: 72rem) {
+
+  .right-sidebar {
+    /* Override position: fixed + width:100% to respect container.     */
+    /* Shift the right edge inward by the same amount.                 */
+    width: var(--sl-sidebar-width) !important;
+    right: max(0px, calc((100vw - 90rem) / 2)) !important;
+    left: auto !important;
+    /* Remove Starlight's default left border — we use our own
+       border on starlight-toc ul instead (VitePress style) */
+    border-inline-start: none !important;
+  }
+}
+
+/* ─── TOC (right sidebar) — VitePress-inspired style ─────────────── */
+/* Vertical line only spans the content, active item gets a highlight  */
+
 starlight-toc {
-  padding-left: 1.5rem;
+  padding-left: 1rem;
+}
+
+/* The nav container gets a left border = the track line */
+starlight-toc nav {
+  position: relative;
+}
+
+/* Vertical track line — only on the top-level list */
+starlight-toc>nav>ul {
+  border-left: 1px solid var(--sl-color-hairline-shade, rgba(128, 128, 128, 0.15));
+}
+
+/* Nested lists (h3 items under h2) — indent further, no extra border */
+starlight-toc ul ul {
+  border-left: none;
+  padding-left: 0.75rem;
 }
 
 starlight-toc a {
-  transition: color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  border-left: 2px solid transparent;
+  margin-left: -1px;
+  /* overlap the ul border */
+  padding-left: 0.75rem;
+}
+
+starlight-toc a:hover {
+  color: var(--sl-color-white);
+  border-left-color: rgba(128, 128, 128, 0.3);
 }
 
 starlight-toc a[aria-current="true"] {
   color: var(--sl-color-accent);
-  border-color: var(--sl-color-accent);
+  border-left-color: var(--sl-color-accent);
+  background-color: rgba(255, 147, 0, 0.06);
+  border-radius: 0 0.25rem 0.25rem 0;
 }
 
 /* ─── Content area ─────────────────────────────────────────────────── */
 .sl-markdown-content {
-  line-height: 1.8;
+  font-size: 1rem;
+  /* 16px — body text */
+  line-height: 1.75;
+  /* VitePress default */
+}
+
+/* Paragraph spacing */
+.sl-markdown-content p {
+  margin-bottom: 1rem;
+}
+
+/* ─── Heading typography scale ────────────────────────────────────── */
+/* Inspired by DDT docs — clean, no border, spacing-driven hierarchy  */
+
+.sl-markdown-content h1,
+.content-panel h1,
+[data-page-type="doc"] h1 {
+  font-size: 1.75rem;
+  /* 28px — VitePress h1 */
+  line-height: 1.3;
+  padding-bottom: 0.75rem;
+  border-bottom: none !important;
+}
+
+/* Remove divider between Starlight content panels (title panel / body panel) */
+.content-panel+.content-panel {
+  border-top: none !important;
 }
 
 .sl-markdown-content h2 {
-  margin-top: 2.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--sl-color-gray-5, rgba(0, 0, 0, 0.1));
+  font-size: 1.5rem;
+  /* 24px — VitePress h2 */
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+  /* VitePress-style: divider line above h2 (content width, no bleed) */
+  border-top: 1px solid var(--sl-color-hairline-shade, rgba(128, 128, 128, 0.12));
+  margin-top: 3rem;
+  padding-top: 1.5rem;
 }
 
 .sl-markdown-content h3 {
+  font-size: 1.25rem;
+  /* 20px — VitePress h3 */
+  line-height: 1.5;
+  margin-top: 2rem;
+}
+
+.sl-markdown-content h4 {
+  font-size: 1rem;
+  /* 16px — detail headings, bold */
+  line-height: 1.6;
+  font-weight: 600;
   margin-top: 1.5rem;
+}
+
+/* ─── Table styling (zebra stripes, clean borders) ────────────────── */
+.sl-markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  /* 15px — slightly smaller than body */
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sl-markdown-content th {
+  background: rgba(128, 128, 128, 0.08);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 2px solid rgba(128, 128, 128, 0.15);
+}
+
+.sl-markdown-content td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+}
+
+.sl-markdown-content tbody tr:nth-child(even) {
+  background: rgba(128, 128, 128, 0.03);
+}
+
+.sl-markdown-content tbody tr:hover {
+  background: rgba(255, 147, 0, 0.04);
 }
 
 .sl-markdown-content code:not(pre code) {
@@ -135,9 +257,12 @@ starlight-toc a[aria-current="true"] {
   color: var(--sl-color-accent-high);
 }
 
+/* ─── Image styling (rounded + spacing) ───────────────────────────── */
 .sl-markdown-content img {
   border-radius: 0.5rem;
   border: 1px solid rgba(128, 128, 128, 0.1);
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .sl-markdown-content blockquote {

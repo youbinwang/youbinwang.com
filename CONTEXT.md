@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-02 02:50 (UTC+8)
+> **更新时间**：2026-04-02 17:50 (UTC+8)
 
 ---
 
@@ -18,7 +18,7 @@
 
 ### 构建状态
 
-- ✅ 零错误，**91 个页面**
+- ✅ 零错误，**91 个页面**（需重新 build 确认）
 - Astro v6.0.8 + Starlight + Tailwind CSS 4 + React Islands
 
 ### 已完成的 Steps
@@ -141,11 +141,18 @@
 | 99 | Echo Quest keywords 更新 | cn: "战斗、关卡策划" → "战斗与关卡设计 Demo"；元素秘境 cn: Demo 前加空格 |
 | 100 | 中英文 Featured 顺序统一 | cnFeaturedSlugs 调整为与 enFeaturedSlugs 一致：echo-quest → elemental-realm → on-the-road → the-scholars-side-quest → shepherds |
 | 101 | Docs TOC 标签重命名 | "本页内容" → "本页导航"：新建 `src/content/i18n/zh-CN.json` Starlight i18n 覆盖；`content.config.ts` 补全 `i18n` 集合定义（之前缺失导致翻译不加载） |
-| 102 | Docs 正文加宽 | `--sl-content-width: 48rem` → `56rem`，与 Portfolio 正文宽度统一 |
+| 102 | Docs 正文加宽 | ~~`--sl-content-width: 48rem` → `56rem`~~ → 最终改为 `43rem`（688px，VitePress 默认），见 #114 |
 | 103 | Docs TOC 贴右边缘 | `.right-sidebar` 改为 `position: fixed; right: 0`，正文 `margin-inline: auto` 居中；首页 `tableOfContents: false` 移除 TOC |
 | 104 | Echo Quest Steps 修复 | 4 个章节（GAS/战斗/打击感/敌人AI）`<Steps>` 在 dev 模式崩溃——嵌套 JSX 导致 MDX 无法解析 `<ol>`；全部改为普通有序列表 |
 | 105 | 侧边栏概览标签 | "〇、概览" → "概览" |
 | 106 | Echo Quest 文档标题精简 | 6 章中 5 处过长 h2 标题缩短（"以X为例，说明Y在项目中的实现" → 简洁动宾短语）；英文版标题已精简，无需改动 |
+| 113 | Echo Quest h2 标题格式统一 | 6 个 MDX 的"项目实现"类 h2 统一为"以 X 为例，说明 Y 在项目中的实现"格式；同步更新 index.mdx LinkCard description 和 EchoQuest_Revised.md |
+| 114 | 文档页字号体系重制（VitePress 对标） | 全面对标 VitePress 默认主题字号：h1 1.75rem(28px), h2 1.5rem(24px), h3 1.25rem(20px), h4 1rem(16px bold), 正文 1rem(16px), 行高 1.75；内容区宽度 56rem→43rem(688px)；段落间距 1.25rem→1rem |
+| 115 | h2 VitePress 分割线 | 每个 h2 上方加 `border-top` 分割线（靠近标题下方），`margin-top: 3rem + padding-top: 1.5rem`；去掉 h1 下方 Starlight 默认分割线（`border-bottom: none` + `.content-panel+.content-panel border-top: none`） |
+| 116 | 左侧栏 VitePress 风格 | sidebar 背景色微灰底区分；顶级分组间加分隔线（`ul.top-level > li + li`） |
+| 117 | 右侧 TOC VitePress 风格 | 去掉 Starlight 默认 `.right-sidebar border-inline-start`；TOC 竖线只画在顶级 `ul`（内容高度）；子级 `ul ul` 缩进 0.75rem 无竖线；active 项橙色左竖条 + 浅橙底色；hover 灰色竖条提示 |
+| 118 | 表格 VitePress 风格 | 斑马条纹（偶数行微灰底）、灰底表头、2px 表头下线、hover 行高亮（浅橙）、表格字号 15px |
+| 119 | 三栏布局限宽居中 | `.page max-width: 90rem(1440px) + margin-inline: auto`；左侧栏 `inset-inline-start: max(0px, (100vw-90rem)/2)`；右侧 TOC `right: max(0px, (100vw-90rem)/2)`——超宽屏上三栏居中，≤1440px 无影响 |
 | 107 | Echo Quest 文档图片系统建立 | 图片路径从 `/images/echo-quest/` 迁移至 `/images/docs/echo-quest/ch{n}-{slug}/`，按章节分文件夹；GAS 章节（ch1）已完成：11 张截图复制重命名 + gas-system.mdx 全部图位更新（10 处插入，1 处无截图保留注释） |
 | 108 | Echo Quest 文档内容修正（以 EchoQuest_Revised.md 为准） | gas-system.mdx：注释掉缺失的 gsc-input-binding.png（后恢复，图片存在）；1.3 节从有序列表改为 `### 1.3.1`—`### 1.3.8` 子标题结构（TOC 现可显示所有子节点）；`ga-dodge-cost-cooldown.png` 移至 1.3.6，`ga-dodge-montage.png` 移至 1.3.8；补充 GE_Cooldown_Dodge「在当前技能结束后」关键时序；enemy-ai.mdx：补写完整的 6.2.4 节（BTT/BTD 原子节点清单，10 个 BTTask + 3 个 BTDecorator）和 6.3 节（EQS 系统：原理 + EQS_Strafe 实现 + 设计考量） |
 | 109 | Echo Quest 文档 Tabs 组件移除 | enemy-ai.mdx：`<Tabs>`/`<TabItem>` 4 个 tab（BeingHit/Combat/Investigating/Passive）改为 `####` 四级标题，消除 dev server HTML 编码错误（Bug #1）；5 个 MDX 文件清理多余 import（Tabs/TabItem/Steps），统一只保留 `import { Aside }` |
