@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-02 17:50 (UTC+8)
+> **更新时间**：2026-04-03 (UTC+8)
 
 ---
 
@@ -153,6 +153,9 @@
 | 117 | 右侧 TOC VitePress 风格 | 去掉 Starlight 默认 `.right-sidebar border-inline-start`；TOC 竖线只画在顶级 `ul`（内容高度）；子级 `ul ul` 缩进 0.75rem 无竖线；active 项橙色左竖条 + 浅橙底色；hover 灰色竖条提示 |
 | 118 | 表格 VitePress 风格 | 斑马条纹（偶数行微灰底）、灰底表头、2px 表头下线、hover 行高亮（浅橙）、表格字号 15px |
 | 119 | 三栏布局限宽居中 | `.page max-width: 90rem(1440px) + margin-inline: auto`；左侧栏 `inset-inline-start: max(0px, (100vw-90rem)/2)`；右侧 TOC `right: max(0px, (100vw-90rem)/2)`——超宽屏上三栏居中，≤1440px 无影响 |
+| 120 | 文档页内容列非对称 padding 修复 | 去掉 `[data-has-sidebar] .main-pane { padding-inline-start: 1.5rem }`（造成左边距 56px、右边距 32px 不对称，h2 border 偏右）；改为依赖 `.content-panel` 自身的对称 `--sl-content-pad-x: 2rem`（两侧各 32px）；同时将 `.sl-container` 改为 `margin-inline: auto !important`（居中，与 VitePress 一致） |
+| 121 | TOC 全高竖线去除 | `.right-sidebar { border-inline-start: none !important }`——去掉从顶部到底部贯穿整个 TOC 区域的竖线；内容等高竖线（`starlight-toc > nav > ul { border-left }`）保留 |
+| 122 | TOC 样式重做（VitePress 风格） | 标题与列表间空隙：`nav > ul { margin-top: 0.75rem }`；条目间距：`padding-block: 0.3rem` + `line-height: 1.5`；active 项：`border-left: 2px solid accent` + `font-weight: 600`（去掉浅橙底色）；hover：半透明橙色竖条 |
 | 107 | Echo Quest 文档图片系统建立 | 图片路径从 `/images/echo-quest/` 迁移至 `/images/docs/echo-quest/ch{n}-{slug}/`，按章节分文件夹；GAS 章节（ch1）已完成：11 张截图复制重命名 + gas-system.mdx 全部图位更新（10 处插入，1 处无截图保留注释） |
 | 108 | Echo Quest 文档内容修正（以 EchoQuest_Revised.md 为准） | gas-system.mdx：注释掉缺失的 gsc-input-binding.png（后恢复，图片存在）；1.3 节从有序列表改为 `### 1.3.1`—`### 1.3.8` 子标题结构（TOC 现可显示所有子节点）；`ga-dodge-cost-cooldown.png` 移至 1.3.6，`ga-dodge-montage.png` 移至 1.3.8；补充 GE_Cooldown_Dodge「在当前技能结束后」关键时序；enemy-ai.mdx：补写完整的 6.2.4 节（BTT/BTD 原子节点清单，10 个 BTTask + 3 个 BTDecorator）和 6.3 节（EQS 系统：原理 + EQS_Strafe 实现 + 设计考量） |
 | 109 | Echo Quest 文档 Tabs 组件移除 | enemy-ai.mdx：`<Tabs>`/`<TabItem>` 4 个 tab（BeingHit/Combat/Investigating/Passive）改为 `####` 四级标题，消除 dev server HTML 编码错误（Bug #1）；5 个 MDX 文件清理多余 import（Tabs/TabItem/Steps），统一只保留 `import { Aside }` |
@@ -168,6 +171,7 @@
 | --- | --- | --- | --- |
 | 1 | ~~Docs `<Tabs>` 在 dev server 显示为原始 HTML 文本~~ | 已通过将 `<Tabs>` 改为普通 Markdown `####` 标题解决（Bug #109），不再依赖 Starlight Tabs 组件。**后续优化**：当前四级标题方案功能正常但页面较长，原 Tabs 在视觉和语义上更优（并列状态按需切换）。可考虑用原生 HTML `<details>/<summary>` 实现手风琴折叠效果（不依赖 Starlight 组件，dev server 无兼容问题）；或等 Astro/Starlight 修复 dev server HTML 编码 Bug 后改回 `<Tabs>` | ✅ 已修复（待优化） |
 | 2 | ~~**Docs 首页（`/docs/`）内容未居中**~~ | 根因：有 TOC 页 `main-pane = 100% - sidebar-width`（内容从 ~316px 起），无 TOC 页 `main-pane = 100%`（`sl-container` 居中后从 ~422px 起），切换时左边缘跳变 106px，视觉上显得「偏左」。修复：在 `starlight-overrides.css` 中为 `[data-has-sidebar]:not([data-has-toc]) .main-pane` 添加相同的宽度约束 `width: calc(100% - var(--sl-sidebar-width))`，消除切换时的位置漂移 | ✅ 已修复 |
+| 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
 
 ---
 

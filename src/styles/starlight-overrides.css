@@ -36,13 +36,50 @@ header.header a {
 
 /* ─── Sidebar polish (VitePress-inspired) ─────────────────────────── */
 
-/* Left sidebar background — subtle tint to distinguish from content */
+/* Left sidebar background — VitePress-style gray tint + right divider */
 .sidebar-pane {
-  background-color: var(--sl-color-bg-sidebar, rgba(128, 128, 128, 0.03)) !important;
+  background-color: #f6f6f7 !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.07) !important;
+}
+
+[data-theme="dark"] .sidebar-pane {
+  background-color: #161618 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Content padding: match VitePress 32px breathing room on both sides */
+@media (min-width: 72rem) {
+  :root {
+    --sl-content-pad-x: 2rem;
+  }
+}
+
+/* On ultra-wide screens (>1440px), fill the left gap between
+   viewport edge and the centered container with the same gray.
+   sidebar-pane starts at (100vw - 90rem) / 2; this strip covers 0 → that offset. */
+@media (min-width: 50rem) {
+  [data-has-sidebar] body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: max(0px, calc((100vw - 90rem) / 2));
+    background-color: #f6f6f7;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  [data-theme="dark"] [data-has-sidebar] body::before {
+    background-color: #161618;
+  }
 }
 
 nav.sidebar {
   padding-top: 1rem;
+  /* Extra right padding — nav links don't extend to sidebar edge,
+     creates visual breathing room before content starts */
+  padding-right: 1.5rem;
 }
 
 /* Top-level sidebar groups — divider line between each */
@@ -97,53 +134,54 @@ nav.sidebar a[aria-current="page"] {
     width: var(--sl-sidebar-width) !important;
     right: max(0px, calc((100vw - 90rem) / 2)) !important;
     left: auto !important;
-    /* Remove Starlight's default left border — we use our own
-       border on starlight-toc ul instead (VitePress style) */
     border-inline-start: none !important;
+  }
+
+  /* Remove single-sided padding — content-panel's symmetric --sl-content-pad-x
+     already provides balanced gaps on both sides (like VitePress's 32px each) */
+
+  /* Center sl-container like VitePress (auto margin on both sides) */
+  [data-has-sidebar][data-has-toc] .main-pane .sl-container {
+    margin-inline: auto !important;
   }
 }
 
 /* ─── TOC (right sidebar) — VitePress-inspired style ─────────────── */
-/* Vertical line only spans the content, active item gets a highlight  */
 
 starlight-toc {
-  padding-left: 1rem;
+  padding-left: 1.5rem;
 }
 
-/* The nav container gets a left border = the track line */
-starlight-toc nav {
-  position: relative;
-}
-
-/* Vertical track line — only on the top-level list */
+/* Vertical track line — content height only */
 starlight-toc>nav>ul {
   border-left: 1px solid var(--sl-color-hairline-shade, rgba(128, 128, 128, 0.15));
+  margin-top: 0.75rem;
+  /* gap between "页面导航" title and list */
 }
 
-/* Nested lists (h3 items under h2) — indent further, no extra border */
+/* Nested lists (h3 items) — indent only */
 starlight-toc ul ul {
-  border-left: none;
   padding-left: 0.75rem;
 }
 
 starlight-toc a {
   transition: color 0.15s ease, border-color 0.15s ease;
+  padding-block: 0.3rem;
+  line-height: 1.5;
   border-left: 2px solid transparent;
   margin-left: -1px;
-  /* overlap the ul border */
   padding-left: 0.75rem;
 }
 
 starlight-toc a:hover {
-  color: var(--sl-color-white);
-  border-left-color: rgba(128, 128, 128, 0.3);
+  color: var(--sl-color-accent);
+  border-left-color: rgba(255, 147, 0, 0.4);
 }
 
 starlight-toc a[aria-current="true"] {
   color: var(--sl-color-accent);
+  font-weight: 600;
   border-left-color: var(--sl-color-accent);
-  background-color: rgba(255, 147, 0, 0.06);
-  border-radius: 0 0.25rem 0.25rem 0;
 }
 
 /* ─── Content area ─────────────────────────────────────────────────── */
@@ -182,10 +220,14 @@ starlight-toc a[aria-current="true"] {
   /* 24px — VitePress h2 */
   line-height: 1.4;
   margin-bottom: 0.75rem;
-  /* VitePress-style: divider line above h2 (content width, no bleed) */
-  border-top: 1px solid var(--sl-color-hairline-shade, rgba(128, 128, 128, 0.12));
+  /* VitePress-style divider above h2 — explicit colors to avoid Starlight variable bugs */
+  border-top: 1px solid rgba(0, 0, 0, 0.10);
   margin-top: 3rem;
   padding-top: 1.5rem;
+}
+
+[data-theme="dark"] .sl-markdown-content h2 {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .sl-markdown-content h3 {

@@ -34,8 +34,6 @@ import { Aside } from '@astrojs/starlight/components';
 - **低耦合通信**：BPI_EnemyAI 蓝图接口消除硬引用，Controller 无需感知具体角色类即可下达指令
 </Aside>
 
----
-
 ## 6.2 以近战敌人为例，说明 AI 全流程在项目中的实现
 
 > **敌人 AI 完整数据流**：`感知刺激 → AIC_Enemy_Base (Perception) → 更新黑板 (AttackTarget / State) → BT_Enemy_Melee (决策) → BTT/BTD (执行) → BP_Enemy_Melee (表现)`
@@ -243,8 +241,6 @@ BP_PatrolRoute 通过在关卡中放置 Spline 点定义路径，支持不同敌
 ![BPI_EnemyAI 蓝图接口定义 — 接口函数列表（SetMovementSpeed / EquipWeapon / ActiveComboGraph 等）](/images/docs/echo-quest/ch6-enemy-ai/bpi-enemy-ai-interface.png)
 
 ![BTT 任务节点内部逻辑示例 — BTT_EquipWeapon 通过 BPI_EnemyAI 接口调用 Pawn 函数的蓝图逻辑](/images/docs/echo-quest/ch6-enemy-ai/btt-equip-weapon.png)
-
----
 
 ## 6.3 空间智能：环境查询系统（EQS）的原理与实践
 
