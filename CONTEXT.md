@@ -160,7 +160,7 @@
 | # | 问题 | 原因 | 状态 |
 | --- | --- | --- | --- |
 | 1 | ~~Docs `<Tabs>` 在 dev server 显示为原始 HTML 文本~~ | 已通过将 `<Tabs>` 改为普通 Markdown `####` 标题解决（Bug #109），不再依赖 Starlight Tabs 组件。**后续优化**：当前四级标题方案功能正常但页面较长，原 Tabs 在视觉和语义上更优（并列状态按需切换）。可考虑用原生 HTML `<details>/<summary>` 实现手风琴折叠效果（不依赖 Starlight 组件，dev server 无兼容问题）；或等 Astro/Starlight 修复 dev server HTML 编码 Bug 后改回 `<Tabs>` | ✅ 已修复（待优化） |
-| 2 | **Docs 首页（`/docs/`）内容未居中** | `tableOfContents: false` 页面无右侧 TOC 栏，`.main-pane` 宽度 100%，内部 `.sl-container`（`max-width: 56rem`）理论上 `margin-inline: auto` 应居中，但实际效果偏左。已尝试多种 CSS override（变量继承、直接选择器、`!important`）均无效，疑为 Starlight 内部布局 flex 计算或 scoped style 优先级问题，需 DevTools 排查。CSS 中已标记 `TODO(Bug #2)` | ⚠️ 待修复 |
+| 2 | ~~**Docs 首页（`/docs/`）内容未居中**~~ | 根因：有 TOC 页 `main-pane = 100% - sidebar-width`（内容从 ~316px 起），无 TOC 页 `main-pane = 100%`（`sl-container` 居中后从 ~422px 起），切换时左边缘跳变 106px，视觉上显得「偏左」。修复：在 `starlight-overrides.css` 中为 `[data-has-sidebar]:not([data-has-toc]) .main-pane` 添加相同的宽度约束 `width: calc(100% - var(--sl-sidebar-width))`，消除切换时的位置漂移 | ✅ 已修复 |
 
 ---
 

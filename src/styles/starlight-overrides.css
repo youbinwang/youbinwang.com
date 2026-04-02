@@ -74,10 +74,14 @@ nav.sidebar a[aria-current="page"] {
     --sl-content-margin-inline: auto;
   }
 
-  /* TODO(Bug #2): docs index (tableOfContents: false) content not centered.
-     main-pane is 100% wide without right-sidebar-container, but
-     .sl-container margin-inline: auto doesn't visually center.
-     Needs DevTools investigation. */
+  /* Bug #2 fix: no-TOC pages (e.g. docs index) — constrain main-pane to the
+     same width as with-TOC pages so the content left edge aligns consistently.
+     Without this, main-pane is 100% wide and sl-container centering shifts
+     the content ~106px right at 1440px, creating a jarring jump when navigating
+     between the docs index and regular docs pages. */
+  [data-has-sidebar]:not([data-has-toc]) .main-pane {
+    width: calc(100% - var(--sl-sidebar-width));
+  }
 }
 
 starlight-toc {
