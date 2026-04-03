@@ -129,18 +129,27 @@ nav.sidebar a[aria-current="page"] {
 @media (min-width: 72rem) {
 
   .right-sidebar {
-    /* Override position: fixed + width:100% to respect container.     */
-    /* Shift the right edge inward by the same amount.                 */
     width: var(--sl-sidebar-width) !important;
     right: max(0px, calc((100vw - 90rem) / 2)) !important;
     left: auto !important;
     border-inline-start: none !important;
   }
 
-  /* Remove single-sided padding — content-panel's symmetric --sl-content-pad-x
-     already provides balanced gaps on both sides (like VitePress's 32px each) */
+  /* True centering fix:
+     Starlight's default formula gives main-pane = content + half-gap and
+     right-sidebar-container = toc + half-gap. This causes the sl-container
+     (centered within main-pane) to sit LEFT of the true midpoint between
+     the two sidebars. Fix: main-pane takes the full available area
+     (left-sidebar-edge → right-TOC-edge), right-sidebar-container = TOC width only. */
+  [data-has-sidebar][data-has-toc] .main-pane {
+    width: calc(100% - var(--sl-sidebar-width)) !important;
+  }
 
-  /* Center sl-container like VitePress (auto margin on both sides) */
+  [data-has-sidebar][data-has-toc] .right-sidebar-container {
+    width: var(--sl-sidebar-width) !important;
+  }
+
+  /* Center sl-container symmetrically within the expanded main-pane */
   [data-has-sidebar][data-has-toc] .main-pane .sl-container {
     margin-inline: auto !important;
   }
