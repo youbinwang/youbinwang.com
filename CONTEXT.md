@@ -163,6 +163,8 @@
 | 110 | combat-system 标题层级修复 | `### 为什么用 ComboGraph，而不用蓝图手搓连招逻辑？` 独立 h3 标题降级为 2.1 正文段落（斜体引导句），消除与 `### 2.2.1` 等子标题的层级混乱 |
 | 111 | motion-warping 跨章节锚点链接修复 | `[动画系统 4.3.3](/docs/echo-quest/animation/)` → 加精准锚点 `#433-扩展实现与程序化修正逻辑驱动层---abp_itemlayerbase`；同时清理 motion-warping.mdx 多余 `Steps` import |
 | 112 | 文档页返回顶部按钮 | Starlight `Head.astro` 中通过 JS 动态创建 `#scroll-top-btn`（与 BaseLayout 版同 ID 防重复）；inline style 使用 `--color-*` + `--sl-color-*` 双 fallback 适配两套主题；`astro:before-swap` 清理 + `astro:after-swap` 重建，支持 View Transitions |
+| 124 | 文档页 H1 与正文间距压缩 | `.content-panel + .content-panel { padding-top: 0.25rem !important }` + h1 `padding-bottom: 0.5rem`；将 Starlight 默认约 40px 间距压缩至约 12px，接近 VitePress 节奏 |
+| 125 | 文档图片 PhotoSwipe Lightbox | 在 `Head.astro` 动态将 `.sl-markdown-content img` 包裹进 `<a class="docs-pswp-link">`，初始化 PhotoSwipe；hover 效果：`::after` 遮罩 + `::before` 放大镜（data URI SVG，含 `xmlns`）+ scale(1.03)；关键修复：① `import "photoswipe/style.css"` 须在 Head.astro script 中显式导入（Starlight 不经过 BaseLayout/global.css）② `width: fit-content` 使 `<a>` 精确贴合图片宽度 ③ 纯 CSS 伪元素方案替代 JS overlay div ④ SVG data URI 必须含 `xmlns` 否则浏览器不渲染；使用 `astro:page-load` 事件确保水合后初始化 |
 
 ---
 
@@ -317,7 +319,7 @@ document.addEventListener("astro:after-swap", initGallery);
 | **平面设计** | ✅ PhotoSwipe | `scale-[1.03]` + 遮罩 + 放大镜图标（400ms） | 海报是核心内容，明确提示可放大 |
 | **摄影** | ✅ PhotoSwipe | `scale-[1.03]` + 遮罩 + 放大镜图标（400ms） | 画廊式展示，同平面设计 |
 | **游戏截图** | ✅ PhotoSwipe | 仅 `cursor: zoom-in`，**不加遮罩/图标** | 截图是辅助内容，视觉保持克制 |
-| **文档图片**（Echo Quest 等） | ❌ 无 Lightbox | 无 hover 效果 | 文档内嵌图，仅作说明用途 |
+| **文档图片**（Echo Quest 等） | ✅ PhotoSwipe | `scale-[1.03]` + 遮罩 + 放大镜图标（400ms）；纯 CSS 伪元素方案 | 文档截图，点击可全屏浏览 |
 
 ### PhotoSwipe CSS 加载位置
 

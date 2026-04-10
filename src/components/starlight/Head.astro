@@ -124,3 +124,55 @@ import { ClientRouter } from "astro:transitions";
     initDocsScrollTopBtn();
     document.addEventListener("astro:after-swap", initDocsScrollTopBtn);
 </script>
+
+<!-- PhotoSwipe lightbox for inline docs images -->
+<script>
+    import "photoswipe/style.css";
+    import PhotoSwipeLightbox from "photoswipe/lightbox";
+    import PhotoSwipe from "photoswipe";
+
+    function initDocsLightbox() {
+        const content = document.querySelector<HTMLElement>(".sl-markdown-content");
+        if (!content) return;
+
+        content.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+            if (img.closest("a[data-pswp-width]")) return;
+
+            const a = document.createElement("a");
+            a.href = img.src;
+            a.setAttribute("data-pswp-width", "1600");
+            a.setAttribute("data-pswp-height", "900");
+            a.className = "docs-pswp-link";
+
+            img.parentElement!.insertBefore(a, img);
+            a.appendChild(img);
+
+            const update = () => {
+                if (img.naturalWidth > 0) {
+                    a.setAttribute("data-pswp-width", String(img.naturalWidth));
+                    a.setAttribute("data-pswp-height", String(img.naturalHeight));
+                }
+            };
+            img.complete && img.naturalWidth > 0
+                ? update()
+                : img.addEventListener("load", update);
+        });
+
+        const links = content.querySelectorAll("a[data-pswp-width]");
+        if (links.length === 0) return;
+
+        const lightbox = new PhotoSwipeLightbox({
+            gallery: content,
+            children: "a[data-pswp-width]",
+            pswpModule: PhotoSwipe,
+        });
+        lightbox.init();
+
+        document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
+            once: true,
+        });
+    }
+
+    initDocsLightbox();
+    document.addEventListener("astro:page-load", initDocsLightbox);
+</script>

@@ -215,13 +215,15 @@ starlight-toc a[aria-current="true"] {
   font-size: 1.75rem;
   /* 28px — VitePress h1 */
   line-height: 1.3;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: none !important;
 }
 
 /* Remove divider between Starlight content panels (title panel / body panel) */
+/* Also compress vertical gap: default Starlight gives ~40px, target ~20px (VitePress-style) */
 .content-panel+.content-panel {
   border-top: none !important;
+  padding-top: 0.25rem !important;
 }
 
 .sl-markdown-content h2 {
@@ -314,6 +316,66 @@ starlight-toc a[aria-current="true"] {
   border: 1px solid rgba(128, 128, 128, 0.1);
   margin-top: 1rem;
   margin-bottom: 1.5rem;
+}
+
+/* ─── Docs PhotoSwipe lightbox — hover effect ─────────────────────── */
+.docs-pswp-link {
+  position: relative;
+  display: block;
+  width: fit-content;
+  overflow: hidden;
+  cursor: zoom-in;
+  text-decoration: none !important;
+}
+
+.docs-pswp-link img {
+  display: block;
+  transition: transform 400ms ease;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.docs-pswp-link:hover img {
+  transform: scale(1.03);
+}
+
+/* Dark overlay */
+.docs-pswp-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  transition: background 400ms ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.docs-pswp-link:hover::after {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Magnifying glass icon */
+.docs-pswp-link::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2.5rem;
+  height: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='white' stroke-width='1.5' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+.docs-pswp-link:hover::before {
+  opacity: 1;
 }
 
 .sl-markdown-content blockquote {
