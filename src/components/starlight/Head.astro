@@ -75,7 +75,7 @@ import { ClientRouter } from "astro:transitions";
             borderRadius: "9999px",
             background: "var(--color-surface, var(--sl-color-bg))",
             border: "1px solid var(--color-border, var(--sl-color-hairline))",
-            boxShadow: "0 1px 3px rgba(0,0,0,.1)",
+            boxShadow: "0 1px 3px var(--color-border)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -131,7 +131,15 @@ import { ClientRouter } from "astro:transitions";
     import PhotoSwipeLightbox from "photoswipe/lightbox";
     import PhotoSwipe from "photoswipe";
 
+    let currentLightbox: PhotoSwipeLightbox | null = null;
+
     function initDocsLightbox() {
+        // Destroy previous instance to prevent memory leak on repeated navigation
+        if (currentLightbox) {
+            currentLightbox.destroy();
+            currentLightbox = null;
+        }
+
         const content = document.querySelector<HTMLElement>(".sl-markdown-content");
         if (!content) return;
 
@@ -161,18 +169,14 @@ import { ClientRouter } from "astro:transitions";
         const links = content.querySelectorAll("a[data-pswp-width]");
         if (links.length === 0) return;
 
-        const lightbox = new PhotoSwipeLightbox({
+        currentLightbox = new PhotoSwipeLightbox({
             gallery: content,
             children: "a[data-pswp-width]",
             pswpModule: PhotoSwipe,
         });
-        lightbox.init();
-
-        document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
-            once: true,
-        });
+        currentLightbox.init();
     }
 
     initDocsLightbox();
-    document.addEventListener("astro:page-load", initDocsLightbox);
+    document.addEventListener("astro:after-swap", initDocsLightbox);
 </script>

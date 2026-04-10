@@ -35,6 +35,15 @@
 
     /* Hero overlays (always dark for readability on images) */
     --color-hero-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.45), var(--color-bg));
+
+    /* Docs-specific — VitePress-inspired sidebar & content element colors */
+    --color-docs-sidebar-bg: #f6f6f7;
+    --color-docs-code-bg: rgba(128, 128, 128, 0.1);
+    --color-docs-table-header-bg: rgba(128, 128, 128, 0.08);
+    --color-docs-table-zebra: rgba(128, 128, 128, 0.03);
+    --color-docs-table-hover: rgba(255, 147, 0, 0.04);
+    --color-docs-blockquote-bg: rgba(128, 128, 128, 0.04);
+    --color-docs-overlay: rgba(0, 0, 0, 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -64,6 +73,15 @@
 
         /* Hero overlay */
         --color-hero-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5), #121212);
+
+        /* Docs-specific — dark mode overrides */
+        --color-docs-sidebar-bg: #161618;
+        --color-docs-code-bg: rgba(255, 255, 255, 0.08);
+        --color-docs-table-header-bg: rgba(255, 255, 255, 0.06);
+        --color-docs-table-zebra: rgba(255, 255, 255, 0.03);
+        --color-docs-table-hover: rgba(255, 147, 0, 0.06);
+        --color-docs-blockquote-bg: rgba(255, 255, 255, 0.04);
+        --color-docs-overlay: rgba(0, 0, 0, 0.5);
     }
 }
 

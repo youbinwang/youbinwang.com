@@ -81,6 +81,8 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
                     "docs-nav-link docs-dropdown-trigger",
                     { active: isOtherWorksActive },
                 ]}
+                aria-expanded="false"
+                aria-haspopup="true"
             >
                 {uiEN("nav.otherWorks")}
                 <svg
@@ -96,7 +98,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
                         d="M19 9l-7 7-7-7"></path>
                 </svg>
             </button>
-            <div class="docs-dropdown-menu">
+            <div class="docs-dropdown-menu" role="menu">
                 {
                     otherWorksItems.map((item) => (
                         <a
@@ -105,6 +107,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
                                 "docs-dropdown-item",
                                 { active: isActive(item.href) },
                             ]}
+                            role="menuitem"
                         >
                             {item.label}
                         </a>
@@ -281,7 +284,8 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         height: 0.75rem;
         transition: transform 0.2s ease;
     }
-    .docs-dropdown:hover .docs-chevron {
+    .docs-dropdown:hover .docs-chevron,
+    .docs-dropdown:focus-within .docs-chevron {
         transform: rotate(180deg);
     }
     .docs-dropdown-menu {
@@ -294,7 +298,7 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         background: var(--color-surface, var(--sl-color-bg-nav));
         border: 1px solid var(--color-border, var(--sl-color-gray-5));
         border-radius: 0.5rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 10px 25px var(--color-border-strong);
         opacity: 0;
         visibility: hidden;
         transition:
@@ -303,7 +307,8 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         min-width: 180px;
         z-index: 100;
     }
-    .docs-dropdown:hover .docs-dropdown-menu {
+    .docs-dropdown:hover .docs-dropdown-menu,
+    .docs-dropdown:focus-within .docs-dropdown-menu {
         opacity: 1;
         visibility: visible;
     }

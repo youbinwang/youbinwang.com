@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-03 (UTC+8)
+> **更新时间**：2026-04-11 (UTC+8)
 
 ---
 
@@ -165,6 +165,11 @@
 | 112 | 文档页返回顶部按钮 | Starlight `Head.astro` 中通过 JS 动态创建 `#scroll-top-btn`（与 BaseLayout 版同 ID 防重复）；inline style 使用 `--color-*` + `--sl-color-*` 双 fallback 适配两套主题；`astro:before-swap` 清理 + `astro:after-swap` 重建，支持 View Transitions |
 | 124 | 文档页 H1 与正文间距压缩 | `.content-panel + .content-panel { padding-top: 0.25rem !important }` + h1 `padding-bottom: 0.5rem`；将 Starlight 默认约 40px 间距压缩至约 12px，接近 VitePress 节奏 |
 | 125 | 文档图片 PhotoSwipe Lightbox | 在 `Head.astro` 动态将 `.sl-markdown-content img` 包裹进 `<a class="docs-pswp-link">`，初始化 PhotoSwipe；hover 效果：`::after` 遮罩 + `::before` 放大镜（data URI SVG，含 `xmlns`）+ scale(1.03)；关键修复：① `import "photoswipe/style.css"` 须在 Head.astro script 中显式导入（Starlight 不经过 BaseLayout/global.css）② `width: fit-content` 使 `<a>` 精确贴合图片宽度 ③ 纯 CSS 伪元素方案替代 JS overlay div ④ SVG data URI 必须含 `xmlns` 否则浏览器不渲染；使用 `astro:page-load` 事件确保水合后初始化 |
+| 126 | Docs Code Review — P0 PhotoSwipe 内存泄漏修复 | `Head.astro`：模块级 `currentLightbox` 变量，每次 `initDocsLightbox()` 前先 `destroy()` 旧实例；`astro:page-load` → `astro:after-swap`（避免初始页面双重初始化）；移除旧的 `astro:before-swap` once 监听 |
+| 127 | Docs Code Review — CSS 变量系统重构 | `global.css` 新增 7 个 `--color-docs-*` 语义变量（含 Light/Dark 两套值）：`--color-docs-sidebar-bg`（VitePress 值 #f6f6f7/#161618）、`--color-docs-code-bg`、`--color-docs-table-header-bg`、`--color-docs-table-zebra`、`--color-docs-table-hover`、`--color-docs-blockquote-bg`、`--color-docs-overlay`；`starlight-overrides.css` 全站 20+ 处硬编码颜色（rgba 灰色系 + accent opacity）替换为 CSS 变量；`--sl-color-accent` 改为引用 `var(--color-accent)`；`::selection` 统一到 `var(--color-accent-selection)`；移除重复的 `scrollbar-gutter` 块 |
+| 128 | Docs Code Review — 键盘可访问性修复 | `Header.astro` Other Works dropdown：添加 `:focus-within` CSS（与 `:hover` 并列），键盘 Tab 可展开菜单；添加 `aria-expanded="false"`、`aria-haspopup="true"`、`role="menu"`、`role="menuitem"` 语义属性；dropdown `box-shadow` 硬编码 → `var(--color-border-strong)` |
+| 129 | Docs Code Review — 侧边栏英文翻译 | `astro.config.mjs` Echo Quest 7 个侧边栏条目添加 `translations: { en: '...' }`，英文 locale 下显示英文标签（概览→Overview，一二三四五六章各自英文名）；新建 `src/content/i18n/en.json` 空文件（规范要求） |
+| 130 | Docs Code Review — gas-system.mdx 残留注释清理 | 删除 6 处旧路径注释（`/images/echo-quest/` 格式），实际图片已全部使用正确路径 `/images/docs/echo-quest/ch1-gas/` |
 
 ---
 
@@ -175,6 +180,7 @@
 | 1 | ~~Docs `<Tabs>` 在 dev server 显示为原始 HTML 文本~~ | 已通过将 `<Tabs>` 改为普通 Markdown `####` 标题解决（Bug #109），不再依赖 Starlight Tabs 组件。**后续优化**：当前四级标题方案功能正常但页面较长，原 Tabs 在视觉和语义上更优（并列状态按需切换）。可考虑用原生 HTML `<details>/<summary>` 实现手风琴折叠效果（不依赖 Starlight 组件，dev server 无兼容问题）；或等 Astro/Starlight 修复 dev server HTML 编码 Bug 后改回 `<Tabs>` | ✅ 已修复（待优化） |
 | 2 | ~~**Docs 首页（`/docs/`）内容未居中**~~ | 根因：有 TOC 页 `main-pane = 100% - sidebar-width`（内容从 ~316px 起），无 TOC 页 `main-pane = 100%`（`sl-container` 居中后从 ~422px 起），切换时左边缘跳变 106px，视觉上显得「偏左」。修复：在 `starlight-overrides.css` 中为 `[data-has-sidebar]:not([data-has-toc]) .main-pane` 添加相同的宽度约束 `width: calc(100% - var(--sl-sidebar-width))`，消除切换时的位置漂移 | ✅ 已修复 |
 | 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
+| 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题为中文。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
 
 ---
 
