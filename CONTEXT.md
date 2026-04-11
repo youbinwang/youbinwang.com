@@ -171,6 +171,7 @@
 | 129 | Docs Code Review — 侧边栏英文翻译 | `astro.config.mjs` Echo Quest 7 个侧边栏条目添加 `translations: { en: '...' }`，英文 locale 下显示英文标签（概览→Overview，一二三四五六章各自英文名）；新建 `src/content/i18n/en.json` 空文件（规范要求） |
 | 130 | Docs Code Review — gas-system.mdx 残留注释清理 | 删除 6 处旧路径注释（`/images/echo-quest/` 格式），实际图片已全部使用正确路径 `/images/docs/echo-quest/ch1-gas/` |
 | 131 | 游戏 videoId 批量填充 | `games.ts` 为 6 个游戏新增 `videoId` 字段：Scholar's Side Quest（`abhE2JtW4wA`）、Shepherds（`uvYppzaDpXI`）、The Camera（`ovuKyvzXgRA`）、Baihua Pavilion（`H7Mk_T36NtM`）、Greedy Roots（`NyWoQLDNY8E`）、Elliot Fig（`8c-GsZeBqwU`）；同步补全各自 `links.youtube` 字段；On the Road / Stars Chat 无视频保持空；另核对确认 Echo Quest / Elemental Realm / Aid Master 三项原有值无误 |
+| 132 | 游戏列表页 Hero 图集成 | 存放 `public/images/games/games-hero.png`（1.3 MB，16:9），更新 `src/pages/[...lang]/games/index.astro` 的 `<HeroSection>` 组件传入 `backgroundImage` 参数；Hero 高度保持全站统一 50vh |
 
 ---
 
