@@ -170,6 +170,7 @@
 | 128 | Docs Code Review — 键盘可访问性修复 | `Header.astro` Other Works dropdown：添加 `:focus-within` CSS（与 `:hover` 并列），键盘 Tab 可展开菜单；添加 `aria-expanded="false"`、`aria-haspopup="true"`、`role="menu"`、`role="menuitem"` 语义属性；dropdown `box-shadow` 硬编码 → `var(--color-border-strong)` |
 | 129 | Docs Code Review — 侧边栏英文翻译 | `astro.config.mjs` Echo Quest 7 个侧边栏条目添加 `translations: { en: '...' }`，英文 locale 下显示英文标签（概览→Overview，一二三四五六章各自英文名）；新建 `src/content/i18n/en.json` 空文件（规范要求） |
 | 130 | Docs Code Review — gas-system.mdx 残留注释清理 | 删除 6 处旧路径注释（`/images/echo-quest/` 格式），实际图片已全部使用正确路径 `/images/docs/echo-quest/ch1-gas/` |
+| 131 | 游戏 videoId 批量填充 | `games.ts` 为 6 个游戏新增 `videoId` 字段：Scholar's Side Quest（`abhE2JtW4wA`）、Shepherds（`uvYppzaDpXI`）、The Camera（`ovuKyvzXgRA`）、Baihua Pavilion（`H7Mk_T36NtM`）、Greedy Roots（`NyWoQLDNY8E`）、Elliot Fig（`8c-GsZeBqwU`）；同步补全各自 `links.youtube` 字段；On the Road / Stars Chat 无视频保持空；另核对确认 Echo Quest / Elemental Realm / Aid Master 三项原有值无误 |
 
 ---
 
@@ -224,7 +225,7 @@
 
 ### 内容填充
 
-1. **8 个游戏缺 videoId**：The Camera, On the Road, Scholar's Side Quest, Baihua Pavilion, Elliot Fig, Greedy Roots, Stars Chat, Shepherds
+1. **2 个游戏无 videoId**：On the Road（无视频）、Stars Chat（无视频）
 2. **全部 11 个游戏缺 gallery**：截图数组为空
 3. **10 个 Key Features MDX**：均为 placeholder 内容（Squarespace JS 动态渲染，WebFetch 无法爬取，需手动迁移）
 4. ~~**6 章 Echo Quest Tech Docs**~~：✅ 中文内容已全部填充
