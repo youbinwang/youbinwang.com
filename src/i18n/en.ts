@@ -18,7 +18,7 @@ const en = {
   'hero.role': 'GAMEPLAY / COMBAT / LEVEL DESIGNER',
 
   // Games page
-  'games.title': 'Game Projects',
+  'games.title': 'Games',
   'games.category.personal': 'Personal Projects',
   'games.category.combat-level': 'Gameplay / Combat / Level Design',
   'games.category.gameplay': 'Other Game Works',

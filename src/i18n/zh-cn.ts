@@ -18,7 +18,7 @@ const zhCN = {
   'hero.role': 'GAMEPLAY / COMBAT / LEVEL DESIGNER',
 
   // Games page
-  'games.title': '游戏项目',
+  'games.title': '游戏作品',
   'games.category.personal': '个人独立游戏作品',
   'games.category.combat-level': '玩法 / 战斗 / 关卡策划',
   'games.category.gameplay': '其他游戏作品',

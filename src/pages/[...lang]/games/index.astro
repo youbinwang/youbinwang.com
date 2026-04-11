@@ -24,13 +24,13 @@ const categories: { key: GameProject["category"]; label: string }[] = [
 ];
 ---
 
-<BaseLayout title={ui("games.title", lang)} lang={lang}>
+<BaseLayout title={ui("games.title", lang)} lang={lang} transparentNav>
   {/* Banner */}
   <HeroSection
     backgroundImage="/images/games/games-hero.png"
     title={ui("games.title", lang)}
     subtitle={lang === "zh-cn"
-      ? "游戏策划 / 战斗策划 / 关卡策划"
+      ? "玩法 / 战斗 / 关卡设计"
       : "Gameplay / Combat / Level Designer"}
   />
 
