@@ -173,6 +173,8 @@
 | 131 | 游戏 videoId 批量填充 | `games.ts` 为 6 个游戏新增 `videoId` 字段：Scholar's Side Quest（`abhE2JtW4wA`）、Shepherds（`uvYppzaDpXI`）、The Camera（`ovuKyvzXgRA`）、Baihua Pavilion（`H7Mk_T36NtM`）、Greedy Roots（`NyWoQLDNY8E`）、Elliot Fig（`8c-GsZeBqwU`）；同步补全各自 `links.youtube` 字段；On the Road / Stars Chat 无视频保持空；另核对确认 Echo Quest / Elemental Realm / Aid Master 三项原有值无误 |
 | 132 | 游戏列表页 Hero 图集成 | 存放 `public/images/games/games-hero.png`（1.3 MB，16:9），更新 `src/pages/[...lang]/games/index.astro` 的 `<HeroSection>` 组件传入 `backgroundImage` 参数；Hero 高度保持全站统一 50vh |
 | 133 | 游戏列表页 Hero 与导航栏改进 | 新增 `transparentNav` prop 使 Navbar 内嵌在 Hero 区域（与电影详情页、主页保持一致）；更新 i18n：`games.title` '游戏项目' → '游戏作品'；副标题改为 '玩法 / 战斗 / 关卡设计'（更精准的学科表述）；英文简化 'Game Projects' → 'Games' |
+| 134 | 全站 Hero 遮罩统一 | 电影详情页遮罩从硬编码 `linear-gradient(rgba...0.65)` 改为 `var(--color-hero-overlay)`；主页遮罩从 `bg-gradient-to-t from-black/30` 改为 `var(--color-hero-overlay)`；全站 Hero 底部统一渐变过渡到背景色（游戏页/主页/电影页一致） |
+| 135 | 视觉微调 | 电影详情页 Hero → 正文间距 `pt-16` → `pt-20`（80px）；主页 Hero 正文区 `pt-32` → `pt-28`（112px）微上移；主页 hero.png 更新（路径不变，重新 build 生效） |
 
 ---
 

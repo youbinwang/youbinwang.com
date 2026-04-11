@@ -54,7 +54,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
       />
       <div
         class="absolute inset-0"
-        style="background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.65) 100%);"
+        style="background: var(--color-hero-overlay);"
       />
     </div>
 
@@ -75,7 +75,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
     </div>
   </section>
 
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 space-y-16">
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 space-y-16">
     {/* ═══════ Poster + Description two-column ═══════ */}
     <section class="flex flex-col md:flex-row gap-8 md:gap-12 items-start">
       {/* Poster + metadata — sticky so it stays visible while scrolling long descriptions */}
