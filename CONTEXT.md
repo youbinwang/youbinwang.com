@@ -172,6 +172,7 @@
 | 130 | Docs Code Review — gas-system.mdx 残留注释清理 | 删除 6 处旧路径注释（`/images/echo-quest/` 格式），实际图片已全部使用正确路径 `/images/docs/echo-quest/ch1-gas/` |
 | 131 | 游戏 videoId 批量填充 | `games.ts` 为 6 个游戏新增 `videoId` 字段：Scholar's Side Quest（`abhE2JtW4wA`）、Shepherds（`uvYppzaDpXI`）、The Camera（`ovuKyvzXgRA`）、Baihua Pavilion（`H7Mk_T36NtM`）、Greedy Roots（`NyWoQLDNY8E`）、Elliot Fig（`8c-GsZeBqwU`）；同步补全各自 `links.youtube` 字段；On the Road / Stars Chat 无视频保持空；另核对确认 Echo Quest / Elemental Realm / Aid Master 三项原有值无误 |
 | 132 | 游戏列表页 Hero 图集成 | 存放 `public/images/games/games-hero.png`（1.3 MB，16:9），更新 `src/pages/[...lang]/games/index.astro` 的 `<HeroSection>` 组件传入 `backgroundImage` 参数；Hero 高度保持全站统一 50vh |
+| 133 | 游戏列表页 Hero 与导航栏改进 | 新增 `transparentNav` prop 使 Navbar 内嵌在 Hero 区域（与电影详情页、主页保持一致）；更新 i18n：`games.title` '游戏项目' → '游戏作品'；副标题改为 '玩法 / 战斗 / 关卡设计'（更精准的学科表述）；英文简化 'Game Projects' → 'Games' |
 
 ---
 
