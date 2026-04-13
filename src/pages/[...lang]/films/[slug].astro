@@ -136,14 +136,22 @@ const isPortraitPoster = film.slug === 'fibonacci';
               href={src}
               data-pswp-width="2000"
               data-pswp-height="2000"
-              class="block overflow-hidden cursor-zoom-in"
+              class="group relative block overflow-hidden cursor-zoom-in"
             >
               <img
                 src={src}
                 alt={`${titleEN} still ${i + 1}`}
-                class="w-full aspect-video object-cover"
+                class="w-full aspect-video object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
                 loading="lazy"
               />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                <svg
+                  class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
+                </svg>
+              </div>
             </a>
           ))}
         </div>

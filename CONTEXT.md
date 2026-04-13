@@ -178,6 +178,8 @@
 | 146 | 游戏列表页 VideoEmbed 封面图 | `games/index.astro` 的 `VideoEmbed` 添加 `poster={game.coverImage}`，有视频的游戏在列表页显示封面图+播放按钮，点击加载 iframe 自动播放；无封面图时降级为直接显示 iframe |
 | 147 | GameProject 新增 `heroPosition` 字段 | `games.ts` interface 新增可选 `heroPosition?: string`（CSS `background-position` 值），控制详情页 Hero 背景裁切位置；已设值：8 个游戏（shepherds 30%、the-camera 15%、on-the-road 20%、aid-master 65%、baihua 60%、roots 50%、elliot 35%、stars-chat 30%） |
 | 148 | 游戏详情页 Hero 改用 background-image | `[slug].astro` Hero 背景从 `<img object-cover>` 改为 `div + background-image/background-position`，配合 `heroPosition` 字段实现精准裁切控制 |
+| 149 | PhotoSwipe CSS 修复 | `global.css` 将 `@import "photoswipe/style.css"` 改为 `@import "photoswipe/dist/photoswipe.css"`（真实文件路径）；原路径为 package exports 别名，CSS `@import` 不走 Node 模块解析，导致样式一直静默失败，lightbox 不显示 |
+| 150 | 电影详情页画廊 hover 效果 | `films/[slug].astro` 画廊 `<a>` 补全 `group-hover:scale-[1.03]` + 半透明遮罩 + 放大镜图标（400ms），与摄影/平面设计页风格统一 |
 | 134 | 全站 Hero 遮罩统一 | 电影详情页遮罩从硬编码 `linear-gradient(rgba...0.65)` 改为 `var(--color-hero-overlay)`；主页遮罩从 `bg-gradient-to-t from-black/30` 改为 `var(--color-hero-overlay)`；全站 Hero 底部统一渐变过渡到背景色（游戏页/主页/电影页一致） |
 | 135 | 视觉微调 | 电影详情页 Hero → 正文间距 `pt-16` → `pt-20`（80px）；主页 Hero 正文区 `pt-32` → `pt-28`（112px）微上移；主页 hero.png 更新（路径不变，重新 build 生效） |
 | 136 | 全站 Code Review — Critical 修复 | C1-C2: `games.ts` Elemental Realm / Scholar's Side Quest 封面图修正（之前 copy-paste 用了其他项目的图）；C3: MobileMenu 汉堡按钮 `bg-white` → CSS 变量 `--color-hamburger`（Light Mode 可见）；C4: VideoEmbed 添加 `role="button"` / `tabindex` / `aria-label` / 键盘 Enter/Space 支持；C5: Footer Docs 链接改用 `getLocalizedPath()` 感知语言 |
