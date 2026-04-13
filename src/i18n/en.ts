@@ -14,9 +14,6 @@ const en = {
   'nav.about': 'About Me',
   'nav.experience': 'Experience',
 
-  // Hero
-  'hero.role': 'GAMEPLAY / COMBAT / LEVEL DESIGNER',
-
   // Games page
   'games.title': 'Games',
   'games.category.personal': 'Personal Projects',
@@ -32,9 +29,16 @@ const en = {
   'game.duration': 'Duration',
   'game.viewTechDocs': '📖 View Tech Docs',
   'game.viewKeyFeatures': '🔍 View Details',
+  'game.details': 'Details',
+  'game.trialVideo': 'Trial Video',
+  'game.designDocs': 'Design Docs',
+  'game.screenshots': 'Screenshots',
+  'game.projectDetails': 'Project Details',
+  'game.backToGames': '← Back to Games',
 
   // Films
   'films.title': 'Films',
+  'films.backToFilms': '← Back to Films',
 
   // Photography
   'photography.title': 'Photography',
@@ -54,6 +58,8 @@ const en = {
   // Common
   'common.backToList': 'Back to List',
   'common.language': 'English',
+  'common.more': '+ More',
+  'common.gameWorks': 'Game Works',
 } as const;
 
 export default en;

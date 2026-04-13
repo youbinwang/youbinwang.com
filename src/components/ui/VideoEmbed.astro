@@ -14,7 +14,7 @@ const { videoId, title = "Video", poster } = Astro.props;
 ---
 
 {poster ? (
-  <div class="video-embed aspect-video rounded-lg overflow-hidden bg-black relative cursor-pointer" data-video-id={videoId} data-title={title}>
+  <div class="video-embed aspect-video rounded-lg overflow-hidden bg-black relative cursor-pointer" data-video-id={videoId} data-title={title} role="button" tabindex="0" aria-label={`Play video: ${title}`}>
     <img
       src={poster}
       alt={title}
@@ -22,7 +22,7 @@ const { videoId, title = "Video", poster } = Astro.props;
       loading="lazy"
     />
     <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
-      <svg class="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+      <svg class="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M8 5v14l11-7z" />
       </svg>
     </div>
@@ -46,7 +46,7 @@ const { videoId, title = "Video", poster } = Astro.props;
       if (container.dataset.initialized) return;
       container.dataset.initialized = 'true';
 
-      container.addEventListener('click', () => {
+      const handleActivate = () => {
         const videoId = container.dataset.videoId;
         const title = container.dataset.title || 'Video';
         const iframe = document.createElement('iframe');
@@ -55,9 +55,19 @@ const { videoId, title = "Video", poster } = Astro.props;
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
         iframe.allowFullscreen = true;
         iframe.className = 'w-full h-full';
-        container.innerHTML = '';
+        container.replaceChildren(iframe);
         container.classList.remove('cursor-pointer');
-        container.appendChild(iframe);
+        container.removeAttribute('role');
+        container.removeAttribute('tabindex');
+        container.removeAttribute('aria-label');
+      };
+
+      container.addEventListener('click', handleActivate, { once: true });
+      container.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleActivate();
+        }
       }, { once: true });
     });
   }

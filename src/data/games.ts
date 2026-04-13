@@ -40,7 +40,6 @@ export interface GameProject {
   gallery: string[];
   videoId?: string;
   docsType: 'tech-docs' | 'key-features' | 'none';
-  keyFeatures?: Bilingual[];
   featured: boolean;
   order: number;
   description: Bilingual;
@@ -85,8 +84,8 @@ export const games: GameProject[] = [
     keywords: { en: 'Gameplay, Combat and Level Design Demo', cn: '玩法、战斗与关卡设计 Demo' },
     category: 'combat-level',
     tags: { genre: 'ARPG / Puzzle', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elemental-realm.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elemental-realm.png',
     meta: {
       role: { en: 'Personal Project, Gameplay / Level / Combat Designer, Unreal Engineer', cn: '个人作品，玩法、战斗、关卡策划，Unreal Engine 程序' },
       engine: 'Unreal Engine 5',
@@ -115,8 +114,8 @@ export const games: GameProject[] = [
     keywords: { en: 'Combat and Level Design', cn: '战斗、关卡策划' },
     category: 'combat-level',
     tags: { genre: 'Action RPG', engine: 'UE4', discipline: 'Combat & Level Design', scope: 'Professional' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
+    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-the-scholars-side-quest.png',
+    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-the-scholars-side-quest.png',
     meta: {
       role: { en: 'Level / Combat Designer', cn: '战斗、关卡策划' },
       engine: 'Unreal Engine 4',
@@ -382,11 +381,6 @@ export const games: GameProject[] = [
     },
   },
 ];
-
-/** Get all games sorted by order */
-export function getGamesByOrder(): GameProject[] {
-  return [...games].sort((a, b) => a.order - b.order);
-}
 
 /** Get games filtered by category */
 export function getGamesByCategory(category: GameProject['category']): GameProject[] {

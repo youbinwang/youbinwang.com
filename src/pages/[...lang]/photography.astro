@@ -143,6 +143,16 @@ const columns: string[][] = Array.from({ length: NUM_COLS }, (_, col) =>
       }
     });
 
+    // At click time, read actual image dimensions (fixes first-click-before-load issue)
+    lightbox.addFilter('domItemData', (itemData, element, linkEl) => {
+      const img = linkEl.querySelector('img');
+      if (img && img.naturalWidth > 0) {
+        itemData.w = img.naturalWidth;
+        itemData.h = img.naturalHeight;
+      }
+      return itemData;
+    });
+
     lightbox.init();
     document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
       once: true,

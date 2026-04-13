@@ -126,7 +126,7 @@ if (game.docsType === "key-features") {
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
         </svg>
-        Games
+        {ui('nav.games', lang)}
       </a>
       <div class="flex flex-wrap gap-2 mb-4">
         {
@@ -156,7 +156,7 @@ if (game.docsType === "key-features") {
     }
 
     {/* ═══════ Meta info blocks ═══════ */}
-    <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <dl class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {
         metaItems.map(({ label, value }) => (
           <div class="border border-[var(--color-border)] rounded-lg px-4 py-4 text-center bg-[var(--color-bg-secondary)]">
@@ -169,7 +169,7 @@ if (game.docsType === "key-features") {
           </div>
         ))
       }
-    </section>
+    </dl>
 
     {/* ═══════ Separator ═══════ */}
     <hr class="border-[var(--color-border)]" />
@@ -221,7 +221,7 @@ if (game.docsType === "key-features") {
               ? lang === "zh-cn"
                 ? "设计文档"
                 : "Design Document Slides"
-              : "Screenshots"}
+              : ui('game.screenshots', lang)}
           </h2>
           {game.slug === "elemental-realm" ? (
             <ImageCarousel
@@ -250,7 +250,7 @@ if (game.docsType === "key-features") {
         <section>
           <hr class="border-[var(--color-border)] mb-8" />
           <h2 class="text-xl font-semibold text-[var(--color-text)] mb-4">
-            Project Details
+            {ui('game.projectDetails', lang)}
           </h2>
           <p class="text-[var(--color-text-secondary)] text-sm mb-6">
             {lang === "zh-cn"
@@ -320,7 +320,7 @@ if (game.docsType === "key-features") {
             stroke-width="2"
             d="M15 19l-7-7 7-7"></path>
         </svg>
-        {lang === "zh-cn" ? "← 返回游戏列表" : "← Back to Games"}
+        {ui('game.backToGames', lang)}
       </a>
     </div>
   </div>

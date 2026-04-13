@@ -14,9 +14,6 @@ const zhCN = {
   'nav.about': '关于我',
   'nav.experience': '工作经历',
 
-  // Hero
-  'hero.role': 'GAMEPLAY / COMBAT / LEVEL DESIGNER',
-
   // Games page
   'games.title': '游戏作品',
   'games.category.personal': '个人独立游戏作品',
@@ -32,9 +29,16 @@ const zhCN = {
   'game.duration': '开发周期',
   'game.viewTechDocs': '📖 查看技术文档',
   'game.viewKeyFeatures': '🔍 查看项目详情',
+  'game.details': '详情',
+  'game.trialVideo': '试玩视频',
+  'game.designDocs': '设计文档',
+  'game.screenshots': '截图',
+  'game.projectDetails': '项目详情',
+  'game.backToGames': '← 返回游戏列表',
 
   // Films
   'films.title': '电影作品',
+  'films.backToFilms': '← 返回电影列表',
 
   // Photography
   'photography.title': '摄影',
@@ -54,6 +58,8 @@ const zhCN = {
   // Common
   'common.backToList': '返回列表',
   'common.language': '中文',
+  'common.more': '+ 更多',
+  'common.gameWorks': '游戏作品',
 } as const;
 
 export default zhCN;

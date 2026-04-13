@@ -4,7 +4,7 @@
  * Used in Navbar.astro with client:load for immediate interactivity.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface NavItem {
   label: string;
@@ -19,6 +19,8 @@ interface Props {
 
 export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -30,36 +32,84 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
     return () => document.body.classList.remove('menu-open');
   }, [isOpen]);
 
-  // Close menu on Escape key
+  // Close menu on Escape key + focus trap
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) setIsOpen(false);
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+        triggerRef.current?.focus();
+        return;
+      }
+
+      if (e.key === 'Tab' && menuRef.current) {
+        const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
+
+  // Focus first link when menu opens
+  useEffect(() => {
+    if (isOpen && menuRef.current) {
+      const firstLink = menuRef.current.querySelector<HTMLElement>('a[href]');
+      if (firstLink) {
+        setTimeout(() => firstLink.focus(), 150);
+      }
+    }
+  }, [isOpen]);
+
+  const handleToggle = useCallback(() => {
+    setIsOpen(prev => {
+      if (prev) {
+        // Closing: return focus to trigger
+        setTimeout(() => triggerRef.current?.focus(), 0);
+      }
+      return !prev;
+    });
+  }, []);
 
   return (
     <>
       {/* Hamburger Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={triggerRef}
+        onClick={handleToggle}
         className="relative z-50 w-11 h-11 flex items-center justify-center rounded-md hover:bg-white/5 transition-colors"
         aria-label={isOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={isOpen}
       >
         <div className="flex flex-col gap-1.5">
           <span
-            className={`block w-6 h-0.5 bg-white transition-all duration-300 origin-center ${isOpen ? 'rotate-45 translate-y-2' : ''
+            className={`block w-6 h-0.5 transition-all duration-300 origin-center ${isOpen ? 'rotate-45 translate-y-2' : ''
               }`}
+            style={{ backgroundColor: 'var(--color-hamburger, var(--color-text))' }}
           />
           <span
-            className={`block w-6 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'opacity-0 scale-x-0' : ''
+            className={`block w-6 h-0.5 transition-all duration-300 ${isOpen ? 'opacity-0 scale-x-0' : ''
               }`}
+            style={{ backgroundColor: 'var(--color-hamburger, var(--color-text))' }}
           />
           <span
-            className={`block w-6 h-0.5 bg-white transition-all duration-300 origin-center ${isOpen ? '-rotate-45 -translate-y-2' : ''
+            className={`block w-6 h-0.5 transition-all duration-300 origin-center ${isOpen ? '-rotate-45 -translate-y-2' : ''
               }`}
+            style={{ backgroundColor: 'var(--color-hamburger, var(--color-text))' }}
           />
         </div>
       </button>
@@ -76,11 +126,14 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
           className="absolute inset-0 backdrop-blur-xl"
           style={{ backgroundColor: 'var(--color-surface-overlay)' }}
           onClick={() => setIsOpen(false)}
+          role="button"
+          aria-label="Close menu"
+          tabIndex={-1}
         />
 
         {/* Menu Content */}
-        <div className="relative flex flex-col items-center justify-center h-full">
-          <nav className="flex flex-col items-center gap-1">
+        <div ref={menuRef} className="relative flex flex-col items-center justify-center h-full">
+          <nav aria-label="Mobile navigation" className="flex flex-col items-center gap-1">
             {navItems.map((item, index) => (
               <a
                 key={item.href}

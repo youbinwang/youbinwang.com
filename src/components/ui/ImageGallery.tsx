@@ -38,6 +38,16 @@ export default function ImageGallery({
       padding: { top: 20, bottom: 20, left: 20, right: 20 },
     });
 
+    // At click time, read actual image dimensions (fixes first-click-before-load issue)
+    lightbox.addFilter('domItemData', (itemData: Record<string, unknown>, _element: HTMLElement, linkEl: HTMLAnchorElement) => {
+      const img = linkEl.querySelector('img');
+      if (img && img.naturalWidth > 0) {
+        itemData.w = img.naturalWidth;
+        itemData.h = img.naturalHeight;
+      }
+      return itemData;
+    });
+
     lightbox.init();
     return () => lightbox.destroy();
   }, [images]);
@@ -68,8 +78,8 @@ export default function ImageGallery({
         <a
           key={src + i}
           href={src}
-          data-pswp-width="1600"
-          data-pswp-height="1200"
+          data-pswp-width="1920"
+          data-pswp-height="1080"
           className="block overflow-hidden rounded-lg cursor-zoom-in"
         >
           <img

@@ -4,5 +4,7 @@
 /games-en     /en/games/      301
 /games-cn     /games/         301
 /about-me     /about/         301
+/films        /films/         301
+/photography  /photography/   301
 /work-experiences    /experience/           301
 /work-experiences/*  /experience/:splat     301

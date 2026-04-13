@@ -6,7 +6,7 @@
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
-import { getLangFromSlug, t, getLocalizedPath } from "../../../i18n";
+import { getLangFromSlug, t, getLocalizedPath, ui } from "../../../i18n";
 import { films, getFilmsByOrder } from "../../../data/films";
 
 export function getStaticPaths() {
@@ -66,7 +66,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
         </svg>
-        Films
+        {ui('nav.films', lang)}
       </a>
 
       <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight drop-shadow-lg">
@@ -211,6 +211,16 @@ const isPortraitPoster = film.slug === 'fibonacci';
       } else {
         img.addEventListener("load", update);
       }
+    });
+
+    // At click time, read actual image dimensions (fixes first-click-before-load issue)
+    lightbox.addFilter('domItemData', (itemData, element, linkEl) => {
+      const img = linkEl.querySelector('img');
+      if (img && img.naturalWidth > 0) {
+        itemData.w = img.naturalWidth;
+        itemData.h = img.naturalHeight;
+      }
+      return itemData;
     });
 
     lightbox.init();

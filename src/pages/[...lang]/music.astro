@@ -73,12 +73,6 @@ const sections: { label: string; tracks: MusicTrack[] }[] = [
                   <div class="w-full md:w-[400px] lg:w-[450px] flex-shrink-0">
                     {track.videoId ? (
                       <VideoEmbed videoId={track.videoId} title={t(track.title, lang)} />
-                    ) : track.coverImage ? (
-                      <img
-                        src={track.coverImage}
-                        alt={t(track.title, lang)}
-                        class="w-full rounded-lg"
-                      />
                     ) : (
                       <div class="aspect-video bg-[var(--color-bg-secondary)] rounded-lg flex items-center justify-center">
                         <svg

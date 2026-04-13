@@ -22,7 +22,7 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: '📚 Docs Home',
-					link: '/docs/',
+					slug: 'docs',
 				},
 				{
 					label: 'Echo Quest',

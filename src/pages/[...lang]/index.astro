@@ -12,21 +12,13 @@ export const getStaticPaths = getI18nStaticPaths;
 const lang = getLangFromSlug(Astro.params.lang);
 
 // Featured games order differs by language (per original site)
-const cnFeaturedSlugs = [
+const featuredSlugs = [
   "echo-quest",
   "elemental-realm",
   "on-the-road",
   "the-scholars-side-quest",
   "shepherds",
 ];
-const enFeaturedSlugs = [
-  "echo-quest",
-  "elemental-realm",
-  "on-the-road",
-  "the-scholars-side-quest",
-  "shepherds",
-];
-const featuredSlugs = lang === "en" ? enFeaturedSlugs : cnFeaturedSlugs;
 const featuredGames = featuredSlugs
   .map((slug) => games.find((g) => g.slug === slug))
   .filter(Boolean) as typeof games;
@@ -108,13 +100,13 @@ const getScopeLabel = (scope: string) => scopeLabels[scope]?.[lang === 'en' ? 'e
     {/* Header: title left + "More" right */}
     <div class="flex items-baseline justify-between mb-10">
       <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)]">
-        {lang === "zh-cn" ? "游戏作品" : "Game Works"}
+        {ui("common.gameWorks", lang)}
       </h2>
       <a
         href={getLocalizedPath("/games/", lang)}
         class="text-lg md:text-xl font-medium text-[var(--color-text)] hover:text-[var(--color-accent)] underline underline-offset-4 transition-colors"
       >
-        + More
+        {ui("common.more", lang)}
       </a>
     </div>
 

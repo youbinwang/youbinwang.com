@@ -70,7 +70,7 @@ export default function ImageCarousel({
             <SwiperSlide
               key={`thumb-${src}-${i}`}
               style={{ width: '80px', height: '52px' }}
-              className="!w-20 cursor-pointer"
+              className="cursor-pointer"
             >
               <img
                 src={src}
@@ -96,7 +96,7 @@ export default function ImageCarousel({
         }
         .image-carousel .swiper-button-prev,
         .image-carousel .swiper-button-next {
-          background: rgba(0, 0, 0, 0.4);
+          background: var(--color-docs-overlay, rgba(0, 0, 0, 0.4));
           border-radius: 50%;
           width: 40px;
           height: 40px;

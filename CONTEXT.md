@@ -175,6 +175,14 @@
 | 133 | 游戏列表页 Hero 与导航栏改进 | 新增 `transparentNav` prop 使 Navbar 内嵌在 Hero 区域（与电影详情页、主页保持一致）；更新 i18n：`games.title` '游戏项目' → '游戏作品'；副标题改为 '玩法 / 战斗 / 关卡设计'（更精准的学科表述）；英文简化 'Game Projects' → 'Games' |
 | 134 | 全站 Hero 遮罩统一 | 电影详情页遮罩从硬编码 `linear-gradient(rgba...0.65)` 改为 `var(--color-hero-overlay)`；主页遮罩从 `bg-gradient-to-t from-black/30` 改为 `var(--color-hero-overlay)`；全站 Hero 底部统一渐变过渡到背景色（游戏页/主页/电影页一致） |
 | 135 | 视觉微调 | 电影详情页 Hero → 正文间距 `pt-16` → `pt-20`（80px）；主页 Hero 正文区 `pt-32` → `pt-28`（112px）微上移；主页 hero.png 更新（路径不变，重新 build 生效） |
+| 136 | 全站 Code Review — Critical 修复 | C1-C2: `games.ts` Elemental Realm / Scholar's Side Quest 封面图修正（之前 copy-paste 用了其他项目的图）；C3: MobileMenu 汉堡按钮 `bg-white` → CSS 变量 `--color-hamburger`（Light Mode 可见）；C4: VideoEmbed 添加 `role="button"` / `tabindex` / `aria-label` / 键盘 Enter/Space 支持；C5: Footer Docs 链接改用 `getLocalizedPath()` 感知语言 |
+| 137 | 全站 Code Review — Accessibility | H1: Navbar Other Works 下拉菜单添加 `aria-haspopup`/`aria-expanded`/`role="menu"`/`role="menuitem"` + `group-focus-within` CSS；H2: MobileMenu 添加 focus trap（Tab 循环）+ 打开时自动聚焦 + 关闭时焦点回到触发按钮 + backdrop `role="button"` + `aria-label="Mobile navigation"`；H3: `<dt>`/`<dd>` 包裹在 `<dl>` 中（ProjectMeta + game detail） |
+| 138 | 全站 Code Review — CSS 变量合规 | H4: `#FFB340` 提取为 `--color-accent-high` CSS 变量（global.css + starlight-overrides.css）；H5: Hero overlay 渐变中硬编码 `#121212` 改为 `var(--color-bg)`（dark mode + force-dark 两处）；M12: ImageCarousel 导航按钮 `rgba(0,0,0,0.4)` → CSS 变量 |
+| 139 | 全站 Code Review — i18n | M1: 新增 8 个翻译 key（`game.details`/`trialVideo`/`designDocs`/`screenshots`/`projectDetails`/`backToGames`、`films.backToFilms`、`common.more`/`gameWorks`），替换 games/index、games/[slug]、films/[slug]、index 4 个页面中 10+ 处硬编码英文字符串；移除未使用的 `hero.role` 翻译 key；合并首页重复的 `cnFeaturedSlugs`/`enFeaturedSlugs` 数组 |
+| 140 | 全站 Code Review — 代码质量 | M3: 移除 Head.astro 重复的 PhotoSwipe CSS import（后恢复，见 #142）；M6: MobileMenu `client:load` → `client:media="(max-width: 767px)"`；M10: 移除 starlight-overrides.css 中 4 处冗余 `[data-theme="dark"]` 选择器 + 重复 `::selection`；M11: 移除 music.astro 中对不存在的 `track.coverImage` 的引用；M14: ProjectMeta 网格 `md:grid-cols-3` → `lg:grid-cols-5` 符合规范 |
+| 141 | 全站 Code Review — Low priority | 移除死字段 `keyFeatures`、死函数 `getGamesByOrder()`；HeroSection 添加 `fetchpriority="high"`；触控设备 44px 最小尺寸限制从全局 `a/button` 缩窄到 `nav/footer`；ImageCarousel 移除重复 width 声明；添加 `/films` `/photography` 重定向；移除 Squarespace CDN preconnect；Navbar 添加 `aria-label="Main navigation"` |
+| 142 | Docs 页中英文差异修复 | 英文 docs 首页从 `template: splash` 改为默认 template（与中文一致）+ `tableOfContents: false`；侧边栏 "Docs Home" 从硬编码 `link: '/docs/'` 改为 `slug: 'docs'`（Starlight 自动本地化）；英文 Echo Quest 7 个 placeholder 的 frontmatter title 从中文改为英文 |
+| 143 | PhotoSwipe Lightbox 首次点击修复 | 全站 5 个 PhotoSwipe 实例添加 `domItemData` filter，在用户点击时动态读取 `img.naturalWidth/Height`（不依赖初始化时可能过时的默认占位尺寸）；Head.astro 恢复 `import "photoswipe/style.css"`（docs 页不走 BaseLayout，需要独立加载）；global.css + starlight-overrides.css 添加 `.pswp` 关键布局安全网（`position: fixed !important` + `z-index: 1500`），防止 JS CSS 注入延迟导致 lightbox 内联渲染 |
 
 ---
 
@@ -185,7 +193,7 @@
 | 1 | ~~Docs `<Tabs>` 在 dev server 显示为原始 HTML 文本~~ | 已通过将 `<Tabs>` 改为普通 Markdown `####` 标题解决（Bug #109），不再依赖 Starlight Tabs 组件。**后续优化**：当前四级标题方案功能正常但页面较长，原 Tabs 在视觉和语义上更优（并列状态按需切换）。可考虑用原生 HTML `<details>/<summary>` 实现手风琴折叠效果（不依赖 Starlight 组件，dev server 无兼容问题）；或等 Astro/Starlight 修复 dev server HTML 编码 Bug 后改回 `<Tabs>` | ✅ 已修复（待优化） |
 | 2 | ~~**Docs 首页（`/docs/`）内容未居中**~~ | 根因：有 TOC 页 `main-pane = 100% - sidebar-width`（内容从 ~316px 起），无 TOC 页 `main-pane = 100%`（`sl-container` 居中后从 ~422px 起），切换时左边缘跳变 106px，视觉上显得「偏左」。修复：在 `starlight-overrides.css` 中为 `[data-has-sidebar]:not([data-has-toc]) .main-pane` 添加相同的宽度约束 `width: calc(100% - var(--sl-sidebar-width))`，消除切换时的位置漂移 | ✅ 已修复 |
 | 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
-| 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题为中文。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
+| 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
 
 ---
 
