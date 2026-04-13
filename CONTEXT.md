@@ -173,6 +173,7 @@
 | 131 | 游戏 videoId 批量填充 | `games.ts` 为 6 个游戏新增 `videoId` 字段：Scholar's Side Quest（`abhE2JtW4wA`）、Shepherds（`uvYppzaDpXI`）、The Camera（`ovuKyvzXgRA`）、Baihua Pavilion（`H7Mk_T36NtM`）、Greedy Roots（`NyWoQLDNY8E`）、Elliot Fig（`8c-GsZeBqwU`）；同步补全各自 `links.youtube` 字段；On the Road / Stars Chat 无视频保持空；另核对确认 Echo Quest / Elemental Realm / Aid Master 三项原有值无误 |
 | 132 | 游戏列表页 Hero 图集成 | 存放 `public/images/games/games-hero.png`（1.3 MB，16:9），更新 `src/pages/[...lang]/games/index.astro` 的 `<HeroSection>` 组件传入 `backgroundImage` 参数；Hero 高度保持全站统一 50vh |
 | 133 | 游戏列表页 Hero 与导航栏改进 | 新增 `transparentNav` prop 使 Navbar 内嵌在 Hero 区域（与电影详情页、主页保持一致）；更新 i18n：`games.title` '游戏项目' → '游戏作品'；副标题改为 '玩法 / 战斗 / 关卡设计'（更精准的学科表述）；英文简化 'Game Projects' → 'Games' |
+| 144 | 游戏列表页右侧悬浮 TOC 导航 | `position: fixed` 浮动面板（xl 1440px+ 才显示）；CSS 公式 `right: max(2rem, calc((100vw - 90rem) / 2 + 2rem))` 使面板始终紧贴内容区右边缘不重叠；Phantom `<div class="hidden xl:block w-44">` 占位保持 flex 列宽；磨砂玻璃卡片样式（`backdrop-filter: blur(12px)` + border + border-radius + 双层 box-shadow）；滚动超过 40vh（英雄区后）淡入（opacity + pointer-events，0.25s ease）；Scrollspy：`IntersectionObserver(rootMargin: -80px 0px -60% 0px)` 激活橙色竖条 + 加粗；`astro:before-swap` 清理 Observer 和 scroll 监听器 |
 | 134 | 全站 Hero 遮罩统一 | 电影详情页遮罩从硬编码 `linear-gradient(rgba...0.65)` 改为 `var(--color-hero-overlay)`；主页遮罩从 `bg-gradient-to-t from-black/30` 改为 `var(--color-hero-overlay)`；全站 Hero 底部统一渐变过渡到背景色（游戏页/主页/电影页一致） |
 | 135 | 视觉微调 | 电影详情页 Hero → 正文间距 `pt-16` → `pt-20`（80px）；主页 Hero 正文区 `pt-32` → `pt-28`（112px）微上移；主页 hero.png 更新（路径不变，重新 build 生效） |
 | 136 | 全站 Code Review — Critical 修复 | C1-C2: `games.ts` Elemental Realm / Scholar's Side Quest 封面图修正（之前 copy-paste 用了其他项目的图）；C3: MobileMenu 汉堡按钮 `bg-white` → CSS 变量 `--color-hamburger`（Light Mode 可见）；C4: VideoEmbed 添加 `role="button"` / `tabindex` / `aria-label` / 键盘 Enter/Space 支持；C5: Footer Docs 链接改用 `getLocalizedPath()` 感知语言 |
@@ -254,11 +255,7 @@
 - 游戏列表页 `bg-[#FF0000]`（YouTube 品牌红）和 `bg-[#35A852]`（Google Drive 品牌绿）为外部品牌色，属合理例外
 - SVG 内 `fill` 属性使用品牌色（Google Drive 图标），属合理例外
 
-### 游戏列表页右侧悬浮导航窗格（待实现）
-
-游戏列表页（`/games/`）计划加一个右侧固定悬浮导航，快速定位到各个游戏项目/分类。
-- 类似文档页的 TOC 右侧栏，但用于游戏列表页的分类/项目锚点跳转
-- 实现思路：固定定位，列出分类标题（玩法/战斗/关卡、研发制作人、个人独立、其他），点击平滑滚动到对应 section
+### ~~游戏列表页右侧悬浮导航窗格~~（✅ 已完成，见 #144）
 
 ### 部署配置（Step 13）
 
