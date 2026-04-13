@@ -190,6 +190,7 @@
 | 141 | 全站 Code Review — Low priority | 移除死字段 `keyFeatures`、死函数 `getGamesByOrder()`；HeroSection 添加 `fetchpriority="high"`；触控设备 44px 最小尺寸限制从全局 `a/button` 缩窄到 `nav/footer`；ImageCarousel 移除重复 width 声明；添加 `/films` `/photography` 重定向；移除 Squarespace CDN preconnect；Navbar 添加 `aria-label="Main navigation"` |
 | 142 | Docs 页中英文差异修复 | 英文 docs 首页从 `template: splash` 改为默认 template（与中文一致）+ `tableOfContents: false`；侧边栏 "Docs Home" 从硬编码 `link: '/docs/'` 改为 `slug: 'docs'`（Starlight 自动本地化）；英文 Echo Quest 7 个 placeholder 的 frontmatter title 从中文改为英文 |
 | 143 | PhotoSwipe Lightbox 首次点击修复 | 全站 5 个 PhotoSwipe 实例添加 `domItemData` filter，在用户点击时动态读取 `img.naturalWidth/Height`（不依赖初始化时可能过时的默认占位尺寸）；Head.astro 恢复 `import "photoswipe/style.css"`（docs 页不走 BaseLayout，需要独立加载）；global.css + starlight-overrides.css 添加 `.pswp` 关键布局安全网（`position: fixed !important` + `z-index: 1500`），防止 JS CSS 注入延迟导致 lightbox 内联渲染 |
+| 151 | Docs Lightbox 首次软导航修复 | 根因：Portfolio 页通过 `global.css` 的 `@import "photoswipe/dist/photoswipe.css"` 同步加载 PhotoSwipe CSS，但 Docs 页不走 BaseLayout，仅靠 Head.astro `<script>` 中 `import "photoswipe/style.css"`（JS 侧异步注入）。从 Portfolio 首次软导航到 Docs 页时 CSS 注入延迟，lightbox 渲染异常；刷新后 CSS 随模块同步加载，恢复正常。修复：`astro.config.mjs` Starlight `customCss` 新增 `photoswipe/dist/photoswipe.css`（与 Portfolio 的 global.css 同源同步），同时移除 Head.astro 中冗余的 JS `import "photoswipe/style.css"`（避免重复加载） |
 
 ---
 
@@ -352,7 +353,8 @@ document.addEventListener("astro:after-swap", initGallery);
 
 ### PhotoSwipe CSS 加载位置
 
-`photoswipe/style.css` 通过 `global.css` 的 `@import` 全局加载（而非在组件内 import），确保样式在任何页面切换后立即可用。
+- **Portfolio 页面**：`global.css` 的 `@import "photoswipe/dist/photoswipe.css"` 通过 BaseLayout 同步加载
+- **Docs 页面**：`astro.config.mjs` Starlight `customCss` 中的 `photoswipe/dist/photoswipe.css` 同步加载（不依赖 Head.astro `<script>` 中的 JS 动态 import，避免首次软导航时 CSS 注入竞态）
 
 1. **内容填充**：10 个 Key Features MDX（需手动从原站迁移文案）
 2. 游戏 gallery 截图、videoId 填充

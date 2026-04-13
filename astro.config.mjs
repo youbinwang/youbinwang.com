@@ -111,6 +111,7 @@ export default defineConfig({
 			customCss: [
 				'./src/styles/starlight-tailwind.css',
 				'./src/styles/starlight-overrides.css',
+				'photoswipe/dist/photoswipe.css',
 			],
 			components: {
 				Head: './src/components/starlight/Head.astro',
