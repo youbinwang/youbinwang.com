@@ -40,8 +40,8 @@
 
 .pswp-thumb {
     flex-shrink: 0;
-    width: 60px;
-    height: 40px;
+    width: 80px;
+    height: 52px;
     padding: 0;
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 4px;
