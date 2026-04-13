@@ -22,6 +22,8 @@ export interface GameProject {
   /** Squarespace CDN URL placeholder — will be replaced with local ImageMetadata */
   coverImage: string;
   heroImage: string;
+  /** CSS object-position for the hero image on detail page, e.g. 'top', '50% 30%'. Defaults to 'center'. */
+  heroPosition?: string;
   meta: {
     role: Bilingual;
     engine: string;
@@ -54,8 +56,8 @@ export const games: GameProject[] = [
     keywords: { en: 'Combat & Level Design', cn: '战斗与关卡设计 Demo' },
     category: 'combat-level',
     tags: { genre: '3D Action', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/0331de16-1f75-4fa8-82fa-ba704f580cc4/ScreenShot00042.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/0331de16-1f75-4fa8-82fa-ba704f580cc4/ScreenShot00042.png',
+    coverImage: '', // TODO: add cover image
+    heroImage: '', // TODO: add hero image — heroPosition TBD
     meta: {
       role: { en: 'Gameplay / Combat / Level Designer, UE Engineer', cn: '个人作品，战斗、关卡策划，Unreal Engine 程序' },
       engine: 'Unreal Engine 5',
@@ -84,8 +86,8 @@ export const games: GameProject[] = [
     keywords: { en: 'Gameplay, Combat and Level Design Demo', cn: '玩法、战斗与关卡设计 Demo' },
     category: 'combat-level',
     tags: { genre: 'ARPG / Puzzle', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elemental-realm.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elemental-realm.png',
+    coverImage: '', // TODO: add cover image
+    heroImage: '', // TODO: add hero image — heroPosition TBD
     meta: {
       role: { en: 'Personal Project, Gameplay / Level / Combat Designer, Unreal Engineer', cn: '个人作品，玩法、战斗、关卡策划，Unreal Engine 程序' },
       engine: 'Unreal Engine 5',
@@ -114,8 +116,8 @@ export const games: GameProject[] = [
     keywords: { en: 'Combat and Level Design', cn: '战斗、关卡策划' },
     category: 'combat-level',
     tags: { genre: 'Action RPG', engine: 'UE4', discipline: 'Combat & Level Design', scope: 'Professional' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-the-scholars-side-quest.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-the-scholars-side-quest.png',
+    coverImage: '/images/games/the-scholars-side-quest/cover.png',
+    heroImage: '', // TODO: add hero image — heroPosition TBD
     meta: {
       role: { en: 'Level / Combat Designer', cn: '战斗、关卡策划' },
       engine: 'Unreal Engine 4',
@@ -146,8 +148,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Production Management', cn: '研发管理' },
     category: 'producer',
     tags: { genre: 'Co-op Action', engine: 'Unity', discipline: 'Production', scope: 'Team Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/6ad4367c-f59f-4595-aaf7-d3d938f0d40c/Library+Hero.png',
+    coverImage: '/images/games/shepherds/cover.png',
+    heroImage: '/images/games/shepherds/hero.png',
+    heroPosition: '50% 30%',
     meta: {
       role: { en: 'Game Producer', cn: '研发制作人' },
       engine: 'Unity',
@@ -178,8 +181,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Narrative Design', cn: '叙事设计' },
     category: 'personal',
     tags: { genre: '2D Narrative RPG', engine: 'RPG Maker', discipline: 'Narrative Design', scope: 'Personal Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1c2c1b34-4897-4ab6-8a8d-cdff74be1321/Details+Icon.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1c2c1b34-4897-4ab6-8a8d-cdff74be1321/Details+Icon.png',
+    coverImage: '/images/games/the-camera/cover.png',
+    heroImage: '/images/games/the-camera/hero.png',
+    heroPosition: '50% 15%',
     meta: {
       role: { en: 'Personal Project', cn: '个人游戏作品，独立开发' },
       engine: 'RPG Maker',
@@ -209,8 +213,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Gameplay (System) Design', cn: '玩法 / 系统设计' },
     category: 'personal',
     tags: { genre: 'Board Game', engine: 'Tabletop', discipline: 'System Design', scope: 'Personal Thesis Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586191644-V95W0JH9LBALDHSTQGTI/On+the+Road+Poster.png',
+    coverImage: '/images/games/on-the-road/cover.png',
+    heroImage: '/images/games/on-the-road/hero.png',
+    heroPosition: '50% 20%',
     meta: {
       role: { en: 'Personal Undergraduate Thesis Project', cn: '个人本科毕业设计，独立开发及发行' },
       engine: 'Tabletop Simulator',
@@ -238,8 +243,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Innovative Interaction and Gameplay Design', cn: '创新性的交互方式与玩法设计' },
     category: 'personal',
     tags: { genre: 'Educational Game', engine: 'Unity', discipline: 'Gameplay & UX Design', scope: 'Personal Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/1710586497071-DEWEL98YCCA3WMSTMKJ6/Aid+Master+Poster.png',
+    coverImage: '/images/games/aid-master/cover.png',
+    heroImage: '/images/games/aid-master/hero.png',
+    heroPosition: '50% 65%',
     meta: {
       role: { en: 'Personal Project', cn: '个人游戏作品，独立开发' },
       engine: 'Unity',
@@ -270,8 +276,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Combat System Design', cn: '战斗系统设计' },
     category: 'gameplay',
     tags: { genre: '3D Action', engine: 'Unity', discipline: 'Gameplay Design', scope: 'Team Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/7087fe07-e90c-4612-b03e-76c7767fc9c9/Scenes+-+2.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/7087fe07-e90c-4612-b03e-76c7767fc9c9/Scenes+-+2.png',
+    coverImage: '/images/games/baihua-pavilion/cover.jpg',
+    heroImage: '/images/games/baihua-pavilion/hero.png',
+    heroPosition: '50% 60%',
     meta: {
       role: { en: 'Gameplay / Combat Designer', cn: '玩法 / 战斗策划' },
       engine: 'Unity',
@@ -300,8 +307,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Gameplay & Level Design', cn: '玩法与关卡设计' },
     category: 'gameplay',
     tags: { genre: '2.5D Action / Strategy', engine: 'Unity', discipline: 'Gameplay Design', scope: 'Game Jam' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-greedy-roots.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-greedy-roots.png',
+    coverImage: '/images/games/greedy-roots/cover.png',
+    heroImage: '/images/games/greedy-roots/hero.png',
+    heroPosition: '50% 50%',
     meta: {
       role: { en: 'Lead Gameplay Designer & Producer', cn: '主玩法设计师 & 制作人' },
       engine: 'Unity',
@@ -330,8 +338,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Narrative & Gameplay Design', cn: '叙事与玩法设计' },
     category: 'gameplay',
     tags: { genre: '2.5D Narrative RPG', engine: 'Unity', discipline: 'Gameplay & Narrative Design', scope: 'Team Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elliot-fig.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-elliot-fig.png',
+    coverImage: '/images/games/elliot-fig/cover.png',
+    heroImage: '/images/games/elliot-fig/hero.png',
+    heroPosition: '50% 35%',
     meta: {
       role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
       engine: 'Unity',
@@ -359,8 +368,9 @@ export const games: GameProject[] = [
     keywords: { en: 'Narrative & Gameplay Design', cn: '叙事与玩法设计' },
     category: 'gameplay',
     tags: { genre: 'Narrative Mobile Game', engine: 'Unity', discipline: 'Gameplay & Narrative Design', scope: 'Team Project' },
-    coverImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-stars-chat.png',
-    heroImage: 'https://images.squarespace-cdn.com/content/v1/654b4d93bf733e56e897721b/placeholder-stars-chat.png',
+    coverImage: '/images/games/stars-chat/cover.png',
+    heroImage: '/images/games/stars-chat/hero.png',
+    heroPosition: '50% 30%',
     meta: {
       role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
       engine: 'Unity 2D',

@@ -99,11 +99,9 @@ if (game.docsType === "key-features") {
     {
       game.heroImage ? (
         <div class="absolute inset-0">
-          <img
-            src={game.heroImage}
-            alt=""
-            class="w-full h-full object-cover"
-            loading="eager"
+          <div
+            class="absolute inset-0 bg-cover"
+            style={`background-image: url('${game.heroImage}'); background-position: ${game.heroPosition ?? '50% 50%'};`}
           />
           <div
             class="absolute inset-0"

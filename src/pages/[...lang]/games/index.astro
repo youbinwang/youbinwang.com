@@ -65,6 +65,7 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
                             <VideoEmbed
                               videoId={game.videoId}
                               title={t(game.title, lang)}
+                              poster={game.coverImage}
                             />
                           ) : (
                             <a

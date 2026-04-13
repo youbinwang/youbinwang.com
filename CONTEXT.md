@@ -174,6 +174,10 @@
 | 132 | 游戏列表页 Hero 图集成 | 存放 `public/images/games/games-hero.png`（1.3 MB，16:9），更新 `src/pages/[...lang]/games/index.astro` 的 `<HeroSection>` 组件传入 `backgroundImage` 参数；Hero 高度保持全站统一 50vh |
 | 133 | 游戏列表页 Hero 与导航栏改进 | 新增 `transparentNav` prop 使 Navbar 内嵌在 Hero 区域（与电影详情页、主页保持一致）；更新 i18n：`games.title` '游戏项目' → '游戏作品'；副标题改为 '玩法 / 战斗 / 关卡设计'（更精准的学科表述）；英文简化 'Game Projects' → 'Games' |
 | 144 | 游戏列表页右侧悬浮 TOC 导航 | `position: fixed` 浮动面板（xl 1440px+ 才显示）；CSS 公式 `right: max(2rem, calc((100vw - 90rem) / 2 + 2rem))` 使面板始终紧贴内容区右边缘不重叠；Phantom `<div class="hidden xl:block w-44">` 占位保持 flex 列宽；磨砂玻璃卡片样式（`backdrop-filter: blur(12px)` + border + border-radius + 双层 box-shadow）；滚动超过 40vh（英雄区后）淡入（opacity + pointer-events，0.25s ease）；Scrollspy：`IntersectionObserver(rootMargin: -80px 0px -60% 0px)` 激活橙色竖条 + 加粗；`astro:before-swap` 清理 Observer 和 scroll 监听器 |
+| 145 | 游戏图片系统本地化 | `games.ts` 全部 11 个游戏 `coverImage`/`heroImage` 从 Squarespace CDN URL 迁移至本地路径 `/images/games/{slug}/cover.{ext}` + `/images/games/{slug}/hero.{ext}`（按项目子目录分别存放）；已到位：shepherds/the-camera/on-the-road/aid-master/baihua-pavilion/greedy-roots/elliot-fig/stars-chat/the-scholars-side-quest(cover only)；待填充：echo-quest/elemental-realm/the-scholars-side-quest(hero) |
+| 146 | 游戏列表页 VideoEmbed 封面图 | `games/index.astro` 的 `VideoEmbed` 添加 `poster={game.coverImage}`，有视频的游戏在列表页显示封面图+播放按钮，点击加载 iframe 自动播放；无封面图时降级为直接显示 iframe |
+| 147 | GameProject 新增 `heroPosition` 字段 | `games.ts` interface 新增可选 `heroPosition?: string`（CSS `background-position` 值），控制详情页 Hero 背景裁切位置；已设值：8 个游戏（shepherds 30%、the-camera 15%、on-the-road 20%、aid-master 65%、baihua 60%、roots 50%、elliot 35%、stars-chat 30%） |
+| 148 | 游戏详情页 Hero 改用 background-image | `[slug].astro` Hero 背景从 `<img object-cover>` 改为 `div + background-image/background-position`，配合 `heroPosition` 字段实现精准裁切控制 |
 | 134 | 全站 Hero 遮罩统一 | 电影详情页遮罩从硬编码 `linear-gradient(rgba...0.65)` 改为 `var(--color-hero-overlay)`；主页遮罩从 `bg-gradient-to-t from-black/30` 改为 `var(--color-hero-overlay)`；全站 Hero 底部统一渐变过渡到背景色（游戏页/主页/电影页一致） |
 | 135 | 视觉微调 | 电影详情页 Hero → 正文间距 `pt-16` → `pt-20`（80px）；主页 Hero 正文区 `pt-32` → `pt-28`（112px）微上移；主页 hero.png 更新（路径不变，重新 build 生效） |
 | 136 | 全站 Code Review — Critical 修复 | C1-C2: `games.ts` Elemental Realm / Scholar's Side Quest 封面图修正（之前 copy-paste 用了其他项目的图）；C3: MobileMenu 汉堡按钮 `bg-white` → CSS 变量 `--color-hamburger`（Light Mode 可见）；C4: VideoEmbed 添加 `role="button"` / `tabindex` / `aria-label` / 键盘 Enter/Space 支持；C5: Footer Docs 链接改用 `getLocalizedPath()` 感知语言 |
@@ -195,6 +199,7 @@
 | 2 | ~~**Docs 首页（`/docs/`）内容未居中**~~ | 根因：有 TOC 页 `main-pane = 100% - sidebar-width`（内容从 ~316px 起），无 TOC 页 `main-pane = 100%`（`sl-container` 居中后从 ~422px 起），切换时左边缘跳变 106px，视觉上显得「偏左」。修复：在 `starlight-overrides.css` 中为 `[data-has-sidebar]:not([data-has-toc]) .main-pane` 添加相同的宽度约束 `width: calc(100% - var(--sl-sidebar-width))`，消除切换时的位置漂移 | ✅ 已修复 |
 | 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
 | 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
+| 5 | **游戏详情页 `heroPosition` 不生效** | Build HTML 输出正确（`background-position: 50% XX%`），但 preview/浏览器无响应。根因未明（可能是 Tailwind `bg-cover` 与 inline style 冲突，或布局层级问题）。待后续重构 Hero 图逻辑时一并解决。 | ⚠️ 已知，待修复 |
 
 ---
 
