@@ -129,6 +129,7 @@ import { ClientRouter } from "astro:transitions";
 <script>
     import PhotoSwipeLightbox from "photoswipe/lightbox";
     import PhotoSwipe from "photoswipe";
+    import { addThumbnailStrip } from "../../utils/pswp-thumbnails";
 
     let currentLightbox: PhotoSwipeLightbox | null = null;
 
@@ -184,6 +185,7 @@ import { ClientRouter } from "astro:transitions";
             return itemData;
         });
 
+        addThumbnailStrip(currentLightbox, content, "a[data-pswp-width]");
         currentLightbox.init();
     }
 

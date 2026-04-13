@@ -116,6 +116,7 @@ const columns: string[][] = Array.from({ length: NUM_COLS }, (_, col) =>
 <script>
   import PhotoSwipeLightbox from "photoswipe/lightbox";
   import PhotoSwipe from "photoswipe";
+  import { addThumbnailStrip } from "../../utils/pswp-thumbnails";
 
   function initGallery() {
     const gallery = document.querySelector<HTMLElement>("#photography-gallery");
@@ -153,6 +154,7 @@ const columns: string[][] = Array.from({ length: NUM_COLS }, (_, col) =>
       return itemData;
     });
 
+    addThumbnailStrip(lightbox, gallery, "a");
     lightbox.init();
     document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
       once: true,

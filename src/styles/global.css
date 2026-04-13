@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "photoswipe/dist/photoswipe.css";
+@import "./pswp-thumbnails.css";
 
 /* ─── Theme tokens (Light = default, Dark = prefers-color-scheme) ──── */
 

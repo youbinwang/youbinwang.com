@@ -194,6 +194,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
 <script>
   import PhotoSwipeLightbox from "photoswipe/lightbox";
   import PhotoSwipe from "photoswipe";
+  import { addThumbnailStrip } from "../../../utils/pswp-thumbnails";
 
   function initGallery() {
     const gallery = document.querySelector<HTMLElement>("#film-gallery");
@@ -231,6 +232,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
       return itemData;
     });
 
+    addThumbnailStrip(lightbox, gallery, "a");
     lightbox.init();
     document.addEventListener("astro:before-swap", () => lightbox.destroy(), {
       once: true,

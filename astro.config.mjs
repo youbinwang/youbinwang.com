@@ -112,6 +112,7 @@ export default defineConfig({
 				'./src/styles/starlight-tailwind.css',
 				'./src/styles/starlight-overrides.css',
 				'photoswipe/dist/photoswipe.css',
+				'./src/styles/pswp-thumbnails.css',
 			],
 			components: {
 				Head: './src/components/starlight/Head.astro',
