@@ -126,6 +126,8 @@ const columns: string[][] = Array.from({ length: NUM_COLS }, (_, col) =>
       gallery,
       children: "a",
       pswpModule: PhotoSwipe,
+      // Preload only 1 slide each side (default 2) — reduces memory for 34-image gallery
+      preload: [1, 1],
     });
 
     gallery.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {

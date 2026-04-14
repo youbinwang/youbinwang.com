@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-11 (UTC+8)
+> **更新时间**：2026-04-14 (UTC+8)
 
 ---
 
@@ -192,6 +192,7 @@
 | 143 | PhotoSwipe Lightbox 首次点击修复 | 全站 5 个 PhotoSwipe 实例添加 `domItemData` filter，在用户点击时动态读取 `img.naturalWidth/Height`（不依赖初始化时可能过时的默认占位尺寸）；Head.astro 恢复 `import "photoswipe/style.css"`（docs 页不走 BaseLayout，需要独立加载）；global.css + starlight-overrides.css 添加 `.pswp` 关键布局安全网（`position: fixed !important` + `z-index: 1500`），防止 JS CSS 注入延迟导致 lightbox 内联渲染 |
 | 151 | Docs Lightbox 首次软导航修复 | 根因：Portfolio 页通过 `global.css` 的 `@import "photoswipe/dist/photoswipe.css"` 同步加载 PhotoSwipe CSS，但 Docs 页不走 BaseLayout，仅靠 Head.astro `<script>` 中 `import "photoswipe/style.css"`（JS 侧异步注入）。从 Portfolio 首次软导航到 Docs 页时 CSS 注入延迟，lightbox 渲染异常；刷新后 CSS 随模块同步加载，恢复正常。修复：`astro.config.mjs` Starlight `customCss` 新增 `photoswipe/dist/photoswipe.css`（与 Portfolio 的 global.css 同源同步），同时移除 Head.astro 中冗余的 JS `import "photoswipe/style.css"`（避免重复加载） |
 | 152 | PhotoSwipe Lightbox 底部缩略图导航条 | 新建 `src/utils/pswp-thumbnails.ts` 共享工具函数（通过 `uiRegister` + `registerElement` 注入 filmstrip UI）+ `src/styles/pswp-thumbnails.css`（渐变底部背景 `linear-gradient`、fade-in 动画、橙色高亮 active 态 `scale(1.1)`）；全站 4 个 PhotoSwipe 实例接入（摄影 34 张、平面设计 6 张、电影画廊 9~24 张、Docs 文档 6~19 张）；CSS 双路加载：`global.css` `@import` + Starlight `customCss`；缩略图 80×52px（`object-fit: cover`），切换时 `scrollIntoView` 自动居中；单图画廊自动隐藏；键盘 `focus-visible` 可访问 |
+| 153 | PhotoSwipe 缩略图条性能与间距优化 | **性能**：thumbnail `src` 不再在 `onInit` 时批量赋值；改为先只 `forceLoad(currIndex)` 加载当前项，等开场动画结束（读 `pswp.options.showAnimationDuration` + 50ms 缓冲）后再初始化 `IntersectionObserver` 懒加载其余缩略图，避免 34 张图请求与动画争资源；**间距对称**：新增 `TOP_PADDING = 44px`（= `STRIP_HEIGHT 120` − strip 实际高度 76px），`padding = { top: 44, bottom: 120 }`，使图片在去掉 strip 区域后上下等距（无论图片高矮均为 44px 对称留白）；**占位色**：`pswp-thumb img` 加 `background: rgba(255,255,255,0.08)` 未加载时有淡灰占位 |
 
 ---
 
