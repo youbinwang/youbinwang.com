@@ -38,13 +38,10 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
   />
 
   <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="flex items-start">
-
-      {/* ── Left phantom spacer (xl+) — mirrors right TOC for visual centering ── */}
-      <div class="hidden xl:block w-44 flex-shrink-0" aria-hidden="true"></div>
+    <div>
 
       {/* ── Category Sections (main content) ── */}
-      <div id="games-main" class="flex-1 min-w-0 space-y-28 xl:px-8">
+      <div id="games-main" class="space-y-28">
         {
           categories.map(({ key, label }) => {
             const categoryGames = getGamesByCategory(key);
@@ -180,9 +177,6 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
         }
       </div>
 
-      {/* ── Phantom spacer (xl+ only) — reserves column width for the fixed floating TOC ── */}
-      <div class="hidden xl:block w-44 flex-shrink-0" aria-hidden="true"></div>
-
     </div>
   </div>
 
@@ -216,11 +210,11 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
     display: none; /* hidden on small screens */
     position: fixed;
     /*
-      Align right edge with the container's right-padding edge.
-      At viewport = 90rem (1440px): right = 2rem (32px from edge).
-      At viewport > 1440px: shifts further right to stay inside the centered container.
+      At exactly 1728px (108rem): right = 0, TOC left edge = 1728-176 = 1552px
+      = content right edge (content centered at 1440px, right padding = 32px → 1552px).
+      At wider viewports: TOC shifts right, staying outside the content area.
     */
-    right: max(2rem, calc((100vw - 90rem) / 2 + 2rem));
+    right: max(0px, calc((100vw - 90rem) / 2 - 11rem));
     top: 7rem;
     width: 11rem; /* matches phantom spacer w-44 */
     z-index: 20;
@@ -242,8 +236,9 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
     transition: opacity 0.25s ease;
   }
 
-  /* Show at xl (1440px) */
-  @media (min-width: 90rem) {
+  /* Show only at 108rem (1728px) — at this width the TOC sits exactly to the
+     right of the centered 1440px content with no overlap */
+  @media (min-width: 108rem) {
     #games-toc {
       display: flex;
       flex-direction: column;

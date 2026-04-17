@@ -91,14 +91,15 @@ if (game.docsType === "key-features") {
 <BaseLayout title={titleEN} lang={lang} transparentNav>
   {/* ═══════ Hero with tags & title ═══════ */}
   <section
-    class="relative w-full min-h-[50vh] flex items-end overflow-hidden"
+    id="cinematic-hero"
+    class="relative w-full aspect-[16/5] min-h-[300px] flex items-end overflow-hidden"
     transition:name="hero"
     transition:animate="fade"
   >
     {/* Background */}
     {
       game.heroImage ? (
-        <div class="absolute inset-0">
+        <div id="cinematic-hero-bg" class="absolute inset-0">
           <div
             class="absolute inset-0 bg-cover"
             style={`background-image: url('${game.heroImage}'); background-position: ${game.heroPosition ?? '50% 50%'};`}
@@ -109,7 +110,7 @@ if (game.docsType === "key-features") {
           />
         </div>
       ) : (
-        <div class="absolute inset-0 bg-bg" />
+        <div id="cinematic-hero-bg" class="absolute inset-0 bg-bg" />
       )
     }
 
@@ -143,6 +144,7 @@ if (game.docsType === "key-features") {
     </div>
   </section>
 
+  <div class="relative z-10 bg-[var(--color-bg)]">
   <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
     {/* ═══════ Video ═══════ */}
     {
@@ -322,4 +324,49 @@ if (game.docsType === "key-features") {
       </a>
     </div>
   </div>
+  </div>
 </BaseLayout>
+
+<script>
+  function initCinematicHero() {
+    const section = document.getElementById("cinematic-hero");
+    const bgLayer = document.getElementById("cinematic-hero-bg");
+    if (!section || !bgLayer) return;
+
+    function update() {
+      const rect = section.getBoundingClientRect();
+      const heroH = section.offsetHeight;
+      const scrolledPast = -rect.top;
+
+      if (rect.bottom <= 0) {
+        bgLayer.style.cssText = "position:absolute;opacity:0;";
+      } else {
+        bgLayer.style.position = "fixed";
+        bgLayer.style.top = "0";
+        bgLayer.style.left = "0";
+        bgLayer.style.width = "100%";
+        bgLayer.style.height = `${heroH}px`;
+        bgLayer.style.zIndex = "0";
+        const fade = Math.max(0, scrolledPast) / (heroH * 0.65);
+        bgLayer.style.opacity = String(Math.max(0, 1 - fade));
+      }
+    }
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        window.removeEventListener("scroll", update);
+        window.removeEventListener("resize", update);
+        bgLayer.style.cssText = "";
+      },
+      { once: true }
+    );
+  }
+
+  initCinematicHero();
+  document.addEventListener("astro:after-swap", initCinematicHero);
+</script>

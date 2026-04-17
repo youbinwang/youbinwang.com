@@ -1,7 +1,7 @@
 # 上下文续传文件 — youbinwang.com 优化与内容填充阶段
 
 > **用途**：在新窗口中让 AI 读取此文件后继续优化与内容填充工作。
-> **更新时间**：2026-04-14 (UTC+8)
+> **更新时间**：2026-04-18 (UTC+8)
 
 ---
 
@@ -193,6 +193,9 @@
 | 151 | Docs Lightbox 首次软导航修复 | 根因：Portfolio 页通过 `global.css` 的 `@import "photoswipe/dist/photoswipe.css"` 同步加载 PhotoSwipe CSS，但 Docs 页不走 BaseLayout，仅靠 Head.astro `<script>` 中 `import "photoswipe/style.css"`（JS 侧异步注入）。从 Portfolio 首次软导航到 Docs 页时 CSS 注入延迟，lightbox 渲染异常；刷新后 CSS 随模块同步加载，恢复正常。修复：`astro.config.mjs` Starlight `customCss` 新增 `photoswipe/dist/photoswipe.css`（与 Portfolio 的 global.css 同源同步），同时移除 Head.astro 中冗余的 JS `import "photoswipe/style.css"`（避免重复加载） |
 | 152 | PhotoSwipe Lightbox 底部缩略图导航条 | 新建 `src/utils/pswp-thumbnails.ts` 共享工具函数（通过 `uiRegister` + `registerElement` 注入 filmstrip UI）+ `src/styles/pswp-thumbnails.css`（渐变底部背景 `linear-gradient`、fade-in 动画、橙色高亮 active 态 `scale(1.1)`）；全站 4 个 PhotoSwipe 实例接入（摄影 34 张、平面设计 6 张、电影画廊 9~24 张、Docs 文档 6~19 张）；CSS 双路加载：`global.css` `@import` + Starlight `customCss`；缩略图 80×52px（`object-fit: cover`），切换时 `scrollIntoView` 自动居中；单图画廊自动隐藏；键盘 `focus-visible` 可访问 |
 | 153 | PhotoSwipe 缩略图条性能与间距优化 | **性能**：thumbnail `src` 不再在 `onInit` 时批量赋值；改为先只 `forceLoad(currIndex)` 加载当前项，等开场动画结束（读 `pswp.options.showAnimationDuration` + 50ms 缓冲）后再初始化 `IntersectionObserver` 懒加载其余缩略图，避免 34 张图请求与动画争资源；**间距对称**：新增 `TOP_PADDING = 44px`（= `STRIP_HEIGHT 120` − strip 实际高度 76px），`padding = { top: 44, bottom: 120 }`，使图片在去掉 strip 区域后上下等距（无论图片高矮均为 44px 对称留白）；**占位色**：`pswp-thumb img` 加 `background: rgba(255,255,255,0.08)` 未加载时有淡灰占位 |
+| 154 | 游戏列表页正文居中修复 | 移除左右两个 `hidden xl:block w-44` phantom spacer div；去掉 flex wrapper 和 `games-main` 上的 `xl:px-8`/`flex-1 min-w-0`；正文区恢复全宽 `max-w-screen-xl` 居中。TOC 改用 `position: fixed; right: max(0px, calc((100vw - 90rem) / 2 - 11rem))`，确保 ≥1728px 时 TOC 左边缘 = 内容区右边缘（无重叠）；CSS 断点从 `@media (min-width: 90rem)` 改为 `@media (min-width: 108rem)`，≤1727px 视口 TOC 不显示 |
+| 155 | 全站 Hero 高度统一 | `HeroSection.astro`（列表页/非全高 Hero）、`films/[slug].astro`、`games/[slug].astro` 三处 Hero 高度从 `min-h-[50vh]` 改为 `aspect-[16/5] min-h-[300px]`；`aspect-ratio` 使高度随宽度等比缩放（与主页一致），`min-h-[300px]` 防止窄屏过度压缩 |
+| 156 | 滚动驱动 Hero 背景淡出（电影/游戏详情页） | Apple 产品页风格：Hero `<section>` 加 `id="cinematic-hero"`，背景 div 加 `id="cinematic-hero-bg"`；JS scroll handler 将背景层切换为 `position: fixed`（钉在视口），随滚动在 Hero 高度 65% 内从 opacity 1→0；内容区外层加全宽 `relative z-10 bg-[var(--color-bg)]` wrapper 覆盖淡出的固定背景；`astro:before-swap` 清理监听器并重置 style，`astro:after-swap` 重新初始化；z-index 栈：Navbar(50) > 内容(10) > Hero 背景(0) |
 
 ---
 

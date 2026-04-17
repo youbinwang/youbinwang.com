@@ -39,12 +39,13 @@ const isPortraitPoster = film.slug === 'fibonacci';
 <BaseLayout title={titleEN} lang={lang} transparentNav>
   {/* ═══════ Hero — film still as background ═══════ */}
   <section
-    class="relative w-full min-h-[50vh] flex items-end overflow-hidden"
+    id="cinematic-hero"
+    class="relative w-full aspect-[16/5] min-h-[300px] flex items-end overflow-hidden"
     transition:name="hero"
     transition:animate="fade"
   >
     {/* heroImage (film still) with coverImage fallback */}
-    <div class="absolute inset-0">
+    <div id="cinematic-hero-bg" class="absolute inset-0">
       <img
         src={film.heroImage || film.coverImage}
         alt=""
@@ -75,6 +76,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
     </div>
   </section>
 
+  <div class="relative z-10 bg-[var(--color-bg)]">
   <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 space-y-16">
     {/* ═══════ Poster + Description two-column ═══════ */}
     <section class="flex flex-col md:flex-row gap-8 md:gap-12 items-start">
@@ -189,6 +191,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
       )}
     </nav>
   </div>
+  </div>
 </BaseLayout>
 
 <script>
@@ -241,4 +244,47 @@ const isPortraitPoster = film.slug === 'fibonacci';
 
   initGallery();
   document.addEventListener("astro:after-swap", initGallery);
+
+  /* ── Cinematic hero scroll-driven fade ── */
+  function initCinematicHero() {
+    const section = document.getElementById("cinematic-hero");
+    const bgLayer = document.getElementById("cinematic-hero-bg");
+    if (!section || !bgLayer) return;
+
+    function update() {
+      const rect = section.getBoundingClientRect();
+      const heroH = section.offsetHeight;
+      const scrolledPast = -rect.top;
+
+      if (rect.bottom <= 0) {
+        bgLayer.style.cssText = "position:absolute;opacity:0;";
+      } else {
+        bgLayer.style.position = "fixed";
+        bgLayer.style.top = "0";
+        bgLayer.style.left = "0";
+        bgLayer.style.width = "100%";
+        bgLayer.style.height = `${heroH}px`;
+        bgLayer.style.zIndex = "0";
+        const fade = Math.max(0, scrolledPast) / (heroH * 0.65);
+        bgLayer.style.opacity = String(Math.max(0, 1 - fade));
+      }
+    }
+
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
+
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        window.removeEventListener("scroll", update);
+        window.removeEventListener("resize", update);
+        bgLayer.style.cssText = "";
+      },
+      { once: true }
+    );
+  }
+
+  initCinematicHero();
+  document.addEventListener("astro:after-swap", initCinematicHero);
 </script>

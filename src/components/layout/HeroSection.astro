@@ -15,7 +15,7 @@ interface Props {
 }
 
 const { backgroundImage, title, subtitle, fullHeight = false } = Astro.props;
-const heightClass = fullHeight ? "min-h-[80vh]" : "min-h-[50vh]";
+const heightClass = fullHeight ? "min-h-[80vh]" : "aspect-[16/5] min-h-[300px]";
 ---
 
 <section
