@@ -196,6 +196,7 @@
 | 154 | 游戏列表页正文居中修复 | 移除左右两个 `hidden xl:block w-44` phantom spacer div；去掉 flex wrapper 和 `games-main` 上的 `xl:px-8`/`flex-1 min-w-0`；正文区恢复全宽 `max-w-screen-xl` 居中。TOC 改用 `position: fixed; right: max(0px, calc((100vw - 90rem) / 2 - 11rem))`，确保 ≥1728px 时 TOC 左边缘 = 内容区右边缘（无重叠）；CSS 断点从 `@media (min-width: 90rem)` 改为 `@media (min-width: 108rem)`，≤1727px 视口 TOC 不显示 |
 | 155 | 全站 Hero 高度统一 | `HeroSection.astro`（列表页/非全高 Hero）、`films/[slug].astro`、`games/[slug].astro` 三处 Hero 高度从 `min-h-[50vh]` 改为 `aspect-[16/5] min-h-[300px]`；`aspect-ratio` 使高度随宽度等比缩放（与主页一致），`min-h-[300px]` 防止窄屏过度压缩 |
 | 156 | 滚动驱动 Hero 背景淡出（电影/游戏详情页） | Apple 产品页风格：Hero `<section>` 加 `id="cinematic-hero"`，背景 div 加 `id="cinematic-hero-bg"`；JS scroll handler 将背景层切换为 `position: fixed`（钉在视口），随滚动在 Hero 高度 65% 内从 opacity 1→0；内容区外层加全宽 `relative z-10 bg-[var(--color-bg)]` wrapper 覆盖淡出的固定背景；`astro:before-swap` 清理监听器并重置 style，`astro:after-swap` 重新初始化；z-index 栈：Navbar(50) > 内容(10) > Hero 背景(0) |
+| 157 | CLAUDE.md 工作流程节 | 新增「工作流程（Workflow Triggers）」节：定义「开始工作」（读 CONTEXT.md + 启动 dev server）和「结束工作」（更新 CONTEXT.md + 杀 dev server + git push）两个触发词及执行步骤 |
 
 ---
 

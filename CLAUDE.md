@@ -415,3 +415,37 @@ import { Aside, LinkCard, CardGrid } from '@astrojs/starlight/components';
 - 图片预留格式：`{/* ![Alt Text](/images/echo-quest/filename.png) */}`，准备好图片后去掉注释即可
 - 图片存放路径：`public/images/echo-quest/`
 - 内容源文件：项目根目录 `EchoQuest_Revised.md`
+
+---
+
+## 工作流程（Workflow Triggers）
+
+当用户说「**开始工作**」时，依次执行：
+
+1. 读取 `CONTEXT.md`，了解当前进度和待办事项
+2. 启动 dev server（后台运行）：
+
+   ```bash
+   node ./node_modules/astro/bin/astro.mjs dev
+   ```
+
+3. 告知用户 dev server 地址（默认 <http://localhost:4321>）及当前待办重点
+
+当用户说「**结束工作**」时，依次执行：
+
+1. 将本次完成的改动追加到 `CONTEXT.md` 第三节表格（格式与现有行一致：`| # | 改动 | 要点 |`）
+2. 关闭 dev server 进程：
+
+   ```bash
+   # Windows：找到占用 4321 端口的进程并杀掉
+   netstat -ano | findstr :4321
+   taskkill /PID <pid> /F
+   ```
+
+3. 执行 git 提交与推送（提交信息由用户确认或 AI 自动生成）：
+
+   ```bash
+   git add -A
+   git commit -m "<本次改动摘要>"
+   git push
+   ```
