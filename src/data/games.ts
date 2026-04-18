@@ -278,7 +278,7 @@ export const games: GameProject[] = [
     tags: { genre: '3D Action', engine: 'Unity', discipline: 'Gameplay Design', scope: 'Team Project' },
     coverImage: '/images/games/baihua-pavilion/cover.jpg',
     heroImage: '/images/games/baihua-pavilion/hero.png',
-    heroPosition: '50% 60%',
+    heroPosition: '50% 70%',
     meta: {
       role: { en: 'Gameplay / Combat Designer', cn: '玩法 / 战斗策划' },
       engine: 'Unity',
@@ -309,7 +309,7 @@ export const games: GameProject[] = [
     tags: { genre: '2.5D Action / Strategy', engine: 'Unity', discipline: 'Gameplay Design', scope: 'Game Jam' },
     coverImage: '/images/games/greedy-roots/cover.png',
     heroImage: '/images/games/greedy-roots/hero.png',
-    heroPosition: '50% 50%',
+    heroPosition: '50% 40%',
     meta: {
       role: { en: 'Lead Gameplay Designer & Producer', cn: '主玩法设计师 & 制作人' },
       engine: 'Unity',
@@ -340,7 +340,7 @@ export const games: GameProject[] = [
     tags: { genre: '2.5D Narrative RPG', engine: 'Unity', discipline: 'Gameplay & Narrative Design', scope: 'Team Project' },
     coverImage: '/images/games/elliot-fig/cover.png',
     heroImage: '/images/games/elliot-fig/hero.png',
-    heroPosition: '50% 35%',
+    heroPosition: '50% 40%',
     meta: {
       role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
       engine: 'Unity',
@@ -370,7 +370,7 @@ export const games: GameProject[] = [
     tags: { genre: 'Narrative Mobile Game', engine: 'Unity', discipline: 'Gameplay & Narrative Design', scope: 'Team Project' },
     coverImage: '/images/games/stars-chat/cover.png',
     heroImage: '/images/games/stars-chat/hero.png',
-    heroPosition: '50% 30%',
+    heroPosition: '50% 40%',
     meta: {
       role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
       engine: 'Unity 2D',

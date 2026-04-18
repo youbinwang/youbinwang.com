@@ -200,6 +200,8 @@
 | 158 | 游戏列表页 Steam/itch.io 按钮品牌化 | Steam：`bg-[#1b2838]` + 白字 + Steam SVG logo（内联路径）；itch.io：`bg-[#FA5C5C]` + 白字 + `/icons/itch-io.svg`（用户提供，白色填充）；与已有 YouTube/Google Drive 按钮风格统一（胶囊形，hover opacity-90） |
 | 159 | Hero 滚动淡出效果修复（消除 View Transition 断裂）| 原实现用 `position: fixed` 导致背景逃出 overflow:hidden，在 View Transition crossfade 时透过半透明新页面露出旧页面背景。修复：**去掉 position:fixed**，改为纯 opacity 渐变（`position: absolute` 保持不变，仅随滚动调整 opacity）；同步将清理监听器改为 `astro:before-preparation`（截图前重置），重初始化改为 `astro:page-load`（动画结束后才激活）；电影/游戏详情页同步修复 |
 | 160 | View Transition 新页面透明闪烁修复 | `global.css` 将 `::view-transition-new(root)` 从 `fadeIn 0.3s` 改为 `animation: none`（新页面立即满载显示），旧页面用 `fadeOut 0.25s` 在下方淡出；消除所有页面切换时新页面半透明期间旧页面背景透出的问题 |
+| 161 | Bug #5 修复：电影 Hero 改用 background-image | `FilmProject` 新增 `heroPosition?: string` 字段；电影详情页 Hero 从 `<img object-position>` 改为与游戏一致的 `div + background-image + background-position` 方案（`object-position` 在此布局下无效，background-position 正常生效）；同步移除旧的 `transform: translateY(-20%)` slug 特判逻辑 |
+| 162 | 全站 heroPosition 调整 | 游戏：百花亭 70%、Greedy Roots 40%、Elliot Fig 40%、Stars Chat 40%、Aid Master 65%（回退未变）、Shepherds 30%（未变）；电影：斐波那契 35%、无知的夜晚 45%、模因污染 80% |
 
 ---
 

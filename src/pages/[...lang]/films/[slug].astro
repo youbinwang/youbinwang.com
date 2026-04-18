@@ -45,14 +45,11 @@ const isPortraitPoster = film.slug === 'fibonacci';
     transition:animate="fade"
   >
     {/* heroImage (film still) with coverImage fallback */}
-    <div id="cinematic-hero-bg" class="absolute inset-0">
-      <img
-        src={film.heroImage || film.coverImage}
-        alt=""
-        class="w-full h-full object-cover"
-        style={film.slug === 'meme-contaminate' ? undefined : 'transform: translateY(-20%);'}
-        loading="eager"
-      />
+    <div
+      id="cinematic-hero-bg"
+      class="absolute inset-0"
+      style={`background-image: url('${film.heroImage || film.coverImage}'); background-size: cover; background-position: ${film.heroPosition ?? '50% 50%'};`}
+    >
       <div
         class="absolute inset-0"
         style="background: var(--color-hero-overlay);"

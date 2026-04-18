@@ -12,6 +12,7 @@ export interface FilmProject {
   year: number;
   coverImage: string;
   heroImage: string;
+  heroPosition?: string;
   posterImage: string;
   description: Bilingual;
   synopsis: Bilingual[];
@@ -32,6 +33,7 @@ export const films: FilmProject[] = [
     year: 2023,
     coverImage: '/images/films/fibonacci-cover.png',
     heroImage: '/images/films/fibonacci-hero.png',
+    heroPosition: '50% 35%',
     posterImage: '/images/films/fibonacci-poster.jpg',
     description: {
       en: 'Fibonacci explores the rupture and rebuilding of a Chinese-style father-son relationship, examining the themes of generational succession and the cyclical nature of life.',
@@ -84,6 +86,7 @@ export const films: FilmProject[] = [
     year: 2021,
     coverImage: '/images/films/an-ignorant-night-cover.png',
     heroImage: '/images/films/an-ignorant-night-hero.png',
+    heroPosition: '50% 45%',
     posterImage: '/images/films/an-ignorant-night-poster.png',
     description: {
       en: 'An Ignorant Night weaves sex, rock music, and DV cameras into an unconventional, essay-like narrative — sketching a raw and fractured dream of youth.',
@@ -136,6 +139,7 @@ export const films: FilmProject[] = [
     year: 2020,
     coverImage: '/images/films/meme-contaminate-cover.png',
     heroImage: '/images/films/meme-contaminate-hero.png',
+    heroPosition: '50% 80%',
     posterImage: '/images/films/meme-contaminate-poster.png',
     description: {
       en: 'Meme Contaminate is an experimental short film blending psychological thriller with avant-garde narrative, using memetic transmission as its lens to explore how virtual media erodes the boundaries between cognition and reality in the digital age.',
