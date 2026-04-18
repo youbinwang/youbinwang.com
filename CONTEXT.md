@@ -197,6 +197,9 @@
 | 155 | 全站 Hero 高度统一 | `HeroSection.astro`（列表页/非全高 Hero）、`films/[slug].astro`、`games/[slug].astro` 三处 Hero 高度从 `min-h-[50vh]` 改为 `aspect-[16/5] min-h-[300px]`；`aspect-ratio` 使高度随宽度等比缩放（与主页一致），`min-h-[300px]` 防止窄屏过度压缩 |
 | 156 | 滚动驱动 Hero 背景淡出（电影/游戏详情页） | Apple 产品页风格：Hero `<section>` 加 `id="cinematic-hero"`，背景 div 加 `id="cinematic-hero-bg"`；JS scroll handler 将背景层切换为 `position: fixed`（钉在视口），随滚动在 Hero 高度 65% 内从 opacity 1→0；内容区外层加全宽 `relative z-10 bg-[var(--color-bg)]` wrapper 覆盖淡出的固定背景；`astro:before-swap` 清理监听器并重置 style，`astro:after-swap` 重新初始化；z-index 栈：Navbar(50) > 内容(10) > Hero 背景(0) |
 | 157 | CLAUDE.md 工作流程节 | 新增「工作流程（Workflow Triggers）」节：定义「开始工作」（读 CONTEXT.md + 启动 dev server）和「结束工作」（更新 CONTEXT.md + 杀 dev server + git push）两个触发词及执行步骤 |
+| 158 | 游戏列表页 Steam/itch.io 按钮品牌化 | Steam：`bg-[#1b2838]` + 白字 + Steam SVG logo（内联路径）；itch.io：`bg-[#FA5C5C]` + 白字 + `/icons/itch-io.svg`（用户提供，白色填充）；与已有 YouTube/Google Drive 按钮风格统一（胶囊形，hover opacity-90） |
+| 159 | Hero 滚动淡出效果修复（消除 View Transition 断裂）| 原实现用 `position: fixed` 导致背景逃出 overflow:hidden，在 View Transition crossfade 时透过半透明新页面露出旧页面背景。修复：**去掉 position:fixed**，改为纯 opacity 渐变（`position: absolute` 保持不变，仅随滚动调整 opacity）；同步将清理监听器改为 `astro:before-preparation`（截图前重置），重初始化改为 `astro:page-load`（动画结束后才激活）；电影/游戏详情页同步修复 |
+| 160 | View Transition 新页面透明闪烁修复 | `global.css` 将 `::view-transition-new(root)` 从 `fadeIn 0.3s` 改为 `animation: none`（新页面立即满载显示），旧页面用 `fadeOut 0.25s` 在下方淡出；消除所有页面切换时新页面半透明期间旧页面背景透出的问题 |
 
 ---
 

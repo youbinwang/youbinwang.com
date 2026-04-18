@@ -241,11 +241,13 @@ img {
 }
 
 ::view-transition-old(root) {
-    animation: fadeOut 0.2s ease-in-out forwards;
+    animation: fadeOut 0.25s ease-in-out forwards;
 }
 
+/* New page appears instantly — old page fades out underneath.
+   Eliminates the transparency window that reveals the previous page's background. */
 ::view-transition-new(root) {
-    animation: fadeIn 0.3s ease-in-out forwards;
+    animation: none;
 }
 
 ::view-transition-old(hero) {

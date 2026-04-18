@@ -254,18 +254,12 @@ const isPortraitPoster = film.slug === 'fibonacci';
     function update() {
       const rect = section.getBoundingClientRect();
       const heroH = section.offsetHeight;
-      const scrolledPast = -rect.top;
+      const scrolledPast = Math.max(0, -rect.top);
 
       if (rect.bottom <= 0) {
-        bgLayer.style.cssText = "position:absolute;opacity:0;";
+        bgLayer.style.opacity = "0";
       } else {
-        bgLayer.style.position = "fixed";
-        bgLayer.style.top = "0";
-        bgLayer.style.left = "0";
-        bgLayer.style.width = "100%";
-        bgLayer.style.height = `${heroH}px`;
-        bgLayer.style.zIndex = "0";
-        const fade = Math.max(0, scrolledPast) / (heroH * 0.65);
+        const fade = scrolledPast / (heroH * 0.65);
         bgLayer.style.opacity = String(Math.max(0, 1 - fade));
       }
     }
@@ -275,16 +269,16 @@ const isPortraitPoster = film.slug === 'fibonacci';
     update();
 
     document.addEventListener(
-      "astro:before-swap",
+      "astro:before-preparation",
       () => {
         window.removeEventListener("scroll", update);
         window.removeEventListener("resize", update);
-        bgLayer.style.cssText = "";
+        bgLayer.style.opacity = "1";
       },
       { once: true }
     );
   }
 
   initCinematicHero();
-  document.addEventListener("astro:after-swap", initCinematicHero);
+  document.addEventListener("astro:page-load", initCinematicHero);
 </script>
