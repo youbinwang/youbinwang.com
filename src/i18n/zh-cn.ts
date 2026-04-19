@@ -30,7 +30,7 @@ const zhCN = {
   'game.viewTechDocs': '📖 查看技术文档',
   'game.viewKeyFeatures': '🔍 查看项目详情',
   'game.details': '详情',
-  'game.trialVideo': '试玩视频',
+  'game.trialVideo': '演示视频',
   'game.designDocs': '设计文档',
   'game.screenshots': '截图',
   'game.projectDetails': '项目详情',

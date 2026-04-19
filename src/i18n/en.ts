@@ -30,7 +30,7 @@ const en = {
   'game.viewTechDocs': '📖 View Tech Docs',
   'game.viewKeyFeatures': '🔍 View Details',
   'game.details': 'Details',
-  'game.trialVideo': 'Trial Video',
+  'game.trialVideo': 'Demo Video',
   'game.designDocs': 'Design Docs',
   'game.screenshots': 'Screenshots',
   'game.projectDetails': 'Project Details',

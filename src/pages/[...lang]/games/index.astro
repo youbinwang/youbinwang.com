@@ -25,6 +25,17 @@ const categories: { key: GameProject["category"]; label: string }[] = [
 
 /** TOC items — only categories with at least one game */
 const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length > 0);
+
+/** Compute human-readable duration from "Mon YYYY - Mon YYYY" format */
+function getDurationLabel(durationEn: string, isZh: boolean): string | null {
+  const match = durationEn.match(/^([A-Z][a-z]{2})\s+(\d{4})\s*-\s*([A-Z][a-z]{2})\s+(\d{4})$/);
+  if (!match) return null;
+  const m: Record<string, number> = {
+    Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12
+  };
+  const diff = (parseInt(match[4]) - parseInt(match[2])) * 12 + (m[match[3]] - m[match[1]]) + 1;
+  return isZh ? `${diff} 个月` : diff === 1 ? '1 month' : `${diff} months`;
+}
 ---
 
 <BaseLayout title={ui("games.title", lang)} lang={lang} transparentNav>
@@ -47,7 +58,7 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
             const categoryGames = getGamesByCategory(key);
             if (categoryGames.length === 0) return null;
             return (
-              <section id={`section-${key}`}>
+              <section id={`section-${key}`} class="scroll-mt-24">
                 {/* Category heading */}
                 <h2 class="text-3xl font-bold text-[var(--color-text)] mb-14 pb-4 border-b-2 border-[var(--color-border)]">
                   {label}
@@ -58,7 +69,7 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
                     const href = getLocalizedPath(`/games/${game.slug}/`, lang);
 
                     return (
-                      <article class="flex flex-col lg:flex-row gap-10 xl:gap-14 items-center">
+                      <article id={`project-${game.slug}`} class="flex flex-col lg:flex-row gap-10 xl:gap-14 items-start scroll-mt-24">
                         {/* ── Left: Video or Cover Image ── */}
                         <div class="w-full lg:w-[55%] flex-shrink-0">
                           {game.videoId ? (
@@ -83,48 +94,59 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
                         </div>
 
                         {/* ── Right: Project Info ── */}
-                        <div class="w-full lg:w-[45%] flex flex-col justify-center">
+                        <div class="w-full lg:w-[45%] flex flex-col lg:pt-[10%]">
+
                           {/* Title */}
                           <a href={href} class="group">
-                            <h3 class="text-xl lg:text-2xl font-bold text-[var(--color-text)] mb-2 group-hover:text-[var(--color-accent)] transition-colors">
+                            <h3 class="text-xl lg:text-2xl font-bold text-[var(--color-text)] mb-3 group-hover:text-[var(--color-accent)] transition-colors">
                               {t(game.title, lang)}
                             </h3>
                           </a>
 
-                          {/* Subtitle */}
-                          <p class="text-base font-semibold text-[var(--color-text-secondary)] mb-5">
-                            {game.category === "combat-level"
-                              ? `${t(game.keywords, lang)} - ${t(game.genre, lang)}`
-                              : t(game.genre, lang)}
-                          </p>
-
-                          {/* Meta info */}
-                          <div class="space-y-2 text-sm text-[var(--color-text-secondary)] mb-6">
-                            <p>{t(game.meta.role, lang)}</p>
-                            <p>{t(game.meta.duration, lang)}</p>
-                            <p>
-                              {game.meta.engine} | {game.meta.platform}
-                            </p>
+                          {/* 4 Tag pills */}
+                          <div class="flex flex-wrap gap-2 mb-6">
+                            {[game.tags.genre, game.tags.engine, game.tags.discipline, game.tags.scope].map((tag) => (
+                              <span class="px-2.5 py-0.5 text-xs font-medium rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)]">
+                                {tag}
+                              </span>
+                            ))}
                           </div>
+
+                          {/* Meta info: labeled grid */}
+                          <dl class="meta-grid mb-10">
+                            <dt>Role</dt>
+                            <dd>{t(game.meta.role, lang)}</dd>
+                            <dt>Duration</dt>
+                            <dd>
+                              {(() => {
+                                const label = getDurationLabel(game.meta.duration.en, lang === 'zh-cn');
+                                const full = t(game.meta.duration, lang);
+                                return label ? <>{label}（{full}）</> : <>{full}</>;
+                              })()}
+                            </dd>
+                          </dl>
 
                           {/* Action buttons */}
                           <div class="flex flex-wrap items-center gap-3">
+                            {/* Primary CTA — internal page navigation */}
                             <a
                               href={href}
-                              class="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-text)] text-[var(--color-bg)] text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+                              class="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-accent)] text-white text-sm font-semibold rounded-full hover:opacity-90 transition-opacity"
                             >
-                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle cx="12" cy="12" r="9" />
+                                <path stroke-linecap="round" d="M12 8v8M8 12h8" />
                               </svg>
                               {ui('game.details', lang)}
                             </a>
 
+                            {/* Secondary — external links (outlined) */}
                             {game.links.youtube && (
                               <a
                                 href={game.links.youtube}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FF0000] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 border border-[#FF0000] text-[#FF0000] text-sm font-medium rounded-full hover:bg-[#FF0000] hover:text-white transition-colors"
                               >
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                   <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -138,7 +160,7 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
                                 href={game.links.gdrive[0]}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#35A852] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+                                class="inline-flex items-center gap-2 px-5 py-2.5 border border-[#35A852] text-[#35A852] text-sm font-medium rounded-full hover:bg-[#35A852] hover:text-white transition-colors"
                               >
                                 <svg class="w-4 h-4" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
                                   <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA" />
@@ -154,15 +176,15 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
 
                             {game.links.itch && (
                               <a href={game.links.itch} target="_blank" rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FA5C5C] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
-                                <img src="/icons/itch-io.svg" alt="" class="w-4 h-4" aria-hidden="true" />
+                                class="group inline-flex items-center gap-2 px-5 py-2.5 border border-[#FA5C5C] text-[#FA5C5C] text-sm font-medium rounded-full hover:bg-[#FA5C5C] hover:text-white transition-colors">
+                                <img src="/icons/itch-io.svg" alt="" class="w-4 h-4 [filter:brightness(0)_saturate(100%)_invert(54%)_sepia(83%)_saturate(504%)_hue-rotate(314deg)] group-hover:filter-none transition-all" aria-hidden="true" />
                                 itch.io
                               </a>
                             )}
 
                             {game.links.steam && (
                               <a href={game.links.steam} target="_blank" rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1b2838] text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity">
+                                class="inline-flex items-center gap-2 px-5 py-2.5 border border-[#1b2838] text-[#1b2838] text-sm font-medium rounded-full hover:bg-[#1b2838] hover:text-white transition-colors">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                   <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.029 4.524 4.524s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.38-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.452 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.662 0 3.015-1.35 3.015-3.015zm-5.273.016c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z"/>
                                 </svg>
@@ -170,6 +192,7 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
                               </a>
                             )}
                           </div>
+
                         </div>
                       </article>
                     );
@@ -193,17 +216,32 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
       {lang === "zh-cn" ? "目录" : "Contents"}
     </p>
     <ul class="toc-list">
-      {tocItems.map(({ key, label }) => (
-        <li>
-          <a
-            href={`#section-${key}`}
-            class="toc-item"
-            data-section={`section-${key}`}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
+      {tocItems.map(({ key, label }) => {
+        const categoryGames = getGamesByCategory(key);
+        return (
+          <li class="toc-group">
+            <a
+              href={`#section-${key}`}
+              class="toc-category"
+            >
+              {label}
+            </a>
+            <ul class="toc-projects">
+              {categoryGames.map((game) => (
+                <li>
+                  <a
+                    href={`#project-${game.slug}`}
+                    class="toc-item"
+                    data-section={`project-${game.slug}`}
+                  >
+                    {t(game.title, lang)}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        );
+      })}
     </ul>
   </nav>
 </BaseLayout>
@@ -211,19 +249,13 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
 <style>
   /* ─── Fixed floating TOC panel ─────────────────────────── */
   #games-toc {
-    display: none; /* hidden on small screens */
+    display: none;
     position: fixed;
-    /*
-      At exactly 1728px (108rem): right = 0, TOC left edge = 1728-176 = 1552px
-      = content right edge (content centered at 1440px, right padding = 32px → 1552px).
-      At wider viewports: TOC shifts right, staying outside the content area.
-    */
-    right: max(0px, calc((100vw - 90rem) / 2 - 11rem));
+    right: max(0px, calc((100vw - 90rem) / 2 - 12rem));
     top: 7rem;
-    width: 11rem; /* matches phantom spacer w-44 */
+    width: 12rem;
     z-index: 20;
 
-    /* Floating card */
     background: color-mix(in srgb, var(--color-surface) 88%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -234,26 +266,47 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
       0 4px 16px color-mix(in srgb, var(--color-text) 6%, transparent),
       0 1px 4px  color-mix(in srgb, var(--color-text) 4%, transparent);
 
-    /* Fade-in on scroll */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
   }
 
-  /* Show only at 108rem (1728px) — at this width the TOC sits exactly to the
-     right of the centered 1440px content with no overlap */
-  @media (min-width: 108rem) {
+  /* Show at 114rem (1824px): TOC left edge = content right edge at this width */
+  @media (min-width: 114rem) {
     #games-toc {
       display: flex;
       flex-direction: column;
-      gap: 0.875rem;
+      gap: 0.5rem;
     }
   }
 
-  /* Visible state — toggled by JS on scroll */
   #games-toc.is-visible {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* ─── Meta labeled grid ──────────────────────────────── */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.45rem 1rem;
+    margin: 0;
+  }
+
+  .meta-grid dt {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    padding-top: 0.1rem; /* optical alignment with dd */
+  }
+
+  .meta-grid dd {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
   }
 
   /* "Contents / 目录" label */
@@ -263,11 +316,45 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-text-muted);
-    margin: 0;
+    margin: 0 0 0.5rem;
   }
 
-  /* List */
+  /* Top-level list */
   .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* Category group */
+  .toc-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  /* Category label — not a scrollspy target, just a jump link */
+  .toc-category {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: 0.1rem 0;
+    transition: color 150ms ease;
+  }
+
+  .toc-category:hover {
+    color: var(--color-text-secondary);
+  }
+
+  /* Project sub-list */
+  .toc-projects {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -276,16 +363,19 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
     flex-direction: column;
   }
 
-  /* Each link */
+  /* Project name link */
   .toc-item {
     display: block;
     font-size: 0.8125rem;
-    line-height: 1.4;
+    line-height: 1.35;
     color: var(--color-text-secondary);
-    padding: 0.35rem 0.75rem;
+    padding: 0.3rem 0.625rem;
     margin-left: -1px;
     border-left: 2px solid transparent;
     text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: color 150ms ease, border-color 150ms ease;
   }
 
@@ -320,14 +410,13 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
 
     if (!sections.length) return;
 
-    // ── Scrollspy: highlight active section ──────────────────
+    // ── Scrollspy: highlight active project ──────────────────
     function setActive(target: HTMLElement) {
       tocLinks.forEach((l) => l.classList.remove("is-active"));
       const match = sections.find(({ section }) => section === target);
       if (match) match.link.classList.add("is-active");
     }
 
-    // Sync active on load (based on current scroll position)
     function syncActive() {
       const midpoint = window.scrollY + window.innerHeight * 0.3;
       let active = sections[0].section;
@@ -349,14 +438,12 @@ const tocItems = categories.filter(({ key }) => getGamesByCategory(key).length >
           }
         }
       },
-      // Detect section entering top 40% of viewport (below navbar)
       { rootMargin: "-80px 0px -60% 0px", threshold: 0 }
     );
     sections.forEach(({ section }) => scrollSpyObserver.observe(section));
 
     // ── Show/hide: fade in after scrolling past the hero ─────
     function updateVisibility() {
-      // Hero is ~50vh; show TOC after scrolling 40% of viewport height
       const threshold = window.innerHeight * 0.4;
       toc.classList.toggle("is-visible", window.scrollY > threshold);
     }

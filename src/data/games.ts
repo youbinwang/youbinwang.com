@@ -180,13 +180,13 @@ export const games: GameProject[] = [
     genre: { en: '2D Narrative RPG', cn: '2D 俯视角叙事 RPG' },
     keywords: { en: 'Narrative Design', cn: '叙事设计' },
     category: 'personal',
-    tags: { genre: '2D Narrative RPG', engine: 'RPG Maker', discipline: 'Narrative Design', scope: 'Personal Project' },
+    tags: { genre: '2D Narrative RPG', engine: 'Unity', discipline: 'Narrative Design', scope: 'Personal Project' },
     coverImage: '/images/games/the-camera/cover.png',
     heroImage: '/images/games/the-camera/hero.png',
     heroPosition: '50% 15%',
     meta: {
       role: { en: 'Personal Project', cn: '个人游戏作品，独立开发' },
-      engine: 'RPG Maker',
+      engine: 'Unity',
       platform: 'PC (Windows, MacOS)',
       teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
       duration: { en: 'Apr 2022 - Jun 2022', cn: '2022 年 04 月 - 2022 年 06 月' },
@@ -333,7 +333,7 @@ export const games: GameProject[] = [
     heroImage: '/images/games/greedy-roots/hero.png',
     heroPosition: '50% 40%',
     meta: {
-      role: { en: 'Lead Gameplay Designer & Producer', cn: '主玩法设计师 & 制作人' },
+      role: { en: 'Lead Gameplay Designer & Producer', cn: '主玩法设计 & 制作人' },
       engine: 'Unity',
       platform: 'PC',
       teamSize: { en: 'Game Jam team', cn: 'Game Jam 团队' },
@@ -364,7 +364,7 @@ export const games: GameProject[] = [
     heroImage: '/images/games/elliot-fig/hero.png',
     heroPosition: '50% 40%',
     meta: {
-      role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
+      role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计' },
       engine: 'Unity',
       platform: 'PC',
       teamSize: { en: 'Team project', cn: '团队项目' },
@@ -394,7 +394,7 @@ export const games: GameProject[] = [
     heroImage: '/images/games/stars-chat/hero.png',
     heroPosition: '50% 40%',
     meta: {
-      role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计师' },
+      role: { en: 'Lead Gameplay & Narrative Designer', cn: '主玩法与叙事设计' },
       engine: 'Unity 2D',
       platform: 'Mobile',
       teamSize: { en: '4 members', cn: '4 人' },

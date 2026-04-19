@@ -203,6 +203,12 @@
 | 161 | Bug #5 修复：电影 Hero 改用 background-image | `FilmProject` 新增 `heroPosition?: string` 字段；电影详情页 Hero 从 `<img object-position>` 改为与游戏一致的 `div + background-image + background-position` 方案（`object-position` 在此布局下无效，background-position 正常生效）；同步移除旧的 `transform: translateY(-20%)` slug 特判逻辑 |
 | 163 | 游戏 gallery 截图填充（9 个游戏） | `games.ts` gallery 数组写入：scholars(12)、shepherds(16)、the-camera(9)、on-the-road(21)、aid-master(14)、baihua-pavilion(12)、greedy-roots(4)、elliot-fig(5)、stars-chat(12)；scholars hero 图本地化（`hero.png`）；echo-quest/elemental-realm 待放图 |
 | 164 | 待办列表重构 | CONTEXT.md 第六节改为结构化待办表（A1–A7），新增游戏图片命名规范（`public/images/games/{slug}/gallery/01.png` 等） |
+| 165 | /games 页两级 TOC | 右侧浮动导航改为两级结构：分类标签（全大写，点击跳分类 section）+ 项目名子列表（点击跳项目 article，scrollspy 高亮）；section/article 加 `scroll-mt-24` 防 Navbar 遮挡；TOC 宽度 11rem→12rem，出现断点 108rem→114rem |
+| 166 | /games 页 Meta 信息重构 | 移除纯文字 subtitle/engine 行；改为 4 Tag pills（Genre/Engine/Discipline/Scope）+ ROLE/DURATION 标签格（`<dl>` 两列网格）；Duration 自动计算月数显示为"4 个月（2024 年 09 月 - 2024 年 12 月）"格式 |
+| 167 | /games 页按钮样式重构 | 详情按钮：橙色实心主 CTA + 圆圈加号图标；外部链接（YouTube/Drive/itch.io/Steam）改为 outlined 边框样式，hover 填充品牌色；itch.io 图标 CSS filter 近似品牌色 |
+| 168 | /games 页右栏定位 | 改用 `items-start + lg:pt-[10%]`：`pt` 百分比基于父元素宽度，与视频高度同比例缩放，任意屏幕宽度下标题稳定落在视频顶部 33% 处 |
+| 169 | The Camera 引擎修正 | `tags.engine` 和 `meta.engine` 从 RPG Maker 改回 Unity |
+| 170 | 文案优化 | "试玩视频" → "演示视频" / "Demo Video"；games.ts 3 处 role 字段"设计师" → "设计" |
 
 ---
 
@@ -215,6 +221,7 @@
 | 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
 | 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
 | 5 | **游戏详情页 `heroPosition` 不生效** | Build HTML 输出正确（`background-position: 50% XX%`），但 preview/浏览器无响应。根因未明（可能是 Tailwind `bg-cover` 与 inline style 冲突，或布局层级问题）。待后续重构 Hero 图逻辑时一并解决。 | ⚠️ 已知，待修复 |
+| 6 | **/games 页外部链接按钮位置偏上** | 右栏用 `items-start + lg:pt-[10%]` 定位，内容整体落点正确，但按钮组（YouTube/Drive 等）与上方正文间距仍不够理想，在不同项目间表现不一致。高优先修复，考虑重新设计按钮展示方案（两行分组、卡片底部固定等）。 | ⚠️ 已知，高优先 |
 
 ---
 
