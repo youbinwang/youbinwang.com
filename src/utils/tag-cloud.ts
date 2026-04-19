@@ -16,8 +16,9 @@ type ChipBox = {
   y: number;
 };
 
-const CHIP_GAP = 12; // min px between chips
-const MIN_HEIGHT = 140;
+const CHIP_GAP = 6; // min px between chips
+const MIN_HEIGHT = 80;
+const PACKING_FACTOR = 0.6; // empirical spiral density — area / (cw × ch)
 const SPIRAL_MAX_R = 800; // max search radius along spiral
 const SPIRAL_R_STEP = 3.5; // px increment per spiral revolution
 const SPIRAL_DTHETA = 0.32; // angular step (smaller = denser sampling)
@@ -82,23 +83,36 @@ function placeChipFromCenter(
   return false;
 }
 
+type AnchorContext = {
+  target: number;
+  anchor: HTMLElement | null;
+  usedBefore: number;
+};
+
 /**
- * Find a sibling anchor element to align the cloud's bottom with.
- * Returns the desired cloud height (anchor's bottom minus the height occupied
- * above the cloud inside its own column wrapper).
+ * Measure the cloud's natural target height (= anchor.offsetHeight - siblings
+ * before cloud) and return the anchor + usedBefore so the caller can sync the
+ * anchor's min-height when the cloud ends up taller than its natural content.
+ *
+ * Resets prior min-height sync first so the measurement reflects natural content.
  */
-function getTargetCanvasHeight(container: HTMLElement): number {
+function measureAnchorContext(container: HTMLElement): AnchorContext {
+  const fallback: AnchorContext = { target: MIN_HEIGHT, anchor: null, usedBefore: 0 };
   const wrapper = container.parentElement;
-  if (!wrapper) return MIN_HEIGHT;
+  if (!wrapper) return fallback;
 
   const section = container.closest('section');
   const anchor = section?.querySelector<HTMLElement>('[data-tag-cloud-anchor]') ?? null;
-  if (!anchor) return MIN_HEIGHT;
+  if (!anchor) return fallback;
 
-  // Mobile / single-column layouts: don't force anchor height
-  if (window.matchMedia('(max-width: 1023px)').matches) return MIN_HEIGHT;
+  // Reset prior min-height so this measurement reads natural content height
+  anchor.style.minHeight = '';
 
-  // Compute height already taken by siblings before the cloud inside its wrapper
+  // Mobile / single-column layouts: don't force anchor at all
+  if (window.matchMedia('(max-width: 1023px)').matches) {
+    return { target: MIN_HEIGHT, anchor, usedBefore: 0 };
+  }
+
   let usedBefore = 0;
   for (const sibling of Array.from(wrapper.children)) {
     if (sibling === container) break;
@@ -108,7 +122,7 @@ function getTargetCanvasHeight(container: HTMLElement): number {
   }
 
   const target = anchor.offsetHeight - usedBefore;
-  return Math.max(MIN_HEIGHT, target);
+  return { target, anchor, usedBefore };
 }
 
 function layoutContainer(container: HTMLElement) {
@@ -136,7 +150,21 @@ function layoutContainer(container: HTMLElement) {
     // Largest first — center is reserved for the most-emphasized chip
     boxes.sort((a, b) => b.emphasis - a.emphasis || b.w * b.h - a.w * a.h);
 
-    const canvasH = getTargetCanvasHeight(container);
+    // Estimate floor that guarantees all chips fit at our spiral's packing density
+    const totalArea = boxes.reduce(
+      (sum, b) => sum + (b.w + CHIP_GAP) * (b.h + CHIP_GAP),
+      0
+    );
+    const fitsAllMin = Math.ceil(totalArea / (PACKING_FACTOR * containerW));
+
+    const { target, anchor, usedBefore } = measureAnchorContext(container);
+    const canvasH = Math.max(MIN_HEIGHT, target, fitsAllMin);
+
+    // Sync anchor min-height when cloud column is taller than natural anchor —
+    // gives the right column flex-col + my-auto room to vertically center its body
+    if (anchor && canvasH > target && !window.matchMedia('(max-width: 1023px)').matches) {
+      anchor.style.minHeight = `${canvasH + usedBefore}px`;
+    }
     const cx = containerW / 2;
     const cy = canvasH / 2;
 

@@ -88,6 +88,16 @@ const chipColor = (cat: FlatChip['category']) => {
   }
 };
 
+/** Legend — only show categories actually present in the chips */
+const categoriesPresent = new Set(flatChips.map((c) => c.category));
+const legendItems = (
+  [
+    { key: 'tools' as const,  cn: '工具', en: 'Tools',       dot: 'bg-[var(--color-chip-tools)]' },
+    { key: 'skills' as const, cn: '设计能力', en: 'Skills',      dot: 'bg-[var(--color-chip-skills)]' },
+    { key: 'soft' as const,   cn: '软实力',   en: 'Soft Skills', dot: 'bg-[var(--color-chip-soft)]' },
+  ]
+).filter((item) => categoriesPresent.has(item.key));
+
 /* ── Docs: tech-docs → CTA, key-features → inline MDX ── */
 const techDocsHref =
   game.docsType === "tech-docs"
@@ -186,10 +196,10 @@ if (game.docsType === "key-features") {
         )}
       </div>
 
-      <div class="lg:col-span-6 flex flex-col gap-6">
+      <div class="lg:col-span-6 lg:self-stretch flex flex-col gap-6">
         {/* Description (logline) — large semibold + small role summary */}
         <div>
-          <p class={`text-xl md:text-2xl lg:text-3xl leading-snug text-[var(--color-text)] font-semibold tracking-tight ${lang === 'en' ? 'italic' : ''}`}>
+          <p class={`text-xl md:text-2xl ${lang === 'en' ? 'lg:text-2xl' : 'lg:text-3xl'} leading-snug text-[var(--color-text)] font-semibold tracking-tight`}>
             {t(game.description, lang)}
           </p>
           {game.roleSummary && (
@@ -199,26 +209,30 @@ if (game.docsType === "key-features") {
           )}
         </div>
 
-        {/* Meta — 4-col plain text spec row with 2px left accent rule */}
-        <dl class="grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-4">
-          {
-            metaItems.map(({ label, value }) => (
-              <div class="border-l-2 border-[var(--color-border)] pl-3">
-                <dt class="text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-muted)] font-semibold mb-1.5">
-                  {label}
-                </dt>
-                <dd class="text-sm font-semibold text-[var(--color-text)] leading-snug">
-                  {value}
-                </dd>
-              </div>
-            ))
-          }
-        </dl>
+        {/* Meta — per-column top divider on desktop, single long divider on mobile */}
+        <div>
+          <hr class="border-[var(--color-border)] mb-5 sm:hidden" />
+          <dl class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4">
+            {
+              metaItems.map(({ label, value }) => (
+                <div>
+                  <div class="hidden sm:block w-20 h-px bg-[var(--color-border-strong)] mb-3" aria-hidden="true"></div>
+                  <dt class="text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-muted)] font-semibold mb-1.5">
+                    {label}
+                  </dt>
+                  <dd class="text-sm font-semibold text-[var(--color-text)] leading-snug">
+                    {value}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
 
         {/* External links — brand-colored outlined pills, single row */}
         {
           (game.links.youtube || game.links.gdrive || game.links.itch || game.links.steam || game.links.github) && (
-            <div class="flex items-center gap-2.5 flex-wrap">
+            <div class="flex items-center gap-2.5 flex-wrap lg:mt-auto">
               {game.links.youtube && (
                 <a href={game.links.youtube} target="_blank" rel="noopener noreferrer"
                   class="inline-flex items-center gap-2 px-4 py-2 border border-[#FF0000] text-[#FF0000] text-sm font-medium rounded-full hover:bg-[#FF0000] hover:text-white transition-colors whitespace-nowrap">
@@ -276,14 +290,22 @@ if (game.docsType === "key-features") {
     {/* ═══════ Detail double — WHAT I LEARNED (left 5/12) + MAIN CONTRIBUTIONS (right 7/12) ═══════ */}
     {
       (flatChips.length > 0 || (game.contributions && game.contributions.length > 0)) && (
-        <>
-          <hr class="border-[var(--color-border)]" />
-          <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             {flatChips.length > 0 && (
               <div class="lg:col-span-5">
-                <h2 class="text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)] font-semibold mb-6">
+                <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
                   {lang === 'zh-cn' ? '我学到了什么？' : 'What I Learned From This Project?'}
                 </h2>
+                {legendItems.length > 0 && (
+                  <div class="flex flex-wrap gap-x-4 gap-y-2 mb-5">
+                    {legendItems.map((item) => (
+                      <span class="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+                        <span class={`w-2 h-2 rounded-full ${item.dot}`} aria-hidden="true"></span>
+                        {lang === 'zh-cn' ? item.cn : item.en}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <div data-tag-cloud class="tag-cloud relative">
                   {flatChips.map(({ word, emphasis, italic, category }) => (
                     <span
@@ -299,14 +321,14 @@ if (game.docsType === "key-features") {
               </div>
             )}
             {game.contributions && game.contributions.length > 0 && (
-              <div class="lg:col-span-7" data-tag-cloud-anchor>
-                <h2 class="text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)] font-semibold mb-6">
+              <div class="lg:col-span-7 lg:flex lg:flex-col" data-tag-cloud-anchor>
+                <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
                   {lang === 'zh-cn' ? '主要贡献' : 'Main Contributions'}
                 </h2>
-                <ul class="space-y-4">
+                <ul class="space-y-4 lg:my-auto">
                   {game.contributions.map(({ lead, body }) => (
-                    <li class="flex gap-3">
-                      <span class="text-[var(--color-text-muted)] mt-1.5 flex-shrink-0" aria-hidden="true">·</span>
+                    <li class="flex items-start gap-3">
+                      <span class="w-1 h-1 mt-[0.55rem] rounded-full bg-[var(--color-text-muted)] flex-shrink-0" aria-hidden="true"></span>
                       <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed">
                         <span class="font-semibold text-[var(--color-text)]">{t(lead, lang)}：</span>
                         {t(body, lang)}
@@ -317,7 +339,6 @@ if (game.docsType === "key-features") {
               </div>
             )}
           </section>
-        </>
       )
     }
 
