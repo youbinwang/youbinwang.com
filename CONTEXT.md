@@ -282,6 +282,7 @@
 | A3 | echo-quest / elemental-realm / scholars hero 图本地化 | ✅ 完成 | 三个项目 hero 均已本地化 |
 | A4 | 11 个游戏 gallery 截图填充 | ✅ 完成 | echo-quest(26张) + elemental-realm(24张) 今日补全；其余 9 个游戏已完成 |
 | A5 | 10 个 Key Features MDX 内容迁移 | ⏳ 待做 | Squarespace JS 渲染，需手动迁移文案 |
+| A5b | 文档页修复与优化 | ⏳ 待做 | 与 A5 内容迁移同步推进，迁移完再做整体视觉打磨 |
 | A6 | 部署（Cloudflare Pages） | ⏳ 待做 | sitemap 已有 `@astrojs/sitemap` |
 | A7 | 工作经历内容填充 | ⏳ 部署后 | responsibilities 全空，coverImage 为 placeholder |
 
