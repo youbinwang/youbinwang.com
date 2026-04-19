@@ -34,11 +34,11 @@ const en = {
   'game.designDocs': 'Design Docs',
   'game.screenshots': 'Screenshots',
   'game.projectDetails': 'Project Details',
-  'game.backToGames': '← Back to Games',
+  'game.backToGames': 'Back to Games',
 
   // Films
   'films.title': 'Films',
-  'films.backToFilms': '← Back to Films',
+  'films.backToFilms': 'Back to Films',
 
   // Photography
   'photography.title': 'Photography',

@@ -119,7 +119,7 @@ if (game.docsType === "key-features") {
       class="relative z-10 max-w-screen-xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-16 md:pb-20"
     >
       <a
-        href={getLocalizedPath('/games/', lang)}
+        href={`${getLocalizedPath('/games/', lang)}#project-${game.slug}`}
         class="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors w-fit mb-4"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,7 +305,7 @@ if (game.docsType === "key-features") {
     {/* ═══════ Back to games ═══════ */}
     <div class="pt-4">
       <a
-        href={getLocalizedPath("/games/", lang)}
+        href={`${getLocalizedPath("/games/", lang)}#project-${game.slug}`}
         class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
       >
         <svg

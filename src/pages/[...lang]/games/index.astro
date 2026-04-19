@@ -81,14 +81,27 @@ function getDurationLabel(durationEn: string, isZh: boolean): string | null {
                           ) : (
                             <a
                               href={href}
-                              class="group block overflow-hidden rounded-lg"
+                              class="group relative block overflow-hidden rounded-lg"
+                              aria-label={`${t(game.title, lang)} — ${ui('game.details', lang)}`}
                             >
                               <img
                                 src={game.coverImage}
                                 alt={t(game.title, lang)}
-                                class="w-full aspect-video object-cover transition-transform duration-500 group-hover:scale-105"
+                                class="w-full aspect-video object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
                                 loading="lazy"
                               />
+                              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                                <svg
+                                  class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                  viewBox="0 0 24 24"
+                                  aria-hidden="true"
+                                >
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M14 5l7 7-7 7" />
+                                </svg>
+                              </div>
                             </a>
                           )}
                         </div>

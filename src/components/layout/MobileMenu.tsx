@@ -162,6 +162,7 @@ export default function MobileMenu({ navItems, langSwitchPath, langLabel }: Prop
           {/* Language Switch */}
           <a
             href={langSwitchPath}
+            data-lang-switch="true"
             className={`text-lg py-2 px-6 text-[var(--color-text-muted)] hover:text-white transition-all duration-300 rounded-lg hover:bg-white/5 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             style={{ transitionDelay: isOpen ? '500ms' : '0ms' }}

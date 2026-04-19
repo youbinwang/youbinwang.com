@@ -163,5 +163,31 @@ const canonicalUrl = new URL(
       initScrollTopBtn();
       document.addEventListener("astro:after-swap", initScrollTopBtn);
     </script>
+
+    <!-- Preserve scroll position across language switch -->
+    <script>
+      function initLangSwitchScrollSave() {
+        document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((link) => {
+          link.addEventListener("click", () => {
+            sessionStorage.setItem("langSwitchScroll", String(window.scrollY));
+          });
+        });
+      }
+
+      function restoreLangSwitchScroll() {
+        const saved = sessionStorage.getItem("langSwitchScroll");
+        if (saved === null) return;
+        sessionStorage.removeItem("langSwitchScroll");
+        // Override ClientRouter's default scroll-to-top by jumping to saved Y
+        window.scrollTo(0, parseInt(saved, 10));
+      }
+
+      initLangSwitchScrollSave();
+      restoreLangSwitchScroll();
+      document.addEventListener("astro:after-swap", () => {
+        initLangSwitchScrollSave();
+        restoreLangSwitchScroll();
+      });
+    </script>
   </body>
 </html>

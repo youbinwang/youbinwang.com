@@ -213,6 +213,9 @@
 | 172 | /games 页右栏垂直对称化 | `<article>` 去掉 `items-start`（恢复默认 `items-stretch` 让右栏拉伸到视频高度）；右栏 `lg:pt-[10%]` → `lg:justify-center`；Title/Tags/Meta/Buttons 整组在视频高度内垂直居中，左右两栏视觉对齐 |
 | 173 | /games 页间距系统化（Plan E 比例，总高 78px） | Title↕Tags = `mb-3.5`（14px，紧贴）；Tags↕Meta = `mb-7`（28px，常规）；Meta↕Buttons = `mt-9`（36px，分组留白），移动端按钮间距 `mt-6 lg:mt-9`；保持 1:2:2.57 递进比例（"组内紧贴 < 跨组常规 < 动作分组"） |
 | 174 | /games 页 6 项视觉细节优化 | ① Details 按钮黑色填充 `bg-[var(--color-text)]`（CSS 变量自动适配 Light/Dark Mode），区分外部品牌色描边按钮 ② Detail 加号图标从 `circle+` → 简洁 `+`（无圆圈）+ `stroke-width: 3.25` 提升视觉权重 ③ Tags pill 加 `bg-[var(--color-bg-secondary)]` 微底色提升可读性 ④ dt `padding-top: 0.1rem → 0.15rem` 光学对齐 ⑤ 左右两栏 gap `gap-10 xl:gap-14` → `gap-10 lg:gap-14 xl:gap-20`（独立但关联的呼吸空间） ⑥ Google Drive 彩色图标 hover 时通过 `group` + `group-hover:[&_path]:fill-white` 全部 path 转白色（CSS 优先级覆盖 SVG `fill` attribute） |
+| 175 | /games 页视频/图片卡片 hover 交互增强 | **VideoEmbed**：父容器加 `group`，封面图 `group-hover:scale-[1.03]`（400ms），遮罩 `bg-black/20 → bg-black/40`，Play 三角图标 `group-hover:scale-110`，明确"可播放"反馈。**纯图片卡片**（`games/index.astro`）：完全对齐摄影页交互——图片 `scale-[1.03]` + 黑色遮罩 `bg-black/0 → bg-black/35` + 中心箭头图标（`stroke-width: 2.5`，"前往详情"语义），与摄影页放大镜（"打开 lightbox"）形成视觉区分 |
+| 176 | 游戏详情页返回链接锚点跳转 | Hero 顶部 + 底部两处返回链接 `href` 加 `#project-{slug}`，利用 /games 页 article 已有的 `id` + `scroll-mt-24`（#144）实现回到对应项目位置；同步移除 `game.backToGames`/`films.backToFilms` i18n 字符串中的 `←` 文字（与 SVG 箭头重复），中英文 4 处统一 |
+| 177 | 全站语言切换保留滚动位置 | 痛点：下滑后切换语言会跳回顶部。修复：① Navbar/MobileMenu/Starlight Header 三处语言切换 `<a>` 加 `data-lang-switch` 标记 ② BaseLayout + Starlight Head 各加全局脚本——点击保存 `window.scrollY` 到 `sessionStorage`，`astro:after-swap` 时恢复并清除标记。仅一次性、仅语言切换链接生效，不污染其他导航 |
 
 ---
 

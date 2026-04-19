@@ -14,15 +14,15 @@ const { videoId, title = "Video", poster } = Astro.props;
 ---
 
 {poster ? (
-  <div class="video-embed aspect-video rounded-lg overflow-hidden bg-black relative cursor-pointer" data-video-id={videoId} data-title={title} role="button" tabindex="0" aria-label={`Play video: ${title}`}>
+  <div class="video-embed group aspect-video rounded-lg overflow-hidden bg-black relative cursor-pointer" data-video-id={videoId} data-title={title} role="button" tabindex="0" aria-label={`Play video: ${title}`}>
     <img
       src={poster}
       alt={title}
-      class="absolute inset-0 w-full h-full object-cover"
+      class="absolute inset-0 w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
       loading="lazy"
     />
-    <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-colors">
-      <svg class="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors duration-[400ms]">
+      <svg class="w-16 h-16 md:w-20 md:h-20 text-white drop-shadow-lg transition-transform duration-[400ms] group-hover:scale-110" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M8 5v14l11-7z" />
       </svg>
     </div>

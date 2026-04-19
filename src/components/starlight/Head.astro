@@ -125,6 +125,31 @@ import { ClientRouter } from "astro:transitions";
     document.addEventListener("astro:after-swap", initDocsScrollTopBtn);
 </script>
 
+<!-- Preserve scroll position across language switch (Docs pages) -->
+<script>
+    function initDocsLangSwitchScrollSave() {
+        document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((link) => {
+            link.addEventListener("click", () => {
+                sessionStorage.setItem("langSwitchScroll", String(window.scrollY));
+            });
+        });
+    }
+
+    function restoreDocsLangSwitchScroll() {
+        const saved = sessionStorage.getItem("langSwitchScroll");
+        if (saved === null) return;
+        sessionStorage.removeItem("langSwitchScroll");
+        window.scrollTo(0, parseInt(saved, 10));
+    }
+
+    initDocsLangSwitchScrollSave();
+    restoreDocsLangSwitchScroll();
+    document.addEventListener("astro:after-swap", () => {
+        initDocsLangSwitchScrollSave();
+        restoreDocsLangSwitchScroll();
+    });
+</script>
+
 <!-- PhotoSwipe lightbox for inline docs images -->
 <script>
     import PhotoSwipeLightbox from "photoswipe/lightbox";

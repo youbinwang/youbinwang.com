@@ -34,11 +34,11 @@ const zhCN = {
   'game.designDocs': '设计文档',
   'game.screenshots': '截图',
   'game.projectDetails': '项目详情',
-  'game.backToGames': '← 返回游戏列表',
+  'game.backToGames': '返回游戏列表',
 
   // Films
   'films.title': '电影作品',
-  'films.backToFilms': '← 返回电影列表',
+  'films.backToFilms': '返回电影列表',
 
   // Photography
   'photography.title': '摄影',
