@@ -216,6 +216,9 @@
 | 175 | /games 页视频/图片卡片 hover 交互增强 | **VideoEmbed**：父容器加 `group`，封面图 `group-hover:scale-[1.03]`（400ms），遮罩 `bg-black/20 → bg-black/40`，Play 三角图标 `group-hover:scale-110`，明确"可播放"反馈。**纯图片卡片**（`games/index.astro`）：完全对齐摄影页交互——图片 `scale-[1.03]` + 黑色遮罩 `bg-black/0 → bg-black/35` + 中心箭头图标（`stroke-width: 2.5`，"前往详情"语义），与摄影页放大镜（"打开 lightbox"）形成视觉区分 |
 | 176 | 游戏详情页返回链接锚点跳转 | Hero 顶部 + 底部两处返回链接 `href` 加 `#project-{slug}`，利用 /games 页 article 已有的 `id` + `scroll-mt-24`（#144）实现回到对应项目位置；同步移除 `game.backToGames`/`films.backToFilms` i18n 字符串中的 `←` 文字（与 SVG 箭头重复），中英文 4 处统一 |
 | 177 | 全站语言切换保留滚动位置 | 痛点：下滑后切换语言会跳回顶部。修复：① Navbar/MobileMenu/Starlight Header 三处语言切换 `<a>` 加 `data-lang-switch` 标记 ② BaseLayout + Starlight Head 各加全局脚本——点击保存 `window.scrollY` 到 `sessionStorage`，`astro:after-swap` 时恢复并清除标记。仅一次性、仅语言切换链接生效，不污染其他导航 |
+| 178 | 主页 Game Works 图片卡片 hover 与全站对齐 | 上排 2 大卡（无视频时）+ 下排 3 小卡补全中心箭头图标（`stroke-width: 2.5`，opacity 0→100），overlay 容器加 `flex items-center justify-center`；与 /games 页 + VideoEmbed 完全一致；视频卡片继续走 VideoEmbed 共享组件 |
+| 179 | 删除死代码 ProjectCard.astro | 全站无任何 import 引用，参数滞留旧版本（scale-105 / duration-500 / gradient overlay）。删除后全站 hover 参数统一：scale-[1.03] / duration-[400ms] / bg-black/0→35（视频卡 20→40 例外，因 normal 需露 Play 按钮） |
+| 180 | Code Review — 死代码清理 | ① 删除未使用的翻译 key 6 个：`common.backToList`、`common.language`、`films.backToFilms`（zh-cn + en 各 3 个） ② 删除 `BaseLayout.astro` 的 `ogImage` Props（接口定义 + 解构 + meta tag 三处），无任何页面传递此 prop ③ 删除 `GameProject.featured` 字段（接口定义 + 11 处 game 数据赋值），定义但全站无任何读取（无 `game.featured`） |
 
 ---
 

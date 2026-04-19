@@ -38,7 +38,6 @@ const zhCN = {
 
   // Films
   'films.title': '电影作品',
-  'films.backToFilms': '返回电影列表',
 
   // Photography
   'photography.title': '摄影',
@@ -56,8 +55,6 @@ const zhCN = {
   'experience.title': '工作经历',
 
   // Common
-  'common.backToList': '返回列表',
-  'common.language': '中文',
   'common.more': '+ 更多',
   'common.gameWorks': '游戏作品',
 } as const;

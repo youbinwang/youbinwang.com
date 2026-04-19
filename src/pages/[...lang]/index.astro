@@ -119,7 +119,18 @@ const getScopeLabel = (scope: string) => scopeLabels[scope]?.[lang === 'en' ? 'e
           ) : (
             <a href={getLocalizedPath(`/games/${game.slug}/`, lang)} class="group block aspect-video rounded-lg overflow-hidden relative">
               <img src={game.coverImage} alt={t(game.title, lang)} class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]" loading="lazy" />
-              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms]"></div>
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                <svg
+                  class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M14 5l7 7-7 7" />
+                </svg>
+              </div>
             </a>
           )}
           <a
@@ -150,7 +161,18 @@ const getScopeLabel = (scope: string) => scopeLabels[scope]?.[lang === 'en' ? 'e
               class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
               loading="lazy"
             />
-            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms]"></div>
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+              <svg
+                class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12h18M14 5l7 7-7 7" />
+              </svg>
+            </div>
           </a>
           <a
             href={getLocalizedPath(`/games/${game.slug}/`, lang)}

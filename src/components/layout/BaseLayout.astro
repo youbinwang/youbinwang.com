@@ -15,8 +15,6 @@ interface Props {
   title: string;
   description?: string;
   lang: Lang;
-  /** Optional OG image for social sharing */
-  ogImage?: string;
   /** Navbar starts transparent over hero image */
   transparentNav?: boolean;
   /** Force dark appearance regardless of system theme (e.g. gallery pages) */
@@ -27,7 +25,6 @@ const {
   title,
   description = "Youbin Wang — Gameplay / Combat / Level Designer",
   lang,
-  ogImage,
   transparentNav = false,
   forceDark = false,
 } = Astro.props;
@@ -55,7 +52,6 @@ const canonicalUrl = new URL(
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl.href} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
 
     <!-- Preconnect for external resources -->
     <link rel="preconnect" href="https://i.ytimg.com" />

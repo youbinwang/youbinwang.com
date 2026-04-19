@@ -38,7 +38,6 @@ const en = {
 
   // Films
   'films.title': 'Films',
-  'films.backToFilms': 'Back to Films',
 
   // Photography
   'photography.title': 'Photography',
@@ -56,8 +55,6 @@ const en = {
   'experience.title': 'Experience',
 
   // Common
-  'common.backToList': 'Back to List',
-  'common.language': 'English',
   'common.more': '+ More',
   'common.gameWorks': 'Game Works',
 } as const;

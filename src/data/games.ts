@@ -42,7 +42,6 @@ export interface GameProject {
   gallery: string[];
   videoId?: string;
   docsType: 'tech-docs' | 'key-features' | 'none';
-  featured: boolean;
   order: number;
   description: Bilingual;
 }
@@ -72,7 +71,6 @@ export const games: GameProject[] = [
     gallery: [],
     videoId: '0G4o5tulQy8',
     docsType: 'tech-docs',
-    featured: true,
     order: 1,
     description: {
       en: 'A 3D action game and technical showcase built in UE5, demonstrating GAS, combat systems, hit feedback, animation, motion warping, and enemy AI.',
@@ -102,7 +100,6 @@ export const games: GameProject[] = [
     gallery: [],
     videoId: 'DPjPorI-D4o',
     docsType: 'key-features',
-    featured: true,
     order: 2,
     description: {
       en: 'An ARPG/Puzzle demo showcasing gameplay, level, and combat design with 34 design document slides.',
@@ -132,7 +129,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 12 }, (_, i) => `/images/games/the-scholars-side-quest/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'abhE2JtW4wA',
     docsType: 'key-features',
-    featured: false,
     order: 3,
     description: {
       en: 'An ARPG project where I designed combat encounters, level layouts, and boss fights.',
@@ -165,7 +161,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 16 }, (_, i) => `/images/games/shepherds/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'uvYppzaDpXI',
     docsType: 'key-features',
-    featured: false,
     order: 4,
     description: {
       en: 'A co-op game where a shepherd and wolf combine abilities to overcome rhythm-based puzzles while descending into a volcano. USC Games MFA thesis project.',
@@ -199,7 +194,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 9 }, (_, i) => `/images/games/the-camera/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'ovuKyvzXgRA',
     docsType: 'key-features',
-    featured: true,
     order: 5,
     description: {
       en: 'A 2D top-down narrative RPG where players explore stories through the lens of a camera.',
@@ -251,7 +245,6 @@ export const games: GameProject[] = [
       '/images/games/on-the-road/gallery/21.png',
     ],
     docsType: 'key-features',
-    featured: true,
     order: 6,
     description: {
       en: 'A board game designed as an undergraduate thesis project, exploring gameplay and system design.',
@@ -282,7 +275,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 14 }, (_, i) => `/images/games/aid-master/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'Z6WZnn8ib5g',
     docsType: 'key-features',
-    featured: true,
     order: 7,
     description: {
       en: 'An educational serious game featuring innovative Kinect-based interaction and gameplay design.',
@@ -315,7 +307,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 12 }, (_, i) => `/images/games/baihua-pavilion/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'H7Mk_T36NtM',
     docsType: 'key-features',
-    featured: false,
     order: 8,
     description: {
       en: 'A 3D multiplayer online action PvP game featuring combat system and character design.',
@@ -346,7 +337,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 4 }, (_, i) => `/images/games/greedy-roots/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'NyWoQLDNY8E',
     docsType: 'key-features',
-    featured: false,
     order: 9,
     description: {
       en: 'A GGJ 2023 game where players control a hero coconut tree, using root-based movement and nutrient management to fight corrupted trees.',
@@ -376,7 +366,6 @@ export const games: GameProject[] = [
     gallery: Array.from({ length: 5 }, (_, i) => `/images/games/elliot-fig/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: '8c-GsZeBqwU',
     docsType: 'key-features',
-    featured: false,
     order: 10,
     description: {
       en: 'A narrative-driven RPG featuring drink mixing mechanics integrated with storytelling, using Yarn Spinner for dialogue.',
@@ -405,7 +394,6 @@ export const games: GameProject[] = [
     },
     gallery: Array.from({ length: 12 }, (_, i) => `/images/games/stars-chat/gallery/${String(i + 1).padStart(2, '0')}.png`),
     docsType: 'key-features',
-    featured: false,
     order: 11,
     description: {
       en: 'A mobile game where players chat with historical figures as Stefan Zweig, inspired by Decisive Moments in History.',
