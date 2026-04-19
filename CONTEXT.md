@@ -219,6 +219,8 @@
 | 178 | 主页 Game Works 图片卡片 hover 与全站对齐 | 上排 2 大卡（无视频时）+ 下排 3 小卡补全中心箭头图标（`stroke-width: 2.5`，opacity 0→100），overlay 容器加 `flex items-center justify-center`；与 /games 页 + VideoEmbed 完全一致；视频卡片继续走 VideoEmbed 共享组件 |
 | 179 | 删除死代码 ProjectCard.astro | 全站无任何 import 引用，参数滞留旧版本（scale-105 / duration-500 / gradient overlay）。删除后全站 hover 参数统一：scale-[1.03] / duration-[400ms] / bg-black/0→35（视频卡 20→40 例外，因 normal 需露 Play 按钮） |
 | 180 | Code Review — 死代码清理 | ① 删除未使用的翻译 key 6 个：`common.backToList`、`common.language`、`films.backToFilms`（zh-cn + en 各 3 个） ② 删除 `BaseLayout.astro` 的 `ogImage` Props（接口定义 + 解构 + meta tag 三处），无任何页面传递此 prop ③ 删除 `GameProject.featured` 字段（接口定义 + 11 处 game 数据赋值），定义但全站无任何读取（无 `game.featured`） |
+| 181 | echo-quest / elemental-realm hero 图本地化 | `games.ts` 两项 `heroImage` 从空 TODO 更新为本地路径；echo-quest 新增 `heroPosition: '50% 30%'` 裁切偏上 |
+| 182 | echo-quest / elemental-realm gallery 填充 | echo-quest 26 张（01–26）、elemental-realm 24 张（01–24）写入 `games.ts` gallery 数组；`Array.from` 格式与其他游戏一致 |
 
 ---
 
@@ -275,10 +277,10 @@
 
 | # | 待办 | 状态 | 备注 |
 |---|---|---|---|
-| A1 | /games 页布局优化 | ⏳ 待做 | — |
+| A1 | /games 页布局优化 | ✅ 完成 | — |
 | A2 | games 详情页布局重新设计 | ⏳ 待做 | — |
-| A3 | echo-quest / elemental-realm / scholars hero 图本地化 | ⏳ 待做 | 见本节图片命名规范 |
-| A4 | 11 个游戏 gallery 截图填充 | ⏳ 待做 | 见本节图片命名规范，用户手动放图后 AI 写入 games.ts |
+| A3 | echo-quest / elemental-realm / scholars hero 图本地化 | ✅ 完成 | 三个项目 hero 均已本地化 |
+| A4 | 11 个游戏 gallery 截图填充 | ✅ 完成 | echo-quest(26张) + elemental-realm(24张) 今日补全；其余 9 个游戏已完成 |
 | A5 | 10 个 Key Features MDX 内容迁移 | ⏳ 待做 | Squarespace JS 渲染，需手动迁移文案 |
 | A6 | 部署（Cloudflare Pages） | ⏳ 待做 | sitemap 已有 `@astrojs/sitemap` |
 | A7 | 工作经历内容填充 | ⏳ 部署后 | responsibilities 全空，coverImage 为 placeholder |

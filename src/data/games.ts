@@ -56,7 +56,8 @@ export const games: GameProject[] = [
     category: 'combat-level',
     tags: { genre: '3D Action', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
     coverImage: '', // TODO: add cover image
-    heroImage: '', // TODO: add hero image — heroPosition TBD
+    heroImage: '/images/games/echo-quest/hero.png',
+    heroPosition: '50% 30%',
     meta: {
       role: { en: 'Gameplay / Combat / Level Designer, UE Engineer', cn: '个人作品，战斗、关卡策划，Unreal Engine 程序' },
       engine: 'Unreal Engine 5',
@@ -68,7 +69,7 @@ export const games: GameProject[] = [
       youtube: 'https://youtu.be/0G4o5tulQy8',
       gdrive: ['https://drive.google.com/drive/folders/1W-M1RD9tYhUKIo5nNcmzqbBVo9w34Cnt'],
     },
-    gallery: [],
+    gallery: Array.from({ length: 26 }, (_, i) => `/images/games/echo-quest/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: '0G4o5tulQy8',
     docsType: 'tech-docs',
     order: 1,
@@ -85,7 +86,7 @@ export const games: GameProject[] = [
     category: 'combat-level',
     tags: { genre: 'ARPG / Puzzle', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
     coverImage: '', // TODO: add cover image
-    heroImage: '', // TODO: add hero image — heroPosition TBD
+    heroImage: '/images/games/elemental-realm/hero.png',
     meta: {
       role: { en: 'Personal Project, Gameplay / Level / Combat Designer, Unreal Engineer', cn: '个人作品，玩法、战斗、关卡策划，Unreal Engine 程序' },
       engine: 'Unreal Engine 5',
@@ -97,7 +98,7 @@ export const games: GameProject[] = [
       youtube: 'https://youtu.be/DPjPorI-D4o',
       gdrive: ['https://drive.google.com/drive/folders/18jW6LWy-X8tijZTGRoy0F0cP8bAIHT7V'],
     },
-    gallery: [],
+    gallery: Array.from({ length: 24 }, (_, i) => `/images/games/elemental-realm/gallery/${String(i + 1).padStart(2, '0')}.png`),
     videoId: 'DPjPorI-D4o',
     docsType: 'key-features',
     order: 2,
