@@ -227,6 +227,7 @@
 | 186 | Meta 信息精简化 | 5 项 → 4 项（ENGINE 合并 PLATFORM）；ENGINE 用 `tags.engine` 缩写 + `shortPlatform()` 去括号 → `UE4 · PC` 格式；DURATION 用 `getDurationMonths()` 解析 "May 2022 - Aug 2022" → "4 个月"；非月份格式（GGJ/年份）fallback 原文；on-the-road platform `'Board Game, PC (Steam Workshop)'` → `'Board Game'`；顺序 `ROLE → TEAM SIZE → ENGINE → DURATION` |
 | 187 | 详情页按钮替换为品牌色 outlined（与 /games 列表页一致） | YouTube 红 `#FF0000` / Drive 多彩 `#35A852` / itch.io 粉 `#FA5C5C` / Steam 深蓝 `#1b2838` / GitHub 黑 `#24292F`；圆形 pill `rounded-full px-4 py-2`，`whitespace-nowrap` 强制单行；移除旧 `externalLinks` 数组，inline 渲染各品牌；GitHub 是新增的（列表页未有） |
 | 188 | global.css 新增 chip 配色变量 | `--color-chip-tools` / `--color-chip-soft` 各定义 light/dark 两套值；准备给标签云分类（Skills 沿用 `--color-accent`） |
+| 189 | Bug #7 标签云重构（放射状 spiral + 底对齐） | **配色**：3 类（Tools 蓝 `#0969DA`/`#58A6FF`、Skills 橙 `#D97706`/`#FFB340`、Soft 紫 `#8250DF`/`#BC8CFF`），文字 100% + 10–15% alpha 背景，无 border；global.css 新增 `--color-chip-{tools,skills,soft}-bg` 6 个变量。**字号**：三级梯度 12 / 14 / 18px（`text-xs / text-sm / text-lg`），emphasis ≤2 / =3 / ≥4 分级。**算法**：新建 `src/utils/tag-cloud.ts`，emphasis 最大 chip 精确放容器中心，其余按 emphasis 降序从中心沿 Archimedean 螺旋（`r = a·θ`，随机起始角度 + 随机旋向）外散，AABB 碰撞检测 + `CHIP_GAP=12`。**底对齐**：右侧 contributions 列加 `data-tag-cloud-anchor`，JS 测量其 offsetHeight 减去 cloud 自身上方 h2/margin 高度，得到 cloud 容器目标高度（lg 断点以上生效，移动端用 `MIN_HEIGHT=140`）。**SSR fallback**：`tag-cloud:not([data-laid-out])` 用 flex-wrap 渲染，水合后切换为 `position: absolute` + opacity 0→1 transition；`astro:page-load` 重新初始化，`astro:before-swap` 清理 resize 监听 + timer。**死代码**：移除 `chipJitter` / `normalizeChip` / `learnedGroups` 三组 label 渲染逻辑 |
 
 ---
 
@@ -260,7 +261,7 @@
 | 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
 | 5 | ~~**游戏详情页 `heroPosition` 不生效**~~ | #148 已改为 `div + background-image + background-position` 方案，`heroPosition` 完全生效。 | ✅ 已修复 |
 | 6 | ~~**/games 页外部链接按钮位置偏上**~~ | #172（右栏 `items-stretch` + `lg:justify-center` 整组居中）+ #173（间距系统 78px）共同修复，按钮在视频高度内自然垂直居中，各项目表现一致。 | ✅ 已修复 |
-| 7 | **游戏详情页标签云布局格式痕迹明显** | 当前实现 pill + 2D jitter + flex-wrap，依然有栅格痕迹，与原站「画布散布」效果有差距。详见 #188 后的 Bug #7 章节。 | ⚠️ 待修复 |
+| 7 | ~~游戏详情页标签云布局格式痕迹明显~~ | #189 重写：放射状 spiral 算法（emphasis 最大居中、其余螺旋外散）+ 三类配色（10–15% alpha 低饱和）+ 三级字号梯度（12/14/18px）+ 底对齐右侧 contributions。已在 the-scholars-side-quest 验证 demo 效果。 | ✅ Demo 通过，待其他项目填充 chips 数据 |
 
 ---
 

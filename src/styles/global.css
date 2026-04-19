@@ -12,9 +12,14 @@
     --color-accent-bg: rgba(255, 147, 0, 0.08);
     --color-accent-selection: rgba(255, 147, 0, 0.2);
 
-    /* Skill chip categories — Blue (Tools) / Amber accent (Skills) / Purple (Soft Skills) */
-    --color-chip-tools: #0066DA;
-    --color-chip-soft: #7C3AED;
+    /* Skill chip categories — Blue (Tools) / Amber (Skills) / Purple (Soft Skills) */
+    /* GitHub-inspired low-saturation palette: solid text + 10-12% alpha fill */
+    --color-chip-tools: #0969DA;
+    --color-chip-tools-bg: rgba(9, 105, 218, 0.10);
+    --color-chip-skills: #D97706;
+    --color-chip-skills-bg: rgba(217, 119, 6, 0.12);
+    --color-chip-soft: #8250DF;
+    --color-chip-soft-bg: rgba(130, 80, 223, 0.10);
 
     /* Surfaces — Apple-inspired warm gray whites */
     --color-bg: #FAFAFA;
@@ -89,9 +94,13 @@
         --color-docs-blockquote-bg: rgba(255, 255, 255, 0.04);
         --color-docs-overlay: rgba(0, 0, 0, 0.5);
 
-        /* Skill chips — lighter shades for dark bg */
-        --color-chip-tools: #5BA0F7;
-        --color-chip-soft: #B795F7;
+        /* Skill chips — lighter shades + slightly stronger alpha for dark bg */
+        --color-chip-tools: #58A6FF;
+        --color-chip-tools-bg: rgba(88, 166, 255, 0.15);
+        --color-chip-skills: #FFB340;
+        --color-chip-skills-bg: rgba(255, 179, 64, 0.15);
+        --color-chip-soft: #BC8CFF;
+        --color-chip-soft-bg: rgba(188, 140, 255, 0.15);
     }
 }
 

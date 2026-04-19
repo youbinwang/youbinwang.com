@@ -57,42 +57,35 @@ const heroTags = [
   game.tags.scope,
 ];
 
-/* ── Learned skill chips grouped by category ── */
-type ChipGroup = { items: LearnedChip[]; label: { en: string; cn: string }; variant: 'filled' | 'accent' | 'ghost' };
-const learnedGroups: ChipGroup[] = [];
-if (game.learned?.tools?.length) learnedGroups.push({ items: game.learned.tools, label: { en: 'Tools', cn: '工具' }, variant: 'filled' });
-if (game.learned?.skills?.length) learnedGroups.push({ items: game.learned.skills, label: { en: 'Skills', cn: '专业技能' }, variant: 'accent' });
-if (game.learned?.softSkills?.length) learnedGroups.push({ items: game.learned.softSkills, label: { en: 'Soft Skills', cn: '软技能' }, variant: 'ghost' });
+/* ── Learned skill chips — flatten all categories into a single tag cloud ── */
+type FlatChip = { word: string; emphasis: number; italic: boolean; category: 'tools' | 'skills' | 'soft' };
 
-const chipColor = (v: ChipGroup['variant']) =>
-  v === 'filled'
-    ? 'bg-[var(--color-chip-tools)]/10 border border-[var(--color-chip-tools)]/30 text-[var(--color-chip-tools)]'
-    : v === 'accent'
-    ? 'bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 text-[var(--color-accent)]'
-    : 'bg-[var(--color-chip-soft)]/10 border border-[var(--color-chip-soft)]/30 text-[var(--color-chip-soft)]';
-
-/** emphasis 1-5 → padding + font-size + weight (pill style) */
-const chipSize = (e: number) => {
-  switch (e) {
-    case 1: return 'px-2.5 py-0.5 text-xs font-normal';
-    case 2: return 'px-3 py-1 text-sm font-medium';
-    case 4: return 'px-4 py-1.5 text-lg font-semibold';
-    case 5: return 'px-5 py-2 text-2xl font-bold';
-    default: return 'px-3 py-1 text-base font-medium';
+const flatChips: FlatChip[] = [];
+const pushChips = (items: LearnedChip[] | undefined, category: FlatChip['category']) => {
+  if (!items) return;
+  for (const c of items) {
+    if (typeof c === 'string') flatChips.push({ word: c, emphasis: 3, italic: false, category });
+    else flatChips.push({ word: c.word, emphasis: c.emphasis ?? 3, italic: c.italic ?? false, category });
   }
 };
+pushChips(game.learned?.tools, 'tools');
+pushChips(game.learned?.skills, 'skills');
+pushChips(game.learned?.softSkills, 'soft');
 
-const normalizeChip = (c: LearnedChip) =>
-  typeof c === 'string'
-    ? { word: c, emphasis: 3, italic: false }
-    : { word: c.word, emphasis: c.emphasis ?? 3, italic: c.italic ?? false };
+/** emphasis 1-5 → 3-tier size system (small / medium / large; 12 / 14 / 18px) */
+const chipSize = (e: number) => {
+  if (e <= 2) return 'px-2 py-0.5 text-xs font-normal';      // 12px
+  if (e >= 4) return 'px-3.5 py-1 text-lg font-semibold';     // 18px
+  return 'px-2.5 py-1 text-sm font-medium';                   // 14px
+};
 
-/** Deterministic 2D jitter — translateX/Y per word for organic scatter feel */
-const chipJitter = (word: string) => {
-  const hash = word.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const ys = [-5, 3, -2, 4, -4, 2, -1, 5, -3, 1, 0];
-  const xs = [0, 8, -4, 12, 4, -8, 16, 6, -2, 10, 2];
-  return { x: xs[hash % xs.length], y: ys[hash % ys.length] };
+/** category → color tokens (text + low-alpha bg) */
+const chipColor = (cat: FlatChip['category']) => {
+  switch (cat) {
+    case 'tools':  return 'bg-[var(--color-chip-tools-bg)] text-[var(--color-chip-tools)]';
+    case 'skills': return 'bg-[var(--color-chip-skills-bg)] text-[var(--color-chip-skills)]';
+    case 'soft':   return 'bg-[var(--color-chip-soft-bg)] text-[var(--color-chip-soft)]';
+  }
 };
 
 /* ── Docs: tech-docs → CTA, key-features → inline MDX ── */
@@ -282,42 +275,31 @@ if (game.docsType === "key-features") {
 
     {/* ═══════ Detail double — WHAT I LEARNED (left 5/12) + MAIN CONTRIBUTIONS (right 7/12) ═══════ */}
     {
-      (learnedGroups.length > 0 || (game.contributions && game.contributions.length > 0)) && (
+      (flatChips.length > 0 || (game.contributions && game.contributions.length > 0)) && (
         <>
           <hr class="border-[var(--color-border)]" />
           <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-            {learnedGroups.length > 0 && (
+            {flatChips.length > 0 && (
               <div class="lg:col-span-5">
                 <h2 class="text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)] font-semibold mb-6">
                   {lang === 'zh-cn' ? '我学到了什么？' : 'What I Learned From This Project?'}
                 </h2>
-                <div class="space-y-5">
-                  {learnedGroups.map(({ items, label, variant }) => (
-                    <div>
-                      <h3 class="text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-muted)] font-semibold mb-2.5">
-                        {t(label, lang)}
-                      </h3>
-                      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-3">
-                        {items.map((c) => {
-                          const { word, emphasis, italic } = normalizeChip(c);
-                          const j = chipJitter(word);
-                          return (
-                            <span
-                              class={`${chipColor(variant)} ${chipSize(emphasis)} rounded-full whitespace-nowrap inline-block ${italic ? 'italic' : ''}`}
-                              style={`transform: translate(${j.x}px, ${j.y}px)`}
-                            >
-                              {word}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
+                <div data-tag-cloud class="tag-cloud relative">
+                  {flatChips.map(({ word, emphasis, italic, category }) => (
+                    <span
+                      data-chip
+                      data-emphasis={emphasis}
+                      data-category={category}
+                      class={`${chipColor(category)} ${chipSize(emphasis)} rounded-full whitespace-nowrap inline-block leading-tight ${italic ? 'italic' : ''}`}
+                    >
+                      {word}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
             {game.contributions && game.contributions.length > 0 && (
-              <div class="lg:col-span-7">
+              <div class="lg:col-span-7" data-tag-cloud-anchor>
                 <h2 class="text-xs uppercase tracking-[0.2em] text-[var(--color-text-muted)] font-semibold mb-6">
                   {lang === 'zh-cn' ? '主要贡献' : 'Main Contributions'}
                 </h2>
@@ -458,6 +440,8 @@ if (game.docsType === "key-features") {
 </BaseLayout>
 
 <script>
+  import "../../../utils/tag-cloud.ts";
+
   function initCinematicHero() {
     const section = document.getElementById("cinematic-hero");
     const bgLayer = document.getElementById("cinematic-hero-bg");
@@ -494,3 +478,18 @@ if (game.docsType === "key-features") {
   initCinematicHero();
   document.addEventListener("astro:page-load", initCinematicHero);
 </script>
+
+<style is:global>
+  /* Tag cloud container — SSR fallback uses flex-wrap so chips render before JS hydrates */
+  .tag-cloud:not([data-laid-out]) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem 0.875rem;
+  }
+  /* Once JS lays chips out, fade-in to mask the reflow from flex-wrap → absolute */
+  .tag-cloud[data-laid-out] [data-chip] {
+    opacity: 0;
+    transition: opacity 0.35s ease-out;
+  }
+</style>
