@@ -201,7 +201,8 @@
 | 159 | Hero 滚动淡出效果修复（消除 View Transition 断裂）| 原实现用 `position: fixed` 导致背景逃出 overflow:hidden，在 View Transition crossfade 时透过半透明新页面露出旧页面背景。修复：**去掉 position:fixed**，改为纯 opacity 渐变（`position: absolute` 保持不变，仅随滚动调整 opacity）；同步将清理监听器改为 `astro:before-preparation`（截图前重置），重初始化改为 `astro:page-load`（动画结束后才激活）；电影/游戏详情页同步修复 |
 | 160 | View Transition 新页面透明闪烁修复 | `global.css` 将 `::view-transition-new(root)` 从 `fadeIn 0.3s` 改为 `animation: none`（新页面立即满载显示），旧页面用 `fadeOut 0.25s` 在下方淡出；消除所有页面切换时新页面半透明期间旧页面背景透出的问题 |
 | 161 | Bug #5 修复：电影 Hero 改用 background-image | `FilmProject` 新增 `heroPosition?: string` 字段；电影详情页 Hero 从 `<img object-position>` 改为与游戏一致的 `div + background-image + background-position` 方案（`object-position` 在此布局下无效，background-position 正常生效）；同步移除旧的 `transform: translateY(-20%)` slug 特判逻辑 |
-| 162 | 全站 heroPosition 调整 | 游戏：百花亭 70%、Greedy Roots 40%、Elliot Fig 40%、Stars Chat 40%、Aid Master 65%（回退未变）、Shepherds 30%（未变）；电影：斐波那契 35%、无知的夜晚 45%、模因污染 80% |
+| 163 | 游戏 gallery 截图填充（9 个游戏） | `games.ts` gallery 数组写入：scholars(12)、shepherds(16)、the-camera(9)、on-the-road(21)、aid-master(14)、baihua-pavilion(12)、greedy-roots(4)、elliot-fig(5)、stars-chat(12)；scholars hero 图本地化（`hero.png`）；echo-quest/elemental-realm 待放图 |
+| 164 | 待办列表重构 | CONTEXT.md 第六节改为结构化待办表（A1–A7），新增游戏图片命名规范（`public/images/games/{slug}/gallery/01.png` 等） |
 
 ---
 
@@ -253,34 +254,65 @@
 
 ---
 
-## 六、尚未实现 / 待填充的内容
+## 六、待办事项（按优先级）
 
-### 内容填充
+| # | 待办 | 状态 | 备注 |
+|---|---|---|---|
+| A1 | /games 页布局优化 | ⏳ 待做 | — |
+| A2 | games 详情页布局重新设计 | ⏳ 待做 | — |
+| A3 | echo-quest / elemental-realm / scholars hero 图本地化 | ⏳ 待做 | 见本节图片命名规范 |
+| A4 | 11 个游戏 gallery 截图填充 | ⏳ 待做 | 见本节图片命名规范，用户手动放图后 AI 写入 games.ts |
+| A5 | 10 个 Key Features MDX 内容迁移 | ⏳ 待做 | Squarespace JS 渲染，需手动迁移文案 |
+| A6 | 部署（Cloudflare Pages） | ⏳ 待做 | sitemap 已有 `@astrojs/sitemap` |
+| A7 | 工作经历内容填充 | ⏳ 部署后 | responsibilities 全空，coverImage 为 placeholder |
 
-1. **2 个游戏无 videoId**：On the Road（无视频）、Stars Chat（无视频）
-2. **全部 11 个游戏缺 gallery**：截图数组为空
-3. **10 个 Key Features MDX**：均为 placeholder 内容（Squarespace JS 动态渲染，WebFetch 无法爬取，需手动迁移）
-4. ~~**6 章 Echo Quest Tech Docs**~~：✅ 中文内容已全部填充
-5. ~~**摄影页面**~~：✅ 已填充 34 张图（photo-01~34），flex 交错分列 masonry 布局
-6. **平面设计页面**：✅ 已填充 6 张图（graphic-design-01~06.png）
-7. ~~**音乐页面**~~：✅ 已完成（videoId 已配置，文案已完成中英双语重写，无需 coverImage）
-8. ~~**电影**~~：✅ 全部完成（3 部电影 hero/cover/poster/gallery/videoId 已填充；详情页布局已复原原站结构；新增 `posterImage` 字段；三部电影 description + synopsis 中英双语文案全面重写）
-9. **工作经历**：responsibilities 全空，coverImage 为 placeholder URL
-10. **Docs 首页封面图方案**：当前 LinkCard + 三行描述（引擎·性质 / 游戏类型 / 文档描述）为过渡方案，等 10 个 Key Features MDX 和游戏截图全部填充后，改用自定义卡片组件（含 coverImage 缩略图）。同时首个 section 与分割线间距问题暂留，一并在封面图方案中解决
-11. **Echo Quest 文档配图**：✅ 完成，见第九节（ch1–ch6 共 74 张图，MDX 全部插入；EchoQuest_Revised.md 同步更新所有图位）
+### 游戏图片命名规范（hero / gallery）
+
+**目录结构**：
+
+```
+public/images/games/
+└── {slug}/
+    ├── cover.{ext}          # 列表页封面（已有）
+    ├── hero.{ext}           # 详情页 Hero 背景（已有/部分待补）
+    └── gallery/
+        ├── 01.{ext}
+        ├── 02.{ext}
+        └── ...              # 按展示顺序编号，支持 .png / .jpg / .jpeg
+```
+
+**11 个游戏 slug 对照**：
+
+| slug | 状态 |
+|---|---|
+| echo-quest | hero ⏳，gallery ⏳ |
+| elemental-realm | hero ⏳，gallery ⏳ |
+| the-scholars-side-quest | hero ⏳，gallery ⏳ |
+| shepherds | hero ✅，gallery ⏳ |
+| the-camera | hero ✅，gallery ⏳ |
+| on-the-road | hero ✅，gallery ⏳ |
+| aid-master | hero ✅，gallery ⏳ |
+| baihua-pavilion | hero ✅，gallery ⏳ |
+| greedy-roots | hero ✅，gallery ⏳ |
+| elliot-fig | hero ✅，gallery ⏳ |
+| stars-chat | hero ✅，gallery ⏳ |
+
+**放图后告知 AI**，AI 将自动扫描目录并更新 `games.ts` 中对应的 `gallery` 数组。
+
+---
+
+## 六-旧、尚未实现 / 待填充的内容（历史备注）
+
+- ~~**摄影页面**~~：✅ 已填充 34 张图
+- ~~**音乐页面**~~：✅ 已完成
+- ~~**电影**~~：✅ 全部完成
+- ~~**Echo Quest 文档配图**~~：✅ 完成（ch1–ch6 共 74 张图）
+- **Docs 首页封面图方案**：过渡方案（LinkCard），待 Key Features MDX + 截图全部填充后改用自定义卡片组件（含 coverImage 缩略图）
 
 ### 代码质量备注
 
 - 游戏列表页 `bg-[#FF0000]`（YouTube 品牌红）和 `bg-[#35A852]`（Google Drive 品牌绿）为外部品牌色，属合理例外
 - SVG 内 `fill` 属性使用品牌色（Google Drive 图标），属合理例外
-
-### ~~游戏列表页右侧悬浮导航窗格~~（✅ 已完成，见 #144）
-
-### 部署配置（Step 13）
-
-- Cloudflare Pages 配置
-- sitemap 生成（已有 `@astrojs/sitemap`）
-- 最终链接检查
 
 ---
 
