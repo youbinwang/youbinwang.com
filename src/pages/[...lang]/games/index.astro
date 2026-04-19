@@ -69,7 +69,7 @@ function getDurationLabel(durationEn: string, isZh: boolean): string | null {
                     const href = getLocalizedPath(`/games/${game.slug}/`, lang);
 
                     return (
-                      <article id={`project-${game.slug}`} class="flex flex-col lg:flex-row gap-10 xl:gap-14 items-start scroll-mt-24">
+                      <article id={`project-${game.slug}`} class="flex flex-col lg:flex-row gap-10 lg:gap-14 xl:gap-20 scroll-mt-24">
                         {/* ── Left: Video or Cover Image ── */}
                         <div class="w-full lg:w-[55%] flex-shrink-0">
                           {game.videoId ? (
@@ -94,26 +94,26 @@ function getDurationLabel(durationEn: string, isZh: boolean): string | null {
                         </div>
 
                         {/* ── Right: Project Info ── */}
-                        <div class="w-full lg:w-[45%] flex flex-col lg:pt-[10%]">
+                        <div class="w-full lg:w-[45%] flex flex-col lg:justify-center">
 
                           {/* Title */}
                           <a href={href} class="group">
-                            <h3 class="text-xl lg:text-2xl font-bold text-[var(--color-text)] mb-3 group-hover:text-[var(--color-accent)] transition-colors">
+                            <h3 class="text-xl lg:text-2xl font-bold text-[var(--color-text)] mb-3.5 group-hover:text-[var(--color-accent)] transition-colors">
                               {t(game.title, lang)}
                             </h3>
                           </a>
 
                           {/* 4 Tag pills */}
-                          <div class="flex flex-wrap gap-2 mb-6">
+                          <div class="flex flex-wrap gap-2 mb-7">
                             {[game.tags.genre, game.tags.engine, game.tags.discipline, game.tags.scope].map((tag) => (
-                              <span class="px-2.5 py-0.5 text-xs font-medium rounded-full border border-[var(--color-border)] text-[var(--color-text-secondary)]">
+                              <span class="px-2.5 py-0.5 text-xs font-medium rounded-full border border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)]">
                                 {tag}
                               </span>
                             ))}
                           </div>
 
                           {/* Meta info: labeled grid */}
-                          <dl class="meta-grid mb-10">
+                          <dl class="meta-grid">
                             <dt>Role</dt>
                             <dd>{t(game.meta.role, lang)}</dd>
                             <dt>Duration</dt>
@@ -126,16 +126,15 @@ function getDurationLabel(durationEn: string, isZh: boolean): string | null {
                             </dd>
                           </dl>
 
-                          {/* Action buttons */}
-                          <div class="flex flex-wrap items-center gap-3">
+                          {/* Action buttons — 14/28/36 px (Plan E ratio scaled, total 78px); mobile uses tighter mt-6 */}
+                          <div class="flex flex-wrap items-center gap-3 mt-6 lg:mt-9">
                             {/* Details — internal page navigation */}
                             <a
                               href={href}
-                              class="inline-flex items-center gap-2 px-5 py-2.5 border border-[var(--color-border)] text-[var(--color-text-secondary)] text-sm font-medium rounded-full hover:border-[var(--color-text-secondary)] transition-colors"
+                              class="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-text)] text-[var(--color-bg)] text-sm font-medium rounded-full hover:opacity-80 transition-opacity"
                             >
-                              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                                <circle cx="12" cy="12" r="9" />
-                                <path stroke-linecap="round" d="M12 8v8M8 12h8" />
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3.25" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
                               </svg>
                               {ui('game.details', lang)}
                             </a>
@@ -160,9 +159,9 @@ function getDurationLabel(durationEn: string, isZh: boolean): string | null {
                                 href={game.links.gdrive[0]}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 border border-[#35A852] text-[#35A852] text-sm font-medium rounded-full hover:bg-[#35A852] hover:text-white transition-colors"
+                                class="group inline-flex items-center gap-2 px-5 py-2.5 border border-[#35A852] text-[#35A852] text-sm font-medium rounded-full hover:bg-[#35A852] hover:text-white transition-colors"
                               >
-                                <svg class="w-4 h-4" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+                                <svg class="w-4 h-4 [&_path]:transition-colors group-hover:[&_path]:fill-white" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
                                   <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA" />
                                   <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0-1.2 4.5h27.5z" fill="#00AC47" />
                                   <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.85L73.55 76.8z" fill="#EA4335" />
@@ -299,7 +298,7 @@ function getDurationLabel(durationEn: string, isZh: boolean): string | null {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-text-muted);
-    padding-top: 0.1rem; /* optical alignment with dd */
+    padding-top: 0.15rem; /* optical alignment with dd */
   }
 
   .meta-grid dd {

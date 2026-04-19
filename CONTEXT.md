@@ -209,6 +209,10 @@
 | 168 | /games 页右栏定位 | 改用 `items-start + lg:pt-[10%]`：`pt` 百分比基于父元素宽度，与视频高度同比例缩放，任意屏幕宽度下标题稳定落在视频顶部 33% 处 |
 | 169 | The Camera 引擎修正 | `tags.engine` 和 `meta.engine` 从 RPG Maker 改回 Unity |
 | 170 | 文案优化 | "试玩视频" → "演示视频" / "Demo Video"；games.ts 3 处 role 字段"设计师" → "设计" |
+| 171 | Bug #5 关闭 | `heroPosition` 在 #148（`div + background-image + background-position`）已修复，CONTEXT.md 状态滞后，本次同步更新 |
+| 172 | /games 页右栏垂直对称化 | `<article>` 去掉 `items-start`（恢复默认 `items-stretch` 让右栏拉伸到视频高度）；右栏 `lg:pt-[10%]` → `lg:justify-center`；Title/Tags/Meta/Buttons 整组在视频高度内垂直居中，左右两栏视觉对齐 |
+| 173 | /games 页间距系统化（Plan E 比例，总高 78px） | Title↕Tags = `mb-3.5`（14px，紧贴）；Tags↕Meta = `mb-7`（28px，常规）；Meta↕Buttons = `mt-9`（36px，分组留白），移动端按钮间距 `mt-6 lg:mt-9`；保持 1:2:2.57 递进比例（"组内紧贴 < 跨组常规 < 动作分组"） |
+| 174 | /games 页 6 项视觉细节优化 | ① Details 按钮黑色填充 `bg-[var(--color-text)]`（CSS 变量自动适配 Light/Dark Mode），区分外部品牌色描边按钮 ② Detail 加号图标从 `circle+` → 简洁 `+`（无圆圈）+ `stroke-width: 3.25` 提升视觉权重 ③ Tags pill 加 `bg-[var(--color-bg-secondary)]` 微底色提升可读性 ④ dt `padding-top: 0.1rem → 0.15rem` 光学对齐 ⑤ 左右两栏 gap `gap-10 xl:gap-14` → `gap-10 lg:gap-14 xl:gap-20`（独立但关联的呼吸空间） ⑥ Google Drive 彩色图标 hover 时通过 `group` + `group-hover:[&_path]:fill-white` 全部 path 转白色（CSS 优先级覆盖 SVG `fill` attribute） |
 
 ---
 
@@ -220,7 +224,7 @@
 | 2 | ~~**Docs 首页（`/docs/`）内容未居中**~~ | 根因：有 TOC 页 `main-pane = 100% - sidebar-width`（内容从 ~316px 起），无 TOC 页 `main-pane = 100%`（`sl-container` 居中后从 ~422px 起），切换时左边缘跳变 106px，视觉上显得「偏左」。修复：在 `starlight-overrides.css` 中为 `[data-has-sidebar]:not([data-has-toc]) .main-pane` 添加相同的宽度约束 `width: calc(100% - var(--sl-sidebar-width))`，消除切换时的位置漂移 | ✅ 已修复 |
 | 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
 | 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
-| 5 | **游戏详情页 `heroPosition` 不生效** | Build HTML 输出正确（`background-position: 50% XX%`），但 preview/浏览器无响应。根因未明（可能是 Tailwind `bg-cover` 与 inline style 冲突，或布局层级问题）。待后续重构 Hero 图逻辑时一并解决。 | ⚠️ 已知，待修复 |
+| 5 | ~~**游戏详情页 `heroPosition` 不生效**~~ | #148 已改为 `div + background-image + background-position` 方案，`heroPosition` 完全生效。 | ✅ 已修复 |
 | 6 | **/games 页外部链接按钮位置偏上** | 右栏用 `items-start + lg:pt-[10%]` 定位，内容整体落点正确，但按钮组（YouTube/Drive 等）与上方正文间距仍不够理想，在不同项目间表现不一致。高优先修复，考虑重新设计按钮展示方案（两行分组、卡片底部固定等）。 | ⚠️ 已知，高优先 |
 
 ---
