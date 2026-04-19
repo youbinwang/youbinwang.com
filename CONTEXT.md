@@ -228,7 +228,7 @@
 | 3 | **Docs h2 分割线全宽问题** | VitePress 的 h2 `border-top` 从主内容区左边缘延伸到右边缘（full content area width）。Starlight 的 h2 `border-top` 只跨越文字列（`sl-container` max-width 688px），视觉上显得比 VitePress 窄。已尝试通过调整 `.sl-container margin-inline` 改变对齐方式，但受限于 Starlight 布局结构，在典型笔记本视口（≤1336px）下视觉差异为零，宽屏下最多 52px 差距。需要进一步探索方案（如负 margin 伪元素或改变内容容器层级） | ⚠️ 已知 Bug |
 | 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
 | 5 | ~~**游戏详情页 `heroPosition` 不生效**~~ | #148 已改为 `div + background-image + background-position` 方案，`heroPosition` 完全生效。 | ✅ 已修复 |
-| 6 | **/games 页外部链接按钮位置偏上** | 右栏用 `items-start + lg:pt-[10%]` 定位，内容整体落点正确，但按钮组（YouTube/Drive 等）与上方正文间距仍不够理想，在不同项目间表现不一致。高优先修复，考虑重新设计按钮展示方案（两行分组、卡片底部固定等）。 | ⚠️ 已知，高优先 |
+| 6 | ~~**/games 页外部链接按钮位置偏上**~~ | #172（右栏 `items-stretch` + `lg:justify-center` 整组居中）+ #173（间距系统 78px）共同修复，按钮在视频高度内自然垂直居中，各项目表现一致。 | ✅ 已修复 |
 
 ---
 
