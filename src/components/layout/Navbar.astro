@@ -154,11 +154,11 @@ const sepCls = transparent ? "bg-white/30" : "bg-[var(--color-border)]";
         <!-- Separator -->
         <div class:list={["nav-sep w-px h-5 mx-2 transition-all duration-300", sepCls]}></div>
 
-        <!-- Language Switch -->
+        <!-- Language Switch — fixed width to prevent layout shift between EN / 中文 -->
         <a
           href={langSwitchPath}
           data-lang-switch
-          class:list={["nav-text px-3 py-2 text-sm transition-all duration-300 rounded-md", textMutedCls]}
+          class:list={["nav-text px-3 py-2 text-sm text-center min-w-[3.25rem] transition-all duration-300 rounded-md", textMutedCls]}
         >
           {langLabel}
         </a>

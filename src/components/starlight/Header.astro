@@ -265,9 +265,13 @@ const isOtherWorksActive = otherWorksItems.some((item) => isActive(item.href));
         background: var(--color-border, var(--sl-color-gray-5));
     }
 
-    /* Language switch — no active underline */
+    /* Language switch — no active underline, fixed width to prevent EN/中文 layout shift */
     .docs-lang-switch::after {
         display: none !important;
+    }
+    .docs-lang-switch {
+        min-width: 3.25rem;
+        text-align: center;
     }
 
     /* Dropdown */

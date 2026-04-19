@@ -6,7 +6,6 @@
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
-import ImageGallery from "../../../components/ui/ImageGallery.tsx";
 import ImageCarousel from "../../../components/ui/ImageCarousel.tsx";
 import { getLangFromSlug, t, getLocalizedPath, ui, uiEN } from "../../../i18n";
 import { games, type LearnedChip } from "../../../data/games";
@@ -363,13 +362,35 @@ if (game.docsType === "key-features") {
               altPrefix={`${titleEN} slide`}
             />
           ) : (
-            <ImageGallery
-              client:visible
-              images={game.gallery}
-              altPrefix={`${titleEN} screenshot`}
-              layout="grid"
-              columns={3}
-            />
+            <div id="screenshots-gallery" class="justified-gallery">
+              {game.gallery.map((src, i) => (
+                <a
+                  href={src}
+                  data-pswp-width="2000"
+                  data-pswp-height="2000"
+                  class="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+                >
+                  <img
+                    src={src}
+                    alt={`${titleEN} screenshot ${i + 1}`}
+                    class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+                    loading="lazy"
+                  />
+                  {/* Hover overlay — match photography / graphic-design pages */}
+                  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                    <svg
+                      class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
           )}
         </section>
       )
@@ -462,6 +483,209 @@ if (game.docsType === "key-features") {
 
 <script>
   import "../../../utils/tag-cloud.ts";
+  import PhotoSwipeLightbox from "photoswipe/lightbox";
+  import PhotoSwipe from "photoswipe";
+  import { addThumbnailStrip } from "../../../utils/pswp-thumbnails";
+
+  /* ── Justified gallery (Flickr-style) ──────────────────────────────────
+   * Greedy-pack items into rows. Each row's height is computed so the row
+   * exactly fills container width — items keep their natural aspect ratio.
+   * Last partial row stays at target height, left-aligned.
+   * Re-runs on resize and after each lazy image finishes loading.
+   * ──────────────────────────────────────────────────────────────────────*/
+  const GAP = 12;
+  const FALLBACK_ASPECT = 16 / 9;
+  let layoutRaf: number | null = null;
+  let screenshotsCleanup: (() => void) | null = null;
+
+  function getTargetRowHeight(): number {
+    const w = window.innerWidth;
+    if (w < 640) return 160;
+    if (w < 1024) return 200;
+    return 240;
+  }
+
+  type Row = { indices: number[]; aspectSum: number; full: boolean };
+
+  function layoutJustifiedGallery(container: HTMLElement) {
+    const items = Array.from(container.querySelectorAll<HTMLAnchorElement>("a"));
+    if (!items.length) return;
+    const containerWidth = container.clientWidth;
+    if (!containerWidth) return;
+
+    const targetRowHeight = getTargetRowHeight();
+
+    const aspects = items.map((item) => {
+      const img = item.querySelector("img");
+      if (img && img.naturalWidth > 0) return img.naturalWidth / img.naturalHeight;
+      return FALLBACK_ASPECT;
+    });
+
+    const rows: Row[] = [];
+    let row: Row = { indices: [], aspectSum: 0, full: false };
+
+    for (let i = 0; i < items.length; i++) {
+      row.indices.push(i);
+      row.aspectSum += aspects[i];
+      const totalGap = GAP * (row.indices.length - 1);
+      const projectedHeight = (containerWidth - totalGap) / row.aspectSum;
+      if (projectedHeight <= targetRowHeight) {
+        row.full = true;
+        rows.push(row);
+        row = { indices: [], aspectSum: 0, full: false };
+      }
+    }
+    if (row.indices.length) rows.push(row);
+
+    /* Tail rebalance — if partial last row leaves too much whitespace
+       (width < 70% of container), pull items from prev row and re-split
+       for visually balanced rows. */
+    rebalanceTail(rows, aspects, containerWidth, GAP, targetRowHeight);
+
+    rows.forEach((r) => {
+      const totalGap = GAP * (r.indices.length - 1);
+      const rowHeight = r.full
+        ? (containerWidth - totalGap) / r.aspectSum
+        : targetRowHeight;
+      r.indices.forEach((idx) => {
+        const w = aspects[idx] * rowHeight;
+        items[idx].style.width = `${w}px`;
+        items[idx].style.height = `${rowHeight}px`;
+      });
+    });
+
+    container.dataset.laidOut = "true";
+  }
+
+  function rebalanceTail(
+    rows: Row[],
+    aspects: number[],
+    containerWidth: number,
+    gap: number,
+    target: number,
+  ) {
+    if (rows.length < 2) return;
+    const last = rows[rows.length - 1];
+    if (last.full) return;
+
+    /* Ideal aspect sum fills container at target height; trigger when
+       partial row's natural width (sum × target) is < 70% of container. */
+    const idealAspectSum = containerWidth / target;
+    if (last.aspectSum >= idealAspectSum * 0.7) return;
+
+    const prev = rows[rows.length - 2];
+    const combined = [...prev.indices, ...last.indices];
+    const sumOf = (arr: number[]) => arr.reduce((s, idx) => s + aspects[idx], 0);
+    const heightOf = (arr: number[]) =>
+      (containerWidth - gap * (arr.length - 1)) / sumOf(arr);
+
+    rows.length -= 2;
+
+    /* Too few items to split into 2 rows of ≥ 2 → merge into a single full row. */
+    if (combined.length <= 3) {
+      rows.push({ indices: combined, aspectSum: sumOf(combined), full: true });
+      return;
+    }
+
+    /* Find split (k = 2…len-2) that minimizes height difference between rows. */
+    let bestSplit = Math.ceil(combined.length / 2);
+    let bestScore = Infinity;
+    for (let k = 2; k <= combined.length - 2; k++) {
+      const r1 = combined.slice(0, k);
+      const r2 = combined.slice(k);
+      const score = Math.abs(heightOf(r1) - heightOf(r2));
+      if (score < bestScore) {
+        bestScore = score;
+        bestSplit = k;
+      }
+    }
+
+    const r1 = combined.slice(0, bestSplit);
+    const r2 = combined.slice(bestSplit);
+    rows.push({ indices: r1, aspectSum: sumOf(r1), full: true });
+    rows.push({ indices: r2, aspectSum: sumOf(r2), full: true });
+  }
+
+  function scheduleLayout(container: HTMLElement) {
+    if (layoutRaf !== null) cancelAnimationFrame(layoutRaf);
+    layoutRaf = requestAnimationFrame(() => {
+      layoutRaf = null;
+      layoutJustifiedGallery(container);
+    });
+  }
+
+  function initScreenshotsGallery() {
+    if (screenshotsCleanup) {
+      screenshotsCleanup();
+      screenshotsCleanup = null;
+    }
+
+    const gallery = document.querySelector<HTMLElement>("#screenshots-gallery");
+    if (!gallery) return;
+
+    /* Initial layout — uses fallback aspect for not-yet-loaded imgs */
+    layoutJustifiedGallery(gallery);
+
+    /* Re-layout each time a lazy image finishes loading (refines row heights) */
+    const imgListeners: Array<[HTMLImageElement, () => void]> = [];
+    gallery.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
+      if (img.complete && img.naturalWidth > 0) return;
+      const onLoad = () => scheduleLayout(gallery);
+      img.addEventListener("load", onLoad, { once: true });
+      img.addEventListener("error", onLoad, { once: true });
+      imgListeners.push([img, onLoad]);
+    });
+
+    /* Re-layout on resize (debounced via rAF) */
+    const onResize = () => scheduleLayout(gallery);
+    window.addEventListener("resize", onResize, { passive: true });
+
+    /* PhotoSwipe lightbox + thumbnail strip — same pattern as photography page */
+    const lightbox = new PhotoSwipeLightbox({
+      gallery,
+      children: "a",
+      pswpModule: PhotoSwipe,
+      preload: [1, 1],
+    });
+
+    gallery.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+      const img = link.querySelector("img");
+      if (!img) return;
+      const update = () => {
+        if (img.naturalWidth > 0) {
+          link.setAttribute("data-pswp-width", String(img.naturalWidth));
+          link.setAttribute("data-pswp-height", String(img.naturalHeight));
+        }
+      };
+      if (img.complete && img.naturalWidth > 0) update();
+      else img.addEventListener("load", update);
+    });
+
+    lightbox.addFilter("domItemData", (itemData, _el, linkEl) => {
+      const img = linkEl.querySelector("img");
+      if (img && img.naturalWidth > 0) {
+        itemData.w = img.naturalWidth;
+        itemData.h = img.naturalHeight;
+      }
+      return itemData;
+    });
+
+    addThumbnailStrip(lightbox, gallery, "a");
+    lightbox.init();
+
+    screenshotsCleanup = () => {
+      window.removeEventListener("resize", onResize);
+      if (layoutRaf !== null) {
+        cancelAnimationFrame(layoutRaf);
+        layoutRaf = null;
+      }
+      imgListeners.forEach(([img, fn]) => {
+        img.removeEventListener("load", fn);
+        img.removeEventListener("error", fn);
+      });
+      lightbox.destroy();
+    };
+  }
 
   function initCinematicHero() {
     const section = document.getElementById("cinematic-hero");
@@ -498,6 +722,15 @@ if (game.docsType === "key-features") {
 
   initCinematicHero();
   document.addEventListener("astro:page-load", initCinematicHero);
+
+  initScreenshotsGallery();
+  document.addEventListener("astro:after-swap", initScreenshotsGallery);
+  document.addEventListener("astro:before-swap", () => {
+    if (screenshotsCleanup) {
+      screenshotsCleanup();
+      screenshotsCleanup = null;
+    }
+  });
 </script>
 
 <style is:global>
@@ -512,5 +745,25 @@ if (game.docsType === "key-features") {
   .tag-cloud[data-laid-out] [data-chip] {
     opacity: 0;
     transition: opacity 0.35s ease-out;
+  }
+
+  /* Justified gallery — Flickr-style row layout. JS sets each <a>'s width/height
+     so each row exactly fills container width while preserving each image's
+     natural aspect ratio (no cropping, no gaps). Hidden until JS lays out. */
+  .justified-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .justified-gallery > a {
+    flex: 0 0 auto;
+    display: block;
+  }
+  .justified-gallery:not([data-laid-out]) > a {
+    opacity: 0;
+  }
+  .justified-gallery[data-laid-out] > a {
+    opacity: 1;
+    transition: opacity 0.3s ease-out;
   }
 </style>
