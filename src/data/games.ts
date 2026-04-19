@@ -6,6 +6,9 @@
 
 import type { Bilingual } from '../i18n/config';
 
+/** Single chip — string for default emphasis, or object for explicit weight/style */
+export type LearnedChip = string | { word: string; emphasis?: 1 | 2 | 3 | 4 | 5; italic?: boolean };
+
 export interface GameProject {
   slug: string;
   title: Bilingual;
@@ -44,6 +47,16 @@ export interface GameProject {
   docsType: 'tech-docs' | 'key-features' | 'none';
   order: number;
   description: Bilingual;
+  /** Optional second paragraph below description — narrates personal role/contribution */
+  roleSummary?: Bilingual;
+  /** Skill chips — "WHAT I LEARNED FROM THIS PROJECT?" 按类别 + per-item emphasis 展示 */
+  learned?: {
+    tools?: LearnedChip[];
+    skills?: LearnedChip[];
+    softSkills?: LearnedChip[];
+  };
+  /** Bullet list — "MAIN CONTRIBUTIONS" 加粗领头 + 描述 */
+  contributions?: { lead: Bilingual; body: Bilingual }[];
 }
 
 export const games: GameProject[] = [
@@ -132,9 +145,54 @@ export const games: GameProject[] = [
     docsType: 'key-features',
     order: 3,
     description: {
-      en: 'An ARPG project where I designed combat encounters, level layouts, and boss fights.',
-      cn: 'ARPG 项目，负责战斗遭遇、关卡布局和 Boss 战设计。',
+      en: "The Scholar's Side Quest is a collaborative design project of a third-person Action-adventure Game. The story takes place in Letter Town — a small town under the control of a phantasmagoria.",
+      cn: '《信镇书生支线任务》是一款第三人称动作冒险游戏的合作设计项目，故事发生在信镇——一座被幻象统治的小镇。',
     },
+    roleSummary: {
+      en: 'I led a team of 17 skilled students to complete the development of the flow of the quest, which involved authoring the 17-page narrative script, creating a major scene, and producing 13 detailed animation cutscenes using Unreal Engine 4.',
+      cn: '我带领 17 人团队完成了任务流程的开发，包括撰写 17 页叙事剧本、搭建主要场景，并使用 Unreal Engine 4 制作 13 段精细的动画过场。',
+    },
+    learned: {
+      tools: [
+        { word: 'Unreal Engine 4', emphasis: 5 },
+        { word: 'Substance Painter', emphasis: 2 },
+      ],
+      skills: [
+        { word: 'Quest Flow Design', emphasis: 4 },
+        { word: 'Level Design', emphasis: 4 },
+        'Environment Design',
+        'Storyboard',
+        '3D Animation Production',
+        { word: 'Script Writing', emphasis: 2 },
+      ],
+      softSkills: [
+        { word: 'Team Leadership', emphasis: 3, italic: true },
+        { word: 'Dream it', emphasis: 1 },
+      ],
+    },
+    contributions: [
+      {
+        lead: { en: 'Video Game Development', cn: '游戏开发' },
+        body: {
+          en: 'Led the "Scholar Side Quest" design for an action RPG, including authoring a 17-page narrative script, engineering a major scene, and producing 13 intricate animation cutscenes with Unreal Engine 4.',
+          cn: '主导 ARPG「书生支线任务」设计：撰写 17 页叙事剧本，搭建主场景，使用 UE4 制作 13 段动画过场。',
+        },
+      },
+      {
+        lead: { en: 'Project Planning', cn: '项目规划' },
+        body: {
+          en: 'Directed a skilled team of 17 students to ascertain project requirements and set forth clear objectives and deliverables.',
+          cn: '带领 17 人团队梳理项目需求，制定明确的目标与交付物。',
+        },
+      },
+      {
+        lead: { en: 'Leadership', cn: '团队管理' },
+        body: {
+          en: 'Strategically steered meetings to synchronize team progress, gathered responses and needs, monitored project scope, and resolved roadblocks and issues, contributing to a cohesive team and the success of the project.',
+          cn: '主持例会同步进度、收集反馈、把控范围、解决阻塞，确保团队协作顺畅与项目成功落地。',
+        },
+      },
+    ],
   },
 
   // ─── 研发制作人 (Producer) ──────────────────────────────────────────
@@ -214,7 +272,7 @@ export const games: GameProject[] = [
     meta: {
       role: { en: 'Personal Undergraduate Thesis Project', cn: '个人本科毕业设计，独立开发及发行' },
       engine: 'Tabletop Simulator',
-      platform: 'Board Game, PC (Steam Workshop)',
+      platform: 'Board Game',
       teamSize: { en: '1 (Solo)', cn: '1 人（独立开发）' },
       duration: { en: 'Sep 2022 - Jun 2023', cn: '2022 年 09 月 - 2023 年 06 月' },
     },

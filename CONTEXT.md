@@ -221,6 +221,32 @@
 | 180 | Code Review — 死代码清理 | ① 删除未使用的翻译 key 6 个：`common.backToList`、`common.language`、`films.backToFilms`（zh-cn + en 各 3 个） ② 删除 `BaseLayout.astro` 的 `ogImage` Props（接口定义 + 解构 + meta tag 三处），无任何页面传递此 prop ③ 删除 `GameProject.featured` 字段（接口定义 + 11 处 game 数据赋值），定义但全站无任何读取（无 `game.featured`） |
 | 181 | echo-quest / elemental-realm hero 图本地化 | `games.ts` 两项 `heroImage` 从空 TODO 更新为本地路径；echo-quest 新增 `heroPosition: '50% 30%'` 裁切偏上 |
 | 182 | echo-quest / elemental-realm gallery 填充 | echo-quest 26 张（01–26）、elemental-realm 24 张（01–24）写入 `games.ts` gallery 数组；`Array.from` 格式与其他游戏一致 |
+| 183 | 游戏详情页 Hero→正文 padding 与电影详情页对齐 | `py-10`（40px）→ `pt-20 pb-12`（80/48px），呼吸感与其他详情页统一 |
+| 184 | 游戏详情页 Hero 下方双栏重构（C 项目档案 + A 大字 + 双栏 detail） | 上栏：左 6/12 视频（无视频降级 coverImage 海报，aspect-video 同尺寸）+ 右 6/12 大字 description（`text-3xl font-semibold`，英文 italic）+ 小字 roleSummary + Meta 4 列裸文字（label 上 / value 下，左 2px 竖线）+ 品牌色按钮单行；下栏：WHAT I LEARNED + MAIN CONTRIBUTIONS 5/12+7/12 双栏（仅有数据时渲染） |
+| 185 | GameProject 新增 `roleSummary` / `learned` / `contributions` 字段 | `roleSummary?: Bilingual` 大字下方角色叙述；`learned: { tools/skills/softSkills: LearnedChip[] }` 分类标签云，`LearnedChip = string \| { word, emphasis: 1-5, italic? }` 支持 per-item 字号优先级；`contributions: { lead, body }[]` 双语贡献列表；the-scholars-side-quest 填 Demo |
+| 186 | Meta 信息精简化 | 5 项 → 4 项（ENGINE 合并 PLATFORM）；ENGINE 用 `tags.engine` 缩写 + `shortPlatform()` 去括号 → `UE4 · PC` 格式；DURATION 用 `getDurationMonths()` 解析 "May 2022 - Aug 2022" → "4 个月"；非月份格式（GGJ/年份）fallback 原文；on-the-road platform `'Board Game, PC (Steam Workshop)'` → `'Board Game'`；顺序 `ROLE → TEAM SIZE → ENGINE → DURATION` |
+| 187 | 详情页按钮替换为品牌色 outlined（与 /games 列表页一致） | YouTube 红 `#FF0000` / Drive 多彩 `#35A852` / itch.io 粉 `#FA5C5C` / Steam 深蓝 `#1b2838` / GitHub 黑 `#24292F`；圆形 pill `rounded-full px-4 py-2`，`whitespace-nowrap` 强制单行；移除旧 `externalLinks` 数组，inline 渲染各品牌；GitHub 是新增的（列表页未有） |
+| 188 | global.css 新增 chip 配色变量 | `--color-chip-tools` / `--color-chip-soft` 各定义 light/dark 两套值；准备给标签云分类（Skills 沿用 `--color-accent`） |
+
+---
+
+### Bug #7（待修复）：标签云布局格式痕迹明显
+
+「我学到了什么？」chips 当前实现：pill + 2D jitter (translateX 0~16px / translateY ±5px) + items-baseline + flex-wrap + per-item emphasis 字号梯度（1=text-xs, 5=text-2xl）+ 三色分类（Blue/Amber/Purple）+ italic 选项。
+
+**问题**：依然能感受到 flex-wrap 的栅格痕迹，与原站「画布散布」效果有差距。原站是纯文字（无 pill 背景）+ 大字号跨度（text-sm 到 text-3xl）+ flex-wrap items-baseline 自然错落。
+
+**已尝试**：
+
+- C 方案（分类 chips + filled/accent/ghost）→ 太规整
+- A 方案（emphasis 字号梯度）→ 接近但用户最终要求保留 pill 形式
+- pill + jitter 组合 → 还是有痕迹
+
+**下次方向建议**：
+
+- 尝试 CSS Grid masonry 或绝对定位
+- 或考虑放弃 pill 改回纯文字（用户初期偏好 pill 但视觉上原站确实是纯文字）
+- 或用 JS 计算更激进的 layout（占位检测 + 随机摆放）
 
 ---
 
@@ -234,6 +260,7 @@
 | 4 | **英文 Echo Quest 文档 7 个章节为 Placeholder** | `src/content/docs/en/docs/echo-quest/` 下全部 7 个文件内容为空 placeholder，frontmatter 标题已改为英文（#142 修复）。英文用户访问到空页面。需人工翻译填充，暂不处理。 | ⚠️ 已知，待填充 |
 | 5 | ~~**游戏详情页 `heroPosition` 不生效**~~ | #148 已改为 `div + background-image + background-position` 方案，`heroPosition` 完全生效。 | ✅ 已修复 |
 | 6 | ~~**/games 页外部链接按钮位置偏上**~~ | #172（右栏 `items-stretch` + `lg:justify-center` 整组居中）+ #173（间距系统 78px）共同修复，按钮在视频高度内自然垂直居中，各项目表现一致。 | ✅ 已修复 |
+| 7 | **游戏详情页标签云布局格式痕迹明显** | 当前实现 pill + 2D jitter + flex-wrap，依然有栅格痕迹，与原站「画布散布」效果有差距。详见 #188 后的 Bug #7 章节。 | ⚠️ 待修复 |
 
 ---
 

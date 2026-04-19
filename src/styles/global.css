@@ -12,6 +12,10 @@
     --color-accent-bg: rgba(255, 147, 0, 0.08);
     --color-accent-selection: rgba(255, 147, 0, 0.2);
 
+    /* Skill chip categories — Blue (Tools) / Amber accent (Skills) / Purple (Soft Skills) */
+    --color-chip-tools: #0066DA;
+    --color-chip-soft: #7C3AED;
+
     /* Surfaces — Apple-inspired warm gray whites */
     --color-bg: #FAFAFA;
     --color-bg-secondary: #F2F2F7;
@@ -84,6 +88,10 @@
         --color-docs-table-hover: rgba(255, 147, 0, 0.06);
         --color-docs-blockquote-bg: rgba(255, 255, 255, 0.04);
         --color-docs-overlay: rgba(0, 0, 0, 0.5);
+
+        /* Skill chips — lighter shades for dark bg */
+        --color-chip-tools: #5BA0F7;
+        --color-chip-soft: #B795F7;
     }
 }
 
