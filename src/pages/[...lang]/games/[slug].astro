@@ -1,12 +1,13 @@
 ---
 /**
- * Game overview page — redesigned layout:
- * Hero (tags + title) → Video → Meta blocks → Description → Links → Screenshots (horizontal scroll) → Details
- * Details logic: tech-docs → CTA link to Starlight docs, key-features → inline MDX content.
+ * Game detail page — layout order:
+ * Hero → Project archive → Detail double →
+ * KEY FEATURES (inline MDX + right floating TOC) → Screenshots → Back link
  */
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
 import ImageCarousel from "../../../components/ui/ImageCarousel.tsx";
+import GameInlineFeatures from "../../../components/games/GameInlineFeatures.astro";
 import { getLangFromSlug, t, getLocalizedPath, ui, uiEN } from "../../../i18n";
 import { games, type LearnedChip } from "../../../data/games";
 import { getEntry, render } from "astro:content";
@@ -34,13 +35,13 @@ function shortPlatform(p: string): string {
 }
 function getDurationMonths(durationEn: string, isZh: boolean): string {
   const match = durationEn.match(/^([A-Z][a-z]{2})\s+(\d{4})\s*-\s*([A-Z][a-z]{2})\s+(\d{4})$/);
-  if (!match) return durationEn; // fallback for non-month formats (e.g. "GGJ 2023")
+  if (!match) return durationEn;
   const m: Record<string, number> = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
   const diff = (parseInt(match[4]) - parseInt(match[2])) * 12 + (m[match[3]] - m[match[1]]) + 1;
   return isZh ? `${diff} 个月` : diff === 1 ? '1 month' : `${diff} months`;
 }
 
-/* ── Meta items (labels always English; engine + platform compacted) ── */
+/* ── Meta items (labels always English) ── */
 const metaItems = [
   { label: "ROLE", value: t(game.meta.role, lang) },
   { label: "TEAM SIZE", value: t(game.meta.teamSize, lang) },
@@ -48,15 +49,10 @@ const metaItems = [
   { label: "DURATION", value: getDurationMonths(game.meta.duration.en, lang === 'zh-cn') },
 ];
 
-/* ── Hero tags (genre, engine, discipline, scope) ── */
-const heroTags = [
-  game.tags.genre,
-  game.tags.engine,
-  game.tags.discipline,
-  game.tags.scope,
-];
+/* ── Hero tags ── */
+const heroTags = [game.tags.genre, game.tags.engine, game.tags.discipline, game.tags.scope];
 
-/* ── Learned skill chips — flatten all categories into a single tag cloud ── */
+/* ── Learned skill chips ── */
 type FlatChip = { word: string; emphasis: number; italic: boolean; category: 'tools' | 'skills' | 'soft' };
 
 const flatChips: FlatChip[] = [];
@@ -71,14 +67,11 @@ pushChips(game.learned?.tools, 'tools');
 pushChips(game.learned?.skills, 'skills');
 pushChips(game.learned?.softSkills, 'soft');
 
-/** emphasis 1-5 → 3-tier size system (small / medium / large; 12 / 14 / 18px) */
 const chipSize = (e: number) => {
-  if (e <= 2) return 'px-2 py-0.5 text-xs font-normal';      // 12px
-  if (e >= 4) return 'px-3.5 py-1 text-lg font-semibold';     // 18px
-  return 'px-2.5 py-1 text-sm font-medium';                   // 14px
+  if (e <= 2) return 'px-2 py-0.5 text-xs font-normal';
+  if (e >= 4) return 'px-3.5 py-1 text-lg font-semibold';
+  return 'px-2.5 py-1 text-sm font-medium';
 };
-
-/** category → color tokens (text + low-alpha bg) */
 const chipColor = (cat: FlatChip['category']) => {
   switch (cat) {
     case 'tools':  return 'bg-[var(--color-chip-tools-bg)] text-[var(--color-chip-tools)]';
@@ -87,27 +80,32 @@ const chipColor = (cat: FlatChip['category']) => {
   }
 };
 
-/* ── Docs: tech-docs → CTA, key-features → inline MDX ── */
+/* ── Tech-docs CTA (echo-quest only) ── */
 const techDocsHref =
   game.docsType === "tech-docs"
-    ? lang === "en"
-      ? `/en/docs/${game.slug}/`
-      : `/docs/${game.slug}/`
+    ? lang === "en" ? `/en/docs/${game.slug}/` : `/docs/${game.slug}/`
     : null;
 
-let DetailsContent: any = null;
-if (game.docsType === "key-features") {
-  const entryId = lang === "en" ? `en/docs/${game.slug}` : `docs/${game.slug}`;
+/* ── Inline-features MDX (key-features games) ── */
+let InlineContent: any = null;
+let inlineHeadings: Array<{ depth: number; slug: string; text: string }> = [];
+if (game.docsType === 'key-features') {
+  const entryId = lang === 'en' ? `en/${game.slug}` : game.slug;
   try {
-    const entry = await getEntry("docs", entryId);
+    const entry = await getEntry('inline-features', entryId);
     if (entry) {
       const rendered = await render(entry);
-      DetailsContent = rendered.Content;
+      InlineContent = rendered.Content;
+      inlineHeadings = rendered.headings;
     }
   } catch {
-    /* MDX not found — skip inline details */
+    /* silently skip if entry not found */
   }
 }
+
+/* ── TOC: only h2/h3, show when ≥ 3 items ── */
+const tocItems = inlineHeadings.filter(h => h.depth <= 3);
+const showToc = tocItems.length >= 3;
 ---
 
 <BaseLayout title={titleEN} lang={lang} transparentNav>
@@ -118,28 +116,19 @@ if (game.docsType === "key-features") {
     transition:name="hero"
     transition:animate="fade"
   >
-    {/* Background */}
-    {
-      game.heroImage ? (
-        <div id="cinematic-hero-bg" class="absolute inset-0">
-          <div
-            class="absolute inset-0 bg-cover"
-            style={`background-image: url('${game.heroImage}'); background-position: ${game.heroPosition ?? '50% 50%'};`}
-          />
-          <div
-            class="absolute inset-0"
-            style="background: var(--color-hero-overlay);"
-          />
-        </div>
-      ) : (
-        <div id="cinematic-hero-bg" class="absolute inset-0 bg-bg" />
-      )
-    }
+    {game.heroImage ? (
+      <div id="cinematic-hero-bg" class="absolute inset-0">
+        <div
+          class="absolute inset-0 bg-cover"
+          style={`background-image: url('${game.heroImage}'); background-position: ${game.heroPosition ?? '50% 50%'};`}
+        />
+        <div class="absolute inset-0" style="background: var(--color-hero-overlay);" />
+      </div>
+    ) : (
+      <div id="cinematic-hero-bg" class="absolute inset-0 bg-bg" />
+    )}
 
-    {/* Tags + Title */}
-    <div
-      class="relative z-10 max-w-screen-xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-16 md:pb-20"
-    >
+    <div class="relative z-10 max-w-screen-xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
       <a
         href={`${getLocalizedPath('/games/', lang)}#project-${game.slug}`}
         class="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors w-fit mb-4"
@@ -150,17 +139,13 @@ if (game.docsType === "key-features") {
         {ui('nav.games', lang)}
       </a>
       <div class="flex flex-wrap gap-2 mb-4">
-        {
-          heroTags.map((tag) => (
-            <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/20 text-white backdrop-blur-sm border border-white/20">
-              {tag}
-            </span>
-          ))
-        }
+        {heroTags.map((tag) => (
+          <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/20 text-white backdrop-blur-sm border border-white/20">
+            {tag}
+          </span>
+        ))}
       </div>
-      <h1
-        class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight drop-shadow-lg"
-      >
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight drop-shadow-lg">
         {title}
       </h1>
     </div>
@@ -168,11 +153,12 @@ if (game.docsType === "key-features") {
 
   <div class="relative z-10 bg-[var(--color-bg)]">
   <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 space-y-10">
-    {/* ═══════ Project archive: Video/Poster (left 6/12) + Big description / Meta / Links stacked (right 6/12) ═══════ */}
+
+    {/* ═══════ Project archive: Video/Poster (left 6/12) + Description/Meta/Links (right 6/12) ═══════ */}
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
       <div class="lg:col-span-6">
         {game.videoId ? (
-          <VideoEmbed videoId={game.videoId} title={title} />
+          <VideoEmbed videoId={game.videoId} title={title} poster={game.coverImage} />
         ) : (
           <div class="aspect-video w-full overflow-hidden rounded-lg bg-[var(--color-bg-secondary)]">
             <img
@@ -186,7 +172,6 @@ if (game.docsType === "key-features") {
       </div>
 
       <div class="lg:col-span-6 lg:self-stretch flex flex-col gap-6">
-        {/* Description (logline) — large semibold + small role summary */}
         <div>
           <p class={`text-xl md:text-2xl ${lang === 'en' ? 'lg:text-2xl' : 'lg:text-3xl'} leading-snug text-[var(--color-text)] font-semibold tracking-tight`}>
             {t(game.description, lang)}
@@ -198,243 +183,202 @@ if (game.docsType === "key-features") {
           )}
         </div>
 
-        {/* Meta — per-column top divider on desktop, single long divider on mobile */}
         <div>
           <hr class="border-[var(--color-border)] mb-5 sm:hidden" />
           <dl class="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-4">
-            {
-              metaItems.map(({ label, value }) => (
-                <div>
-                  <div class="hidden sm:block w-20 h-px bg-[var(--color-border-strong)] mb-3" aria-hidden="true"></div>
-                  <dt class="text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-muted)] font-semibold mb-1.5">
-                    {label}
-                  </dt>
-                  <dd class="text-sm font-semibold text-[var(--color-text)] leading-snug">
-                    {value}
-                  </dd>
-                </div>
-              ))
-            }
+            {metaItems.map(({ label, value }) => (
+              <div>
+                <div class="hidden sm:block w-20 h-px bg-[var(--color-border-strong)] mb-3" aria-hidden="true"></div>
+                <dt class="text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-muted)] font-semibold mb-1.5">
+                  {label}
+                </dt>
+                <dd class="text-sm font-semibold text-[var(--color-text)] leading-snug">
+                  {value}
+                </dd>
+              </div>
+            ))}
           </dl>
         </div>
 
-        {/* External links — brand-colored outlined pills, single row */}
-        {
-          (game.links.youtube || game.links.gdrive || game.links.itch || game.links.steam || game.links.github) && (
-            <div class="flex items-center gap-2.5 flex-wrap lg:mt-auto">
-              {game.links.youtube && (
-                <a href={game.links.youtube} target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-[#FF0000] text-[#FF0000] text-sm font-medium rounded-full hover:bg-[#FF0000] hover:text-white transition-colors whitespace-nowrap">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                  </svg>
-                  YouTube
-                </a>
-              )}
-              {game.links.gdrive && game.links.gdrive.map((url, i) => (
-                <a href={url} target="_blank" rel="noopener noreferrer"
-                  class="group inline-flex items-center gap-2 px-4 py-2 border border-[#35A852] text-[#35A852] text-sm font-medium rounded-full hover:bg-[#35A852] hover:text-white transition-colors whitespace-nowrap">
-                  <svg class="w-4 h-4 [&_path]:transition-colors group-hover:[&_path]:fill-white" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
-                    <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA" />
-                    <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0-1.2 4.5h27.5z" fill="#00AC47" />
-                    <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.85L73.55 76.8z" fill="#EA4335" />
-                    <path d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832D" />
-                    <path d="M59.85 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.5 1.2h36.75c1.6 0 3.15-.45 4.5-1.2z" fill="#2684FC" />
-                    <path d="M73.4 26.5 60.65 4.5c-.8-1.4-1.95-2.5-3.3-3.3L43.6 25l16.25 28h27.5c0-1.55-.4-3.1-1.2-4.5z" fill="#FFBA00" />
-                  </svg>
-                  Google Drive{game.links.gdrive!.length > 1 ? ` ${i + 1}` : ''}
-                </a>
-              ))}
-              {game.links.itch && (
-                <a href={game.links.itch} target="_blank" rel="noopener noreferrer"
-                  class="group inline-flex items-center gap-2 px-4 py-2 border border-[#FA5C5C] text-[#FA5C5C] text-sm font-medium rounded-full hover:bg-[#FA5C5C] hover:text-white transition-colors whitespace-nowrap">
-                  <img src="/icons/itch-io.svg" alt="" class="w-4 h-4 [filter:brightness(0)_saturate(100%)_invert(54%)_sepia(83%)_saturate(504%)_hue-rotate(314deg)] group-hover:filter-none transition-all" aria-hidden="true" />
-                  itch.io
-                </a>
-              )}
-              {game.links.steam && (
-                <a href={game.links.steam} target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-[#1b2838] text-[#1b2838] text-sm font-medium rounded-full hover:bg-[#1b2838] hover:text-white transition-colors whitespace-nowrap">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.029 4.524 4.524s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.38-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.452 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.662 0 3.015-1.35 3.015-3.015zm-5.273.016c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z"/>
-                  </svg>
-                  Steam
-                </a>
-              )}
-              {game.links.github && (
-                <a href={game.links.github} target="_blank" rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-[#24292F] text-[#24292F] text-sm font-medium rounded-full hover:bg-[#24292F] hover:text-white transition-colors whitespace-nowrap">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                  GitHub
-                </a>
-              )}
-            </div>
-          )
-        }
+        {(game.links.youtube || game.links.gdrive || game.links.itch || game.links.steam || game.links.github) && (
+          <div class="flex items-center gap-2.5 flex-wrap lg:mt-auto">
+            {game.links.youtube && (
+              <a href={game.links.youtube} target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-[#FF0000] text-[#FF0000] text-sm font-medium rounded-full hover:bg-[#FF0000] hover:text-white transition-colors whitespace-nowrap">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+                YouTube
+              </a>
+            )}
+            {game.links.gdrive && game.links.gdrive.map((url, i) => (
+              <a href={url} target="_blank" rel="noopener noreferrer"
+                class="group inline-flex items-center gap-2 px-4 py-2 border border-[#35A852] text-[#35A852] text-sm font-medium rounded-full hover:bg-[#35A852] hover:text-white transition-colors whitespace-nowrap">
+                <svg class="w-4 h-4 [&_path]:transition-colors group-hover:[&_path]:fill-white" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+                  <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066DA" />
+                  <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0-1.2 4.5h27.5z" fill="#00AC47" />
+                  <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H59.85L73.55 76.8z" fill="#EA4335" />
+                  <path d="M43.65 25 57.4 1.2C56.05.4 54.5 0 52.9 0H34.4c-1.6 0-3.15.45-4.5 1.2z" fill="#00832D" />
+                  <path d="M59.85 53H27.5L13.75 76.8c1.35.8 2.9 1.2 4.5 1.2h36.75c1.6 0 3.15-.45 4.5-1.2z" fill="#2684FC" />
+                  <path d="M73.4 26.5 60.65 4.5c-.8-1.4-1.95-2.5-3.3-3.3L43.6 25l16.25 28h27.5c0-1.55-.4-3.1-1.2-4.5z" fill="#FFBA00" />
+                </svg>
+                Google Drive{game.links.gdrive!.length > 1 ? ` ${i + 1}` : ''}
+              </a>
+            ))}
+            {game.links.itch && (
+              <a href={game.links.itch} target="_blank" rel="noopener noreferrer"
+                class="group inline-flex items-center gap-2 px-4 py-2 border border-[#FA5C5C] text-[#FA5C5C] text-sm font-medium rounded-full hover:bg-[#FA5C5C] hover:text-white transition-colors whitespace-nowrap">
+                <img src="/icons/itch-io.svg" alt="" class="w-4 h-4 [filter:brightness(0)_saturate(100%)_invert(54%)_sepia(83%)_saturate(504%)_hue-rotate(314deg)] group-hover:filter-none transition-all" aria-hidden="true" />
+                itch.io
+              </a>
+            )}
+            {game.links.steam && (
+              <a href={game.links.steam} target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-[#1b2838] text-[#1b2838] text-sm font-medium rounded-full hover:bg-[#1b2838] hover:text-white transition-colors whitespace-nowrap">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M11.979 0C5.678 0 .511 4.86.022 11.037l6.432 2.658c.545-.371 1.203-.59 1.912-.59.063 0 .125.004.188.006l2.861-4.142V8.91c0-2.495 2.028-4.524 4.524-4.524 2.494 0 4.524 2.029 4.524 4.524s-2.03 4.525-4.524 4.525h-.105l-4.076 2.911c0 .052.004.105.004.159 0 1.875-1.515 3.396-3.39 3.396-1.635 0-3.016-1.173-3.331-2.727L.436 15.27C1.862 20.307 6.486 24 11.979 24c6.627 0 11.999-5.373 11.999-12S18.606 0 11.979 0zM7.54 18.21l-1.473-.61c.262.543.714.999 1.314 1.25 1.297.539 2.793-.076 3.332-1.375.263-.63.264-1.319.005-1.949s-.75-1.121-1.38-1.383c-.624-.26-1.29-.249-1.878-.03l1.523.63c.956.4 1.409 1.5 1.009 2.455-.397.957-1.497 1.41-2.452 1.012H7.54zm11.415-9.303c0-1.662-1.353-3.015-3.015-3.015-1.665 0-3.015 1.353-3.015 3.015 0 1.665 1.35 3.015 3.015 3.015 1.662 0 3.015-1.35 3.015-3.015zm-5.273.016c0-1.252 1.013-2.266 2.265-2.266 1.249 0 2.266 1.014 2.266 2.266 0 1.251-1.017 2.265-2.266 2.265-1.252 0-2.265-1.014-2.265-2.265z"/>
+                </svg>
+                Steam
+              </a>
+            )}
+            {game.links.github && (
+              <a href={game.links.github} target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-[#24292F] text-[#24292F] text-sm font-medium rounded-full hover:bg-[#24292F] hover:text-white transition-colors whitespace-nowrap">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </section>
 
     {/* ═══════ Detail double — WHAT I LEARNED (left 5/12) + MAIN CONTRIBUTIONS (right 7/12) ═══════ */}
-    {
-      (flatChips.length > 0 || (game.contributions && game.contributions.length > 0)) && (
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-            {flatChips.length > 0 && (
-              <div class="lg:col-span-5">
-                <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
-                  {lang === 'zh-cn' ? '我学到了什么？' : 'What I Learned From This Project?'}
-                </h2>
-                <div data-tag-cloud class="tag-cloud relative">
-                  {flatChips.map(({ word, emphasis, italic, category }) => (
-                    <span
-                      data-chip
-                      data-emphasis={emphasis}
-                      data-category={category}
-                      class={`${chipColor(category)} ${chipSize(emphasis)} rounded-full whitespace-nowrap inline-block leading-tight ${italic ? 'italic' : ''}`}
-                    >
-                      {word}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {game.contributions && game.contributions.length > 0 && (
-              <div class="lg:col-span-7 lg:flex lg:flex-col" data-tag-cloud-anchor>
-                <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
-                  {lang === 'zh-cn' ? '主要贡献' : 'Main Contributions'}
-                </h2>
-                <ul class="space-y-4 lg:my-auto">
-                  {game.contributions.map(({ lead, body }) => (
-                    <li class="flex items-start gap-3">
-                      <span class="w-1 h-1 mt-[0.55rem] rounded-full bg-[var(--color-text-muted)] flex-shrink-0" aria-hidden="true"></span>
-                      <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                        <span class="font-semibold text-[var(--color-text)]">{t(lead, lang)}：</span>
-                        {t(body, lang)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </section>
-      )
-    }
-
-    {/* ═══════ Separator ═══════ */}
-    <hr class="border-[var(--color-border)]" />
-
-    {/* ═══════ Screenshots / Slides ═══════ */}
-    {
-      game.gallery.length > 0 && (
-        <section>
-          <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
-            {game.slug === "elemental-realm"
-              ? lang === "zh-cn"
-                ? "设计文档"
-                : "Design Document Slides"
-              : ui('game.screenshots', lang)}
-          </h2>
-          {game.slug === "elemental-realm" ? (
-            <ImageCarousel
-              client:visible
-              images={game.gallery}
-              altPrefix={`${titleEN} slide`}
-            />
-          ) : (
-            <div id="screenshots-gallery" class="justified-gallery">
-              {game.gallery.map((src, i) => (
-                <a
-                  href={src}
-                  data-pswp-width="2000"
-                  data-pswp-height="2000"
-                  class="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+    {(flatChips.length > 0 || (game.contributions && game.contributions.length > 0)) && (
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+        {flatChips.length > 0 && (
+          <div class="lg:col-span-5">
+            <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
+              {lang === 'zh-cn' ? '我学到了什么？' : 'What I Learned From This Project?'}
+            </h2>
+            <div data-tag-cloud class="tag-cloud relative">
+              {flatChips.map(({ word, emphasis, italic, category }) => (
+                <span
+                  data-chip
+                  data-emphasis={emphasis}
+                  data-category={category}
+                  class={`${chipColor(category)} ${chipSize(emphasis)} rounded-full whitespace-nowrap inline-block leading-tight ${italic ? 'italic' : ''}`}
                 >
-                  <img
-                    src={src}
-                    alt={`${titleEN} screenshot ${i + 1}`}
-                    class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
-                    loading="lazy"
-                  />
-                  {/* Hover overlay — match photography / graphic-design pages */}
-                  <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
-                    <svg
-                      class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
-                    </svg>
-                  </div>
-                </a>
+                  {word}
+                </span>
               ))}
             </div>
-          )}
-        </section>
-      )
-    }
-
-    {/* ═══════ Project Details ═══════ */}
-
-    {/* tech-docs (Echo Quest) → CTA button linking to Starlight docs */}
-    {
-      techDocsHref && (
-        <section>
-          <hr class="border-[var(--color-border)] mb-8" />
-          <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
-            {ui('game.projectDetails', lang)}
-          </h2>
-          <p class="text-[var(--color-text-secondary)] text-sm mb-6">
-            {lang === "zh-cn"
-              ? "本项目包含详细的技术文档，涵盖 GAS 系统、战斗系统、打击反馈、动画系统、Motion Warping 和敌人 AI。"
-              : "This project includes comprehensive technical documentation covering the GAS system, combat systems, hit feedback, animation, motion warping, and enemy AI."}
-          </p>
-          <a
-            href={techDocsHref}
-            class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            📖 {lang === "zh-cn" ? "查看技术文档" : "View Tech Docs"}
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </a>
-        </section>
-      )
-    }
-
-    {/* key-features → inline MDX content (no redirect) */}
-    {
-      DetailsContent && (
-        <section>
-          <hr class="border-[var(--color-border)] mb-8" />
-          <div
-            class="prose prose-sm sm:prose-base max-w-none
-                    prose-headings:text-[var(--color-text)] prose-headings:font-semibold
-                    prose-h1:text-2xl prose-h1:mt-0 prose-h1:mb-4
-                    prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-[var(--color-border)] prose-h2:pb-2
-                    prose-p:text-[var(--color-text-secondary)] prose-p:leading-relaxed
-                    prose-strong:text-[var(--color-text)]
-                    prose-a:text-[var(--color-accent)] hover:prose-a:text-[var(--color-accent-hover)]
-                    prose-li:text-[var(--color-text-secondary)]
-                    prose-ul:my-3 prose-ol:my-3"
-          >
-            <DetailsContent />
           </div>
-        </section>
-      )
-    }
+        )}
+        {game.contributions && game.contributions.length > 0 && (
+          <div class="lg:col-span-7 lg:flex lg:flex-col" data-tag-cloud-anchor>
+            <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
+              {lang === 'zh-cn' ? '主要贡献' : 'Main Contributions'}
+            </h2>
+            <ul class="space-y-4 lg:my-auto">
+              {game.contributions.map(({ lead, body }) => (
+                <li class="flex items-start gap-3">
+                  <span class="w-1 h-1 mt-[0.55rem] rounded-full bg-[var(--color-text-muted)] flex-shrink-0" aria-hidden="true"></span>
+                  <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+                    <span class="font-semibold text-[var(--color-text)]">{t(lead, lang)}：</span>
+                    {t(body, lang)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    )}
+
+    {/* ═══════ KEY FEATURES — inline MDX (key-features) or CTA (tech-docs) ═══════ */}
+    {(InlineContent || techDocsHref) && (
+      <section>
+        <hr class="border-[var(--color-border)] mb-10" />
+
+        {/* Inline MDX content */}
+        {InlineContent && (
+          <div id="key-features-content">
+            <GameInlineFeatures Content={InlineContent} />
+          </div>
+        )}
+
+        {/* tech-docs CTA (Echo Quest) */}
+        {techDocsHref && (
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-4">
+              {ui('game.projectDetails', lang)}
+            </h2>
+            <p class="text-[var(--color-text-secondary)] text-sm mb-6">
+              {lang === "zh-cn"
+                ? "本项目包含详细的技术文档，涵盖 GAS 系统、战斗系统、打击反馈、动画系统、Motion Warping 和敌人 AI。"
+                : "This project includes comprehensive technical documentation covering the GAS system, combat systems, hit feedback, animation, motion warping, and enemy AI."}
+            </p>
+            <a
+              href={techDocsHref}
+              class="inline-flex items-center gap-2 px-6 py-3 bg-[var(--color-accent)] hover:bg-[var(--color-accent-hover)] text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              📖 {lang === "zh-cn" ? "查看技术文档" : "View Tech Docs"}
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        )}
+      </section>
+    )}
+
+    {/* ═══════ Screenshots / Slides — LAST ═══════ */}
+    {game.gallery.length > 0 && (
+      <section>
+        <hr class="border-[var(--color-border)] mb-8" />
+        <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
+          {game.slug === "elemental-realm"
+            ? lang === "zh-cn" ? "设计文档" : "Design Document Slides"
+            : ui('game.screenshots', lang)}
+        </h2>
+        {game.slug === "elemental-realm" ? (
+          <ImageCarousel
+            client:visible
+            images={game.gallery}
+            altPrefix={`${titleEN} slide`}
+          />
+        ) : (
+          <div id="screenshots-gallery" class="justified-gallery">
+            {game.gallery.map((src, i) => (
+              <a
+                href={src}
+                data-pswp-width="2000"
+                data-pswp-height="2000"
+                class="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+              >
+                <img
+                  src={src}
+                  alt={`${titleEN} screenshot ${i + 1}`}
+                  class="w-full h-full object-cover transition-transform duration-[400ms] group-hover:scale-[1.03]"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/35 transition-colors duration-[400ms] flex items-center justify-center">
+                  <svg
+                    class="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-[400ms] drop-shadow-lg"
+                    fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zm0 0v.01M11 8v6m-3-3h6" />
+                  </svg>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </section>
+    )}
 
     {/* ═══════ Back to games ═══════ */}
     <div class="pt-4">
@@ -442,23 +386,33 @@ if (game.docsType === "key-features") {
         href={`${getLocalizedPath("/games/", lang)}#project-${game.slug}`}
         class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
       >
-        <svg
-          class="w-4 h-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"></path>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
         {ui('game.backToGames', lang)}
       </a>
     </div>
   </div>
   </div>
+
+  {/* ═══════ Right floating TOC (xl 1728px+, key-features only) ═══════ */}
+  {showToc && (
+    <nav
+      id="inline-toc"
+      aria-label={lang === 'zh-cn' ? '页面导航' : 'Page navigation'}
+    >
+      <p class="toc-heading">Key Features</p>
+      <ul>
+        {tocItems.map(h => (
+          <li class={h.depth === 3 ? 'toc-sub' : ''}>
+            <a href={`#${h.slug}`} data-toc-slug={h.slug} class="toc-link">
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
 </BaseLayout>
 
 <script>
@@ -467,12 +421,7 @@ if (game.docsType === "key-features") {
   import PhotoSwipe from "photoswipe";
   import { addThumbnailStrip } from "../../../utils/pswp-thumbnails";
 
-  /* ── Justified gallery (Flickr-style) ──────────────────────────────────
-   * Greedy-pack items into rows. Each row's height is computed so the row
-   * exactly fills container width — items keep their natural aspect ratio.
-   * Last partial row stays at target height, left-aligned.
-   * Re-runs on resize and after each lazy image finishes loading.
-   * ──────────────────────────────────────────────────────────────────────*/
+  /* ── Justified gallery ────────────────────────────────────────────────── */
   const GAP = 12;
   const FALLBACK_ASPECT = 16 / 9;
   let layoutRaf: number | null = null;
@@ -494,7 +443,6 @@ if (game.docsType === "key-features") {
     if (!containerWidth) return;
 
     const targetRowHeight = getTargetRowHeight();
-
     const aspects = items.map((item) => {
       const img = item.querySelector("img");
       if (img && img.naturalWidth > 0) return img.naturalWidth / img.naturalHeight;
@@ -517,9 +465,6 @@ if (game.docsType === "key-features") {
     }
     if (row.indices.length) rows.push(row);
 
-    /* Tail rebalance — if partial last row leaves too much whitespace
-       (width < 70% of container), pull items from prev row and re-split
-       for visually balanced rows. */
     rebalanceTail(rows, aspects, containerWidth, GAP, targetRowHeight);
 
     rows.forEach((r) => {
@@ -528,8 +473,7 @@ if (game.docsType === "key-features") {
         ? (containerWidth - totalGap) / r.aspectSum
         : targetRowHeight;
       r.indices.forEach((idx) => {
-        const w = aspects[idx] * rowHeight;
-        items[idx].style.width = `${w}px`;
+        items[idx].style.width = `${aspects[idx] * rowHeight}px`;
         items[idx].style.height = `${rowHeight}px`;
       });
     });
@@ -537,47 +481,31 @@ if (game.docsType === "key-features") {
     container.dataset.laidOut = "true";
   }
 
-  function rebalanceTail(
-    rows: Row[],
-    aspects: number[],
-    containerWidth: number,
-    gap: number,
-    target: number,
-  ) {
+  function rebalanceTail(rows: Row[], aspects: number[], containerWidth: number, gap: number, target: number) {
     if (rows.length < 2) return;
     const last = rows[rows.length - 1];
     if (last.full) return;
 
-    /* Ideal aspect sum fills container at target height; trigger when
-       partial row's natural width (sum × target) is < 70% of container. */
     const idealAspectSum = containerWidth / target;
     if (last.aspectSum >= idealAspectSum * 0.7) return;
 
     const prev = rows[rows.length - 2];
     const combined = [...prev.indices, ...last.indices];
     const sumOf = (arr: number[]) => arr.reduce((s, idx) => s + aspects[idx], 0);
-    const heightOf = (arr: number[]) =>
-      (containerWidth - gap * (arr.length - 1)) / sumOf(arr);
+    const heightOf = (arr: number[]) => (containerWidth - gap * (arr.length - 1)) / sumOf(arr);
 
     rows.length -= 2;
 
-    /* Too few items to split into 2 rows of ≥ 2 → merge into a single full row. */
     if (combined.length <= 3) {
       rows.push({ indices: combined, aspectSum: sumOf(combined), full: true });
       return;
     }
 
-    /* Find split (k = 2…len-2) that minimizes height difference between rows. */
     let bestSplit = Math.ceil(combined.length / 2);
     let bestScore = Infinity;
     for (let k = 2; k <= combined.length - 2; k++) {
-      const r1 = combined.slice(0, k);
-      const r2 = combined.slice(k);
-      const score = Math.abs(heightOf(r1) - heightOf(r2));
-      if (score < bestScore) {
-        bestScore = score;
-        bestSplit = k;
-      }
+      const score = Math.abs(heightOf(combined.slice(0, k)) - heightOf(combined.slice(k)));
+      if (score < bestScore) { bestScore = score; bestSplit = k; }
     }
 
     const r1 = combined.slice(0, bestSplit);
@@ -588,25 +516,17 @@ if (game.docsType === "key-features") {
 
   function scheduleLayout(container: HTMLElement) {
     if (layoutRaf !== null) cancelAnimationFrame(layoutRaf);
-    layoutRaf = requestAnimationFrame(() => {
-      layoutRaf = null;
-      layoutJustifiedGallery(container);
-    });
+    layoutRaf = requestAnimationFrame(() => { layoutRaf = null; layoutJustifiedGallery(container); });
   }
 
   function initScreenshotsGallery() {
-    if (screenshotsCleanup) {
-      screenshotsCleanup();
-      screenshotsCleanup = null;
-    }
+    if (screenshotsCleanup) { screenshotsCleanup(); screenshotsCleanup = null; }
 
     const gallery = document.querySelector<HTMLElement>("#screenshots-gallery");
     if (!gallery) return;
 
-    /* Initial layout — uses fallback aspect for not-yet-loaded imgs */
     layoutJustifiedGallery(gallery);
 
-    /* Re-layout each time a lazy image finishes loading (refines row heights) */
     const imgListeners: Array<[HTMLImageElement, () => void]> = [];
     gallery.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
       if (img.complete && img.naturalWidth > 0) return;
@@ -616,37 +536,22 @@ if (game.docsType === "key-features") {
       imgListeners.push([img, onLoad]);
     });
 
-    /* Re-layout on resize (debounced via rAF) */
     const onResize = () => scheduleLayout(gallery);
     window.addEventListener("resize", onResize, { passive: true });
 
-    /* PhotoSwipe lightbox + thumbnail strip — same pattern as photography page */
-    const lightbox = new PhotoSwipeLightbox({
-      gallery,
-      children: "a",
-      pswpModule: PhotoSwipe,
-      preload: [1, 1],
-    });
+    const lightbox = new PhotoSwipeLightbox({ gallery, children: "a", pswpModule: PhotoSwipe, preload: [1, 1] });
 
     gallery.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
       const img = link.querySelector("img");
       if (!img) return;
-      const update = () => {
-        if (img.naturalWidth > 0) {
-          link.setAttribute("data-pswp-width", String(img.naturalWidth));
-          link.setAttribute("data-pswp-height", String(img.naturalHeight));
-        }
-      };
+      const update = () => { if (img.naturalWidth > 0) { link.setAttribute("data-pswp-width", String(img.naturalWidth)); link.setAttribute("data-pswp-height", String(img.naturalHeight)); } };
       if (img.complete && img.naturalWidth > 0) update();
       else img.addEventListener("load", update);
     });
 
     lightbox.addFilter("domItemData", (itemData, _el, linkEl) => {
       const img = linkEl.querySelector("img");
-      if (img && img.naturalWidth > 0) {
-        itemData.w = img.naturalWidth;
-        itemData.h = img.naturalHeight;
-      }
+      if (img && img.naturalWidth > 0) { itemData.w = img.naturalWidth; itemData.h = img.naturalHeight; }
       return itemData;
     });
 
@@ -655,18 +560,13 @@ if (game.docsType === "key-features") {
 
     screenshotsCleanup = () => {
       window.removeEventListener("resize", onResize);
-      if (layoutRaf !== null) {
-        cancelAnimationFrame(layoutRaf);
-        layoutRaf = null;
-      }
-      imgListeners.forEach(([img, fn]) => {
-        img.removeEventListener("load", fn);
-        img.removeEventListener("error", fn);
-      });
+      if (layoutRaf !== null) { cancelAnimationFrame(layoutRaf); layoutRaf = null; }
+      imgListeners.forEach(([img, fn]) => { img.removeEventListener("load", fn); img.removeEventListener("error", fn); });
       lightbox.destroy();
     };
   }
 
+  /* ── Cinematic hero scroll fade ───────────────────────────────────────── */
   function initCinematicHero() {
     const section = document.getElementById("cinematic-hero");
     const bgLayer = document.getElementById("cinematic-hero-bg");
@@ -676,74 +576,167 @@ if (game.docsType === "key-features") {
       const rect = section.getBoundingClientRect();
       const heroH = section.offsetHeight;
       const scrolledPast = Math.max(0, -rect.top);
-
-      if (rect.bottom <= 0) {
-        bgLayer.style.opacity = "0";
-      } else {
-        const fade = scrolledPast / (heroH * 0.65);
-        bgLayer.style.opacity = String(Math.max(0, 1 - fade));
-      }
+      bgLayer.style.opacity = rect.bottom <= 0 ? "0" : String(Math.max(0, 1 - scrolledPast / (heroH * 0.65)));
     }
 
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update, { passive: true });
     update();
 
-    document.addEventListener(
-      "astro:before-preparation",
-      () => {
-        window.removeEventListener("scroll", update);
-        window.removeEventListener("resize", update);
-        bgLayer.style.opacity = "1";
+    document.addEventListener("astro:before-preparation", () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+      bgLayer.style.opacity = "1";
+    }, { once: true });
+  }
+
+  /* ── Right floating TOC scrollspy ────────────────────────────────────── */
+  function initToc() {
+    const toc = document.getElementById("inline-toc");
+    if (!toc) return;
+
+    const tocLinks = Array.from(toc.querySelectorAll<HTMLAnchorElement>("[data-toc-slug]"));
+    if (!tocLinks.length) return;
+
+    /* Fade in after hero scrolled past */
+    const hero = document.getElementById("cinematic-hero");
+    const onScroll = () => {
+      const threshold = (hero?.offsetHeight ?? 200) * 0.8;
+      toc.classList.toggle("toc-visible", window.scrollY > threshold);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    /* Scrollspy via IntersectionObserver */
+    const contentEl = document.getElementById("key-features-content");
+    const headings = contentEl
+      ? Array.from(contentEl.querySelectorAll<HTMLElement>("h2, h3"))
+      : [];
+
+    const setActive = (slug: string) => {
+      tocLinks.forEach(link => link.classList.toggle("toc-active", link.dataset.tocSlug === slug));
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) { setActive(entry.target.id); break; }
+        }
       },
-      { once: true }
+      { rootMargin: "-80px 0px -55% 0px" }
     );
+    headings.forEach(h => observer.observe(h));
+
+    document.addEventListener("astro:before-swap", () => {
+      window.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+    }, { once: true });
   }
 
   initCinematicHero();
   document.addEventListener("astro:page-load", initCinematicHero);
 
   initScreenshotsGallery();
-  document.addEventListener("astro:after-swap", initScreenshotsGallery);
+  initToc();
+  document.addEventListener("astro:after-swap", () => {
+    initScreenshotsGallery();
+    initToc();
+  });
   document.addEventListener("astro:before-swap", () => {
-    if (screenshotsCleanup) {
-      screenshotsCleanup();
-      screenshotsCleanup = null;
-    }
+    if (screenshotsCleanup) { screenshotsCleanup(); screenshotsCleanup = null; }
   });
 </script>
 
 <style is:global>
-  /* Tag cloud container — SSR fallback uses flex-wrap so chips render before JS hydrates */
+  /* Tag cloud SSR fallback */
   .tag-cloud:not([data-laid-out]) {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.75rem 0.875rem;
   }
-  /* Once JS lays chips out, fade-in to mask the reflow from flex-wrap → absolute */
   .tag-cloud[data-laid-out] [data-chip] {
     opacity: 0;
     transition: opacity 0.35s ease-out;
   }
 
-  /* Justified gallery — Flickr-style row layout. JS sets each <a>'s width/height
-     so each row exactly fills container width while preserving each image's
-     natural aspect ratio (no cropping, no gaps). Hidden until JS lays out. */
-  .justified-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+  /* Justified gallery */
+  .justified-gallery { display: flex; flex-wrap: wrap; gap: 12px; }
+  .justified-gallery > a { flex: 0 0 auto; display: block; }
+  .justified-gallery:not([data-laid-out]) > a { opacity: 0; }
+  .justified-gallery[data-laid-out] > a { opacity: 1; transition: opacity 0.3s ease-out; }
+
+  /* Headings inside inline-features content need scroll-margin for fixed navbar */
+  #key-features-content h2,
+  #key-features-content h3 {
+    scroll-margin-top: 5.5rem;
   }
-  .justified-gallery > a {
-    flex: 0 0 auto;
-    display: block;
-  }
-  .justified-gallery:not([data-laid-out]) > a {
+
+  /* Right floating TOC */
+  #inline-toc {
+    display: none;
+    position: fixed;
+    top: 5.5rem;
+    right: max(0px, calc((100vw - 90rem) / 2 - 11rem));
+    width: 10.5rem;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    padding: 0.875rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+    backdrop-filter: blur(12px);
     opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 40;
   }
-  .justified-gallery[data-laid-out] > a {
+  @media (min-width: 108rem) {
+    #inline-toc { display: block; }
+  }
+  #inline-toc.toc-visible {
     opacity: 1;
-    transition: opacity 0.3s ease-out;
+    pointer-events: auto;
+  }
+  #inline-toc .toc-heading {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 0.625rem;
+  }
+  #inline-toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--color-border);
+  }
+  #inline-toc li { margin: 0; }
+  #inline-toc .toc-link {
+    display: block;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    margin-left: -1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  #inline-toc .toc-sub .toc-link {
+    padding-left: 1.125rem;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+  }
+  #inline-toc .toc-link:hover {
+    color: var(--color-text);
+    border-left-color: var(--color-border-strong);
+  }
+  #inline-toc .toc-link.toc-active {
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+    font-weight: 600;
   }
 </style>

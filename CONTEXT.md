@@ -237,6 +237,7 @@
 | 196 | 游戏画廊 Justified Gallery（Flickr 风格） | **算法**：贪心装行 — 累加 item aspect 直到 projectedHeight ≤ targetRowHeight 关闭该行；行高 `(W - gaps) / aspectSum` 精确填满容器；每个 `<a>` 设 `width = aspect × rowHeight, height = rowHeight`，与图片自然比例严格匹配 → `object-cover` 不裁切。**末行 rebalance**：partial row 自然宽度 < 容器 70% 时触发，pop 末两行合并 + 二分搜索最优拆点（让 h1 与 h2 高度差最小，两行各 ≥ 2 张）；合并后 ≤3 张则压成单行 stretch — 杜绝 4-4-1 类孤儿行。**响应**：targetRowHeight mobile 160 / tablet 200 / desktop 240px；lazy img onload + resize 双向 rAF debounced 重排；SSR `opacity:0` → JS layout 完 `[data-laid-out]` fade-in；`astro:before-swap` 清理 resize/raf/img listeners/lightbox |
 | 197 | 游戏详情页 h2 字号 + legend 清理 | 「截图」`text-lg` → `text-2xl md:text-3xl font-bold`；「项目详情」`text-xl` → `text-2xl md:text-3xl font-bold`，与字号规范及主页 Featured Games h2 一致；移除「我学到了什么？」上方三色 legend（chip 颜色已足够区分类别）；清理 `categoriesPresent` / `legendItems` 死代码 |
 | 198 | KEY FEATURES 架构方案决策（方案 B） | 经 A/B/C/D 四方案对比，最终选定**方案 B**：MDX 移到独立 `inline-features` collection（Starlight 不索引）+ 通过 `GameInlineFeatures` 组件 inline 渲染到游戏详情页。SEO 单一 URL；/docs/ 系统专门服务 echo-quest 长篇技术文档。MDX 编辑体验保留 + 新增 `<TextImage>` `<ImageRow>` `<ImageGrid>` 组件库。组件化封装保留可逆路径（未来若要恢复 Docs 全套效果，可写 thin proxy + TOC 提取工具，4-6 小时）。完整执行计划见 [MIGRATION_PLAN.md](MIGRATION_PLAN.md)。决策依据：echo-quest（30000 字技术教学）与 10 个 key-features（1000-2000 字项目讲解）存在内容性质差异。原站 the-scholars-side-quest HTML 已下载到本地 `C:\Users\wangyoubin\Desktop\youbinwang Site\Game Projects\`，~80 张图可直接复用，可自动生成第一版 MDX |
+| 199 | Phase 1 — inline-features 基础架构完成 | **1.1** `content.config.ts` 新增 `inline-features` collection（glob loader，schema: title + description?）+ `src/content/inline-features/` 目录（中英各 10 个占位 MDX）。**1.2** `src/components/games/GameInlineFeatures.astro`：接收 `Content` prop，通过 `<Content components={{ TextImage, ImageRow, ImageGrid }} />` 全局注入 MDX layout 组件。**1.3** `src/components/mdx/` 新建三个 layout 组件：`TextImage.astro`（左文右图/左图右文）、`ImageRow.astro`（横排等高图组）、`ImageGrid.astro`（2-4 列网格）。**1.4** `[slug].astro` 重构：数据源 `getEntry('docs',...)` → `getEntry('inline-features',...)`；布局顺序 Detail double → KEY FEATURES → 截图（移至最后）；右侧浮动 TOC（position:fixed，108rem+ 显示，IntersectionObserver scrollspy，橙色高亮 active 项）。**1.5** `/docs/` 落地页精简为仅 echo-quest；物理删除 docs/docs/ + docs/en/docs/ 各 10 个旧 MDX 文件（共 20 个）。**1.6** `astro.config.mjs` sidebar 仅保留 Docs Home + Echo Quest 7 条。**1.7** `_redirects` 新增 10 条 301（旧 /docs/{slug} → /games/{slug}/）。**1.8** 构建验证：**71 页，零错误**（91 - 20 = 71，符合预期） |
 
 ---
 
@@ -318,10 +319,10 @@
 | # | 待办 | 状态 | 备注 |
 |---|---|---|---|
 | A1 | /games 页布局优化 | ✅ 完成 | — |
-| A2 | games 详情页布局重新设计 | ⏳ 进行中 | hero 下方双栏 + 标签云 + Justified Gallery + h2 字号修复已完成；KEY FEATURES 重构与 TOC 见 B1 |
+| A2 | games 详情页布局重新设计 | ✅ 完成 | hero 下方双栏 + 标签云 + Justified Gallery + KEY FEATURES 重构 + 右侧浮动 TOC |
 | A3 | echo-quest / elemental-realm / scholars hero 图本地化 | ✅ 完成 | 三个项目 hero 均已本地化 |
 | A4 | 11 个游戏 gallery 截图填充 | ✅ 完成 | echo-quest(26张) + elemental-realm(24张) 今日补全；其余 9 个游戏已完成 |
-| **B1** | **Phase 1 — 基础架构（inline-features collection + GameInlineFeatures wrapper + 3 个 MDX layout 组件 + [slug].astro 顺序调整 + 右侧 TOC + /docs/ 落地页清理 + sidebar 清理 + _redirects）** | ⏳ 待做 | 详见 MIGRATION_PLAN.md Phase 1，~3 小时 |
+| **B1** | **Phase 1 — 基础架构** | ✅ 完成 | 详见下方 Phase 1 完成记录 |
 | **B2** | **Phase 2 — 10 个项目 MDX 内容迁移（每个项目 1-2 小时）** | ⏳ 待做 | 优先 the-scholars-side-quest 试点（HTML 已解析）；其余按内容丰富度排序 |
 | **B3** | **Phase 3 — 全站构建验证 + 中英文文案核对 + SEO 检查** | ⏳ 待做 | B2 完成后 |
 | A6 | 部署（Cloudflare Pages） | ⏳ B3 后 | sitemap 已有 `@astrojs/sitemap` |

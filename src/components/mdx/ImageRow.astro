@@ -1,0 +1,32 @@
+---
+/**
+ * MDX layout: 2–4 images in a horizontal row, equal height, no cropping.
+ */
+interface Props {
+  images: string[];
+  alts?: string[];
+  caption?: string;
+}
+
+const { images, alts = [], caption } = Astro.props;
+---
+
+<figure class="not-prose my-8">
+  <div class="flex gap-3 items-stretch">
+    {images.map((src, i) => (
+      <div class="flex-1 min-w-0 overflow-hidden rounded-lg">
+        <img
+          src={src}
+          alt={alts[i] ?? ''}
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    ))}
+  </div>
+  {caption && (
+    <figcaption class="mt-2 text-xs text-center text-[var(--color-text-muted)]">
+      {caption}
+    </figcaption>
+  )}
+</figure>

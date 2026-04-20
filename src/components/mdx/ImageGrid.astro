@@ -1,0 +1,40 @@
+---
+/**
+ * MDX layout: image grid with 2–4 columns.
+ * Mobile always collapses to 2 columns (or 1 for columns=2 on very small screens).
+ */
+interface Props {
+  images: string[];
+  columns?: 2 | 3 | 4;
+  alts?: string[];
+  caption?: string;
+}
+
+const { images, columns = 2, alts = [], caption } = Astro.props;
+
+const gridClass: Record<number, string> = {
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-2 sm:grid-cols-3',
+  4: 'grid-cols-2 sm:grid-cols-4',
+};
+---
+
+<figure class="not-prose my-8">
+  <div class={`grid gap-3 ${gridClass[columns]}`}>
+    {images.map((src, i) => (
+      <div class="overflow-hidden rounded-lg">
+        <img
+          src={src}
+          alt={alts[i] ?? ''}
+          class="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    ))}
+  </div>
+  {caption && (
+    <figcaption class="mt-2 text-xs text-center text-[var(--color-text-muted)]">
+      {caption}
+    </figcaption>
+  )}
+</figure>

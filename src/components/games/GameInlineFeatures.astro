@@ -1,0 +1,37 @@
+---
+/**
+ * Renders an inline-features MDX entry with layout components auto-injected.
+ * The parent ([slug].astro) calls render() to get Content + headings;
+ * Content is passed here so headings remain available to the parent for TOC.
+ */
+import TextImage from '../mdx/TextImage.astro';
+import ImageRow from '../mdx/ImageRow.astro';
+import ImageGrid from '../mdx/ImageGrid.astro';
+
+interface Props {
+  Content: any;
+}
+
+const { Content } = Astro.props;
+---
+
+{Content && (
+  <div
+    class="
+      prose prose-sm sm:prose-base max-w-none
+      prose-headings:text-[var(--color-text)] prose-headings:font-semibold
+      prose-h1:text-2xl prose-h1:mt-0 prose-h1:mb-6
+      prose-h2:text-xl prose-h2:mt-12 prose-h2:mb-4
+      prose-h2:border-b prose-h2:border-[var(--color-border)] prose-h2:pb-2
+      prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
+      prose-p:text-[var(--color-text-secondary)] prose-p:leading-relaxed
+      prose-strong:text-[var(--color-text)]
+      prose-a:text-[var(--color-accent)] hover:prose-a:underline
+      prose-li:text-[var(--color-text-secondary)]
+      prose-ul:my-3 prose-ol:my-3
+      prose-img:rounded-lg prose-img:my-4
+    "
+  >
+    <Content components={{ TextImage, ImageRow, ImageGrid }} />
+  </div>
+)}

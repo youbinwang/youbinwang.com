@@ -8,3 +8,14 @@
 /photography  /photography/   301
 /work-experiences    /experience/           301
 /work-experiences/*  /experience/:splat     301
+
+/docs/the-scholars-side-quest    /games/the-scholars-side-quest/    301
+/docs/elemental-realm            /games/elemental-realm/            301
+/docs/on-the-road                /games/on-the-road/                301
+/docs/shepherds                  /games/shepherds/                  301
+/docs/the-camera                 /games/the-camera/                 301
+/docs/aid-master                 /games/aid-master/                 301
+/docs/baihua-pavilion            /games/baihua-pavilion/            301
+/docs/greedy-roots               /games/greedy-roots/               301
+/docs/elliot-fig                 /games/elliot-fig/                 301
+/docs/stars-chat                 /games/stars-chat/                 301
