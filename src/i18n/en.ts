@@ -38,6 +38,7 @@ const en = {
 
   // Films
   'films.title': 'Films',
+  'film.backToFilms': 'Back to Films',
 
   // Photography
   'photography.title': 'Photography',

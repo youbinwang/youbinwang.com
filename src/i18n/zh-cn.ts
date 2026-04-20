@@ -38,6 +38,7 @@ const zhCN = {
 
   // Films
   'films.title': '电影作品',
+  'film.backToFilms': '返回电影列表',
 
   // Photography
   'photography.title': '摄影',

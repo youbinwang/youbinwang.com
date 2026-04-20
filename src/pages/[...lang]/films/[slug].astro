@@ -7,7 +7,7 @@
 import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
 import { getLangFromSlug, t, getLocalizedPath, ui } from "../../../i18n";
-import { films, getFilmsByOrder } from "../../../data/films";
+import { films } from "../../../data/films";
 
 export function getStaticPaths() {
   const paths = [];
@@ -25,12 +25,6 @@ const { film } = Astro.props;
 const lang = getLangFromSlug(Astro.params.lang);
 const title = t(film.title, lang);
 const titleEN = t(film.title, "en");
-
-/* ── Prev / Next navigation ── */
-const ordered = getFilmsByOrder();
-const currentIndex = ordered.findIndex((f) => f.slug === film.slug);
-const prevFilm = currentIndex > 0 ? ordered[currentIndex - 1] : null;
-const nextFilm = currentIndex < ordered.length - 1 ? ordered[currentIndex + 1] : null;
 
 /* ── Poster orientation — portrait posters stay narrow, landscape gets wider ── */
 const isPortraitPoster = film.slug === 'fibonacci';
@@ -74,7 +68,7 @@ const isPortraitPoster = film.slug === 'fibonacci';
   </section>
 
   <div class="relative z-10 bg-[var(--color-bg)]">
-  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 space-y-16">
+  <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 space-y-10">
     {/* ═══════ Poster + Description two-column ═══════ */}
     <section class="flex flex-col md:flex-row gap-8 md:gap-12 items-start">
       {/* Poster + metadata — sticky so it stays visible while scrolling long descriptions */}
@@ -157,36 +151,18 @@ const isPortraitPoster = film.slug === 'fibonacci';
       </section>
     )}
 
-    {/* ═══════ Prev / Next navigation ═══════ */}
-    <nav class="flex items-center justify-between pt-8">
-      {prevFilm ? (
-        <a
-          href={getLocalizedPath(`/films/${prevFilm.slug}/`, lang)}
-          class="group flex items-center gap-2 text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
-        >
-          <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span class="text-lg md:text-xl italic">{t(prevFilm.title, lang)}</span>
-        </a>
-      ) : (
-        <div />
-      )}
-
-      {nextFilm ? (
-        <a
-          href={getLocalizedPath(`/films/${nextFilm.slug}/`, lang)}
-          class="group flex items-center gap-2 text-[var(--color-text)] hover:text-[var(--color-accent)] transition-colors"
-        >
-          <span class="text-lg md:text-xl italic">{t(nextFilm.title, lang)}</span>
-          <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
-      ) : (
-        <div />
-      )}
-    </nav>
+    {/* ═══════ Back to films ═══════ */}
+    <div class="pt-4">
+      <a
+        href={getLocalizedPath('/films/', lang)}
+        class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        {ui('film.backToFilms', lang)}
+      </a>
+    </div>
   </div>
   </div>
 </BaseLayout>
