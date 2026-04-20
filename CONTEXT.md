@@ -235,6 +235,8 @@
 | 194 | Header 语言切换等宽修复 | Navbar `langSwitch` 加 `min-w-[3.25rem] text-center`；Starlight Header `.docs-lang-switch` 同步 min-width 3.25rem + text-align center — 消除 EN（窄）/ 中文（宽）切换时整组导航因总宽变化而左右偏移的视觉错位 |
 | 195 | 游戏详情页画廊统一交互 | 移除 React `<ImageGallery>` Island，改 Astro 原生 markup，与摄影/海报/电影详情页同款 hover：`scale-[1.03]` + `bg-black/35` 遮罩 + 居中放大镜 SVG（400ms）；PhotoSwipe + `addThumbnailStrip` 缩略图条；遵循 graphic-design 模板的 init/cleanup 模式 |
 | 196 | 游戏画廊 Justified Gallery（Flickr 风格） | **算法**：贪心装行 — 累加 item aspect 直到 projectedHeight ≤ targetRowHeight 关闭该行；行高 `(W - gaps) / aspectSum` 精确填满容器；每个 `<a>` 设 `width = aspect × rowHeight, height = rowHeight`，与图片自然比例严格匹配 → `object-cover` 不裁切。**末行 rebalance**：partial row 自然宽度 < 容器 70% 时触发，pop 末两行合并 + 二分搜索最优拆点（让 h1 与 h2 高度差最小，两行各 ≥ 2 张）；合并后 ≤3 张则压成单行 stretch — 杜绝 4-4-1 类孤儿行。**响应**：targetRowHeight mobile 160 / tablet 200 / desktop 240px；lazy img onload + resize 双向 rAF debounced 重排；SSR `opacity:0` → JS layout 完 `[data-laid-out]` fade-in；`astro:before-swap` 清理 resize/raf/img listeners/lightbox |
+| 197 | 游戏详情页 h2 字号 + legend 清理 | 「截图」`text-lg` → `text-2xl md:text-3xl font-bold`；「项目详情」`text-xl` → `text-2xl md:text-3xl font-bold`，与字号规范及主页 Featured Games h2 一致；移除「我学到了什么？」上方三色 legend（chip 颜色已足够区分类别）；清理 `categoriesPresent` / `legendItems` 死代码 |
+| 198 | KEY FEATURES 架构方案决策（方案 B） | 经 A/B/C/D 四方案对比，最终选定**方案 B**：MDX 移到独立 `inline-features` collection（Starlight 不索引）+ 通过 `GameInlineFeatures` 组件 inline 渲染到游戏详情页。SEO 单一 URL；/docs/ 系统专门服务 echo-quest 长篇技术文档。MDX 编辑体验保留 + 新增 `<TextImage>` `<ImageRow>` `<ImageGrid>` 组件库。组件化封装保留可逆路径（未来若要恢复 Docs 全套效果，可写 thin proxy + TOC 提取工具，4-6 小时）。完整执行计划见 [MIGRATION_PLAN.md](MIGRATION_PLAN.md)。决策依据：echo-quest（30000 字技术教学）与 10 个 key-features（1000-2000 字项目讲解）存在内容性质差异。原站 the-scholars-side-quest HTML 已下载到本地 `C:\Users\wangyoubin\Desktop\youbinwang Site\Game Projects\`，~80 张图可直接复用，可自动生成第一版 MDX |
 
 ---
 
@@ -310,15 +312,19 @@
 
 ## 六、待办事项（按优先级）
 
+> **📋 重要**：A5 / A5b / A2-后续 已重组为「方案 B：MDX 迁移规划」，详见 [MIGRATION_PLAN.md](MIGRATION_PLAN.md)。
+> 该方案 2026-04-20 决策选定，包含完整 Phase 1 / 2 / 3 步骤、可逆性保障与回滚策略。
+
 | # | 待办 | 状态 | 备注 |
 |---|---|---|---|
 | A1 | /games 页布局优化 | ✅ 完成 | — |
-| A2 | games 详情页布局重新设计 | ⏳ 待做 | — |
+| A2 | games 详情页布局重新设计 | ⏳ 进行中 | hero 下方双栏 + 标签云 + Justified Gallery + h2 字号修复已完成；KEY FEATURES 重构与 TOC 见 B1 |
 | A3 | echo-quest / elemental-realm / scholars hero 图本地化 | ✅ 完成 | 三个项目 hero 均已本地化 |
 | A4 | 11 个游戏 gallery 截图填充 | ✅ 完成 | echo-quest(26张) + elemental-realm(24张) 今日补全；其余 9 个游戏已完成 |
-| A5 | 10 个 Key Features MDX 内容迁移 | ⏳ 待做 | Squarespace JS 渲染，需手动迁移文案 |
-| A5b | 文档页修复与优化 | ⏳ 待做 | 与 A5 内容迁移同步推进，迁移完再做整体视觉打磨 |
-| A6 | 部署（Cloudflare Pages） | ⏳ 待做 | sitemap 已有 `@astrojs/sitemap` |
+| **B1** | **Phase 1 — 基础架构（inline-features collection + GameInlineFeatures wrapper + 3 个 MDX layout 组件 + [slug].astro 顺序调整 + 右侧 TOC + /docs/ 落地页清理 + sidebar 清理 + _redirects）** | ⏳ 待做 | 详见 MIGRATION_PLAN.md Phase 1，~3 小时 |
+| **B2** | **Phase 2 — 10 个项目 MDX 内容迁移（每个项目 1-2 小时）** | ⏳ 待做 | 优先 the-scholars-side-quest 试点（HTML 已解析）；其余按内容丰富度排序 |
+| **B3** | **Phase 3 — 全站构建验证 + 中英文文案核对 + SEO 检查** | ⏳ 待做 | B2 完成后 |
+| A6 | 部署（Cloudflare Pages） | ⏳ B3 后 | sitemap 已有 `@astrojs/sitemap` |
 | A7 | 工作经历内容填充 | ⏳ 部署后 | responsibilities 全空，coverImage 为 placeholder |
 
 ### 游戏图片命名规范（hero / gallery）

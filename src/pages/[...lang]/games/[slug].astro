@@ -87,16 +87,6 @@ const chipColor = (cat: FlatChip['category']) => {
   }
 };
 
-/** Legend — only show categories actually present in the chips */
-const categoriesPresent = new Set(flatChips.map((c) => c.category));
-const legendItems = (
-  [
-    { key: 'tools' as const,  cn: '工具', en: 'Tools',       dot: 'bg-[var(--color-chip-tools)]' },
-    { key: 'skills' as const, cn: '设计能力', en: 'Skills',      dot: 'bg-[var(--color-chip-skills)]' },
-    { key: 'soft' as const,   cn: '软实力',   en: 'Soft Skills', dot: 'bg-[var(--color-chip-soft)]' },
-  ]
-).filter((item) => categoriesPresent.has(item.key));
-
 /* ── Docs: tech-docs → CTA, key-features → inline MDX ── */
 const techDocsHref =
   game.docsType === "tech-docs"
@@ -295,16 +285,6 @@ if (game.docsType === "key-features") {
                 <h2 class="text-sm uppercase tracking-[0.2em] text-[var(--color-text-secondary)] font-semibold pb-3 mb-5 border-b border-[var(--color-border)]">
                   {lang === 'zh-cn' ? '我学到了什么？' : 'What I Learned From This Project?'}
                 </h2>
-                {legendItems.length > 0 && (
-                  <div class="flex flex-wrap gap-x-4 gap-y-2 mb-5">
-                    {legendItems.map((item) => (
-                      <span class="inline-flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
-                        <span class={`w-2 h-2 rounded-full ${item.dot}`} aria-hidden="true"></span>
-                        {lang === 'zh-cn' ? item.cn : item.en}
-                      </span>
-                    ))}
-                  </div>
-                )}
                 <div data-tag-cloud class="tag-cloud relative">
                   {flatChips.map(({ word, emphasis, italic, category }) => (
                     <span
@@ -348,7 +328,7 @@ if (game.docsType === "key-features") {
     {
       game.gallery.length > 0 && (
         <section>
-          <h2 class="text-lg font-semibold text-[var(--color-text)] mb-4">
+          <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
             {game.slug === "elemental-realm"
               ? lang === "zh-cn"
                 ? "设计文档"
@@ -403,7 +383,7 @@ if (game.docsType === "key-features") {
       techDocsHref && (
         <section>
           <hr class="border-[var(--color-border)] mb-8" />
-          <h2 class="text-xl font-semibold text-[var(--color-text)] mb-4">
+          <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
             {ui('game.projectDetails', lang)}
           </h2>
           <p class="text-[var(--color-text-secondary)] text-sm mb-6">

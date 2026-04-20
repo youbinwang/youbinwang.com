@@ -14,7 +14,10 @@ Youbin Wang 的个人作品集网站，基于 Astro + Starlight + Cloudflare Pag
 ### 双轨结构
 
 - **自定义 Astro 页面**：所有视觉展示页（首页、列表、概览、画廊）
-- **Starlight 文档**（`/docs/` 前缀）：游戏项目的技术/特性文档（侧边栏、TOC、搜索）
+- **Starlight 文档**（`/docs/` 前缀）：仅服务**长篇深度技术文档**（当前只有 echo-quest 6 章），享受侧边栏 / TOC / 搜索全套
+- **inline-features collection**（独立于 Starlight）：10 个非 echo-quest 游戏项目的 KEY FEATURES MDX 内容，仅供 `/games/{slug}/` 详情页 inline 渲染，**不暴露独立 URL**
+
+> **历史**：原先所有项目都在 `docs` collection（同时暴露 `/docs/{slug}/` 和 inline 嵌入到 `/games/{slug}/`），导致 SEO 双地址 + 定位混乱。重构方案与执行细节见 [MIGRATION_PLAN.md](MIGRATION_PLAN.md)。
 
 ### i18n 方案
 
@@ -43,20 +46,33 @@ Youbin Wang 的个人作品集网站，基于 Astro + Starlight + Cloudflare Pag
 
 ### 游戏项目详情页布局
 
-从上到下：Hero（4 Tags + 标题）→ 视频 → 信息卡片（5列）→ 简介 → 外部链接 → 截图 → 项目详情
+从上到下：Hero（4 Tags + 标题）→ 项目档案（视频 + 描述 + Meta + Buttons）→ 标签云 + 主要贡献 → **KEY FEATURES (inline MDX，含 layout 组件，右侧浮动 TOC)** → 截图画廊（最后）
 
 项目详情的双轨逻辑：
 
 | 类型 | 说明 | 当前项目 | 行为 |
 |---|---|---|---|
-| Tech Docs | 多页 Starlight 文档 | Echo Quest（6 章，中文已填充） | CTA 按钮跳转到 Starlight |
-| Key Features | 内联 MDX 内容 | 其余 10 个游戏 | 分割线后直接渲染 MDX 内容（无跳转） |
+| Tech Docs | 多页 Starlight 文档（独立 URL）| Echo Quest（6 章，中文已填充）| 详情页 CTA 按钮跳转到 `/docs/echo-quest/` |
+| Inline Features | 单页 MDX 内联渲染（无独立 URL）| 其余 10 个游戏 | KEY FEATURES 区域直接渲染 inline-features MDX，配合右侧浮动 TOC |
+
+### MDX layout 组件库（`src/components/mdx/`）
+
+为 inline-features MDX 提供图文混排能力。全局自动注入到 MDX 文件，无需手动 import：
+
+| 组件 | 用途 |
+|---|---|
+| `<TextImage>` | 左文右图 / 左图右文（参数 `align="left" \| "right"`） |
+| `<ImageRow>` | 横排图组（2-4 张并列等高） |
+| `<ImageGrid>` | 网格图组（参数 `columns: 2 \| 3 \| 4`） |
 
 ### 文档系统（`/docs/` 前缀）
 
-- 所有文档 URL 统一在 `/docs/` 下
-- `/docs/` 落地页：分类卡片网格展示所有项目文档
-- 侧边栏智能过滤：只显示「Docs Home」+ 当前项目的页面
+- 仅服务长篇深度技术文档（当前只有 echo-quest）
+- `/docs/` 落地页：仅展示 echo-quest 概览卡片
+- 侧边栏：仅 echo-quest 6 章 + Docs Home
+- 搜索：Pagefind 自动索引（仅 docs collection 内容）
+
+> 历史：旧版 `/docs/{slug}/` URL 已通过 `_redirects` 301 跳转到 `/games/{slug}/`
 
 ---
 
@@ -114,16 +130,26 @@ src/
 │   │   ├── PageHeader.astro      # Other Works 页统一页头（Music/Photography/Graphic Design）
 │   │   ├── ImageGallery.tsx      # PhotoSwipe 5 砖石/网格 + Lightbox
 │   │   └── ImageCarousel.tsx     # Swiper 11 轮播 + 缩略图
+│   ├── games/
+│   │   └── GameInlineFeatures.astro  # Wrapper：读取 inline-features collection 并渲染（含 headings 暴露给 TOC）
+│   ├── mdx/                      # MDX layout 组件库（全局自动注入到所有 MDX 文件）
+│   │   ├── TextImage.astro       # 左文右图 / 左图右文
+│   │   ├── ImageRow.astro        # 横排图组（2-4 张并列等高）
+│   │   └── ImageGrid.astro       # 网格图组
 │   └── starlight/
 │       ├── Head.astro            # 覆盖 Starlight Head：注入 ClientRouter + 主题修正
 │       ├── Header.astro          # 覆盖 Starlight 导航统一风格
 │       └── Sidebar.astro         # 自定义侧边栏（智能过滤当前项目）
-├── content/docs/
-│   ├── docs/                     # ← 中文文档（/docs/ URL 前缀）
-│   │   ├── index.mdx             # Docs 落地页
-│   │   ├── echo-quest/           # Tech Docs（index + 6 章 MDX）
-│   │   └── {slug}.mdx            # Key Features × 10（每个游戏一个）
-│   └── en/docs/                  # 英文版镜像（结构相同）
+├── content/
+│   ├── docs/
+│   │   ├── docs/                 # ← 中文文档（/docs/ URL 前缀，仅 echo-quest）
+│   │   │   ├── index.mdx         # Docs 落地页（仅 echo-quest 卡片）
+│   │   │   └── echo-quest/       # Tech Docs（index + 6 章 MDX）
+│   │   └── en/docs/              # 英文版镜像
+│   └── inline-features/          # ← 10 个游戏的 KEY FEATURES MDX（不暴露独立 URL）
+│       ├── {slug}.mdx            # 中文版 × 10
+│       └── en/                   # 英文版镜像
+│           └── {slug}.mdx
 ├── pages/[...lang]/
 │   ├── index.astro               # 首页（transparentNav）
 │   ├── games/index.astro         # 游戏列表
