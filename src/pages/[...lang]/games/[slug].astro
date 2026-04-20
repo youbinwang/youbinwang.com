@@ -301,11 +301,14 @@ const showToc = tocItems.length >= 3;
     {/* ═══════ KEY FEATURES — inline MDX (key-features) or CTA (tech-docs) ═══════ */}
     {(InlineContent || techDocsHref) && (
       <section>
-        <hr class="border-[var(--color-border)] mb-10" />
+        <hr class="border-[var(--color-border)] mb-8" />
 
         {/* Inline MDX content */}
         {InlineContent && (
           <div id="key-features-content">
+            <h2 class="text-2xl md:text-3xl font-bold text-[var(--color-text)] mb-6">
+              {ui('game.keyFeatures', lang)}
+            </h2>
             <GameInlineFeatures Content={InlineContent} />
           </div>
         )}

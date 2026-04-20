@@ -34,6 +34,7 @@ const en = {
   'game.designDocs': 'Design Docs',
   'game.screenshots': 'Screenshots',
   'game.projectDetails': 'Project Details',
+  'game.keyFeatures': 'Key Features',
   'game.backToGames': 'Back to Games',
 
   // Films

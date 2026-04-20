@@ -34,6 +34,7 @@ const zhCN = {
   'game.designDocs': '设计文档',
   'game.screenshots': '截图',
   'game.projectDetails': '项目详情',
+  'game.keyFeatures': '核心特性',
   'game.backToGames': '返回游戏列表',
 
   // Films

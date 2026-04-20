@@ -179,6 +179,9 @@ src/
 | **Page title**（无 Hero，无 section） | `text-3xl` | `text-3xl` | 独立页面标题（About、Experience 等，页内无 h2） |
 | **Section heading（h2）** | `text-2xl` | `md:text-3xl` | 页面内分区标题（Games、Music Production 等） |
 | **Item heading（h3）** | `text-lg` | `md:text-xl` | 卡片/条目/曲目标题 |
+| **MDX h2**（inline-features 内） | `text-xl` | `md:text-2xl` | KEY FEATURES section 内的子标题（如「角色与叙事」），**比 Section h2 小一级** |
+| **MDX h3**（inline-features 内） | `text-lg` | `text-lg` | MDX 内三级标题 |
+| **MDX h4**（inline-features 内） | `text-base font-semibold` | 同左 | MDX 内四级标题 |
 | **Body** | `text-base` | `text-base` | 正文描述、段落 |
 | **Caption / Meta** | `text-sm` | `text-sm` | 标签、元信息、辅助说明 |
 
@@ -187,6 +190,7 @@ src/
 - h2 与 h3 之间至少保持一级差距（避免两者在同一断点下字号相同）。
 - 当页面同时有 Page title 和 Section h2 时，Page title 必须用 **PageHeader** 层级（`text-4xl md:text-5xl`）而非普通 `text-3xl`，否则桌面端两者字号相同，层级消失。
 - PageHeader 与 Section h2 的字号比约 **1.5～1.6×**（桌面 48px vs 30px），符合排版层级规范。
+- **MDX h2 必须比页面 Section h2 小一级**（桌面 24px vs 30px）。原因：游戏详情页的 Key Features 已经是一个 Section（用 page h2 「核心特性」标识），MDX 里的 h2 是它的子层级，与 page 的 h3 同级。在 [GameInlineFeatures.astro](src/components/games/GameInlineFeatures.astro) 中通过 `prose-h2:text-xl prose-h2:md:text-2xl` 强制覆盖 prose 默认值。
 
 ---
 
