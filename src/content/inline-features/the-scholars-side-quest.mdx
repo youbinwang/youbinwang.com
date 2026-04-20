@@ -1,3 +1,138 @@
 ---
-title: The Scholar's Side Quest — Key Features
+title: 信镇书生支线任务 — 核心设计亮点
 ---
+
+## 角色与叙事设计
+
+任务以虚构的**信镇**为舞台，玩家操控冥王之子「魂」，在充满幻象迷雾的小镇中探查真相、完成支线委托。我主导撰写了 17 页叙事剧本，设计了 5 名关键 NPC 的性格弧与对话逻辑，并通过任务触发器将剧情推进与场景解锁紧密绑定。
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/character-hun.png',
+  '/images/games/the-scholars-side-quest/features/character-lian.png',
+  '/images/games/the-scholars-side-quest/features/character-scholar.png',
+  '/images/games/the-scholars-side-quest/features/character-xia.png',
+]} alts={['主角 魂', '李安', '吕传', '夏将军']} caption="五位关键角色原画（左起：魂、李安、吕传、夏将军）" />
+
+| 角色 | 身份 | 设计核心 |
+|---|---|---|
+| **魂** | 冥王之子，顶级剑客 | 主角，战斗风格强调力量与速度 |
+| **李安** | 隐门幻术师之女，患有遗忘症 | 关键线索携带者，触发核心任务 |
+| **吕传（书生）** | 官家之子，热爱写作 | 提供任务委托，推动主线 |
+| **夏将军** | 曾经的朝廷大将，被幻象所困 | BOSS 战前置 NPC，揭示世界背景 |
+| **翠云（侍女）** | 吕传家的侍女 | 辅助 NPC，传递信息线索 |
+
+<TextImage image="/images/games/the-scholars-side-quest/features/story-plot-narrative.png" alt="故事结构与叙事流程图" align="right">
+
+### 叙事结构
+
+剧情流程采用**三幕式推进**：第一幕"进镇探秘"（收集线索 + 角色认识），第二幕"解开幻象"（破解 NPC 的幻术锁链），第三幕"真相揭露"（Boss 战 + 结局过场）。每段对话触发后，系统自动播放对应的动画过场，保持剧情节奏连贯。
+
+</TextImage>
+
+---
+
+## 任务流程设计
+
+<TextImage image="/images/games/the-scholars-side-quest/features/gameplay-dialogue-1.png" alt="对话系统截图" align="left">
+
+### 对话驱动的任务推进
+
+游戏采用**对话插件**实现核心任务功能：玩家必须与 NPC 交互才能推进任务，对话结束时自动触发过场动画。这种设计将叙事展示与任务状态更新合并为单一交互节点，减少了 UI 打断感。
+
+</TextImage>
+
+<TextImage image="/images/games/the-scholars-side-quest/features/gameplay-dialogue-2.png" alt="任务流程与玩法结合" align="right">
+
+### 收集任务设计
+
+李安遗忘症引发的支线：**8 张藏匿于信镇各处的书信**，分布在建筑角落、竹林深处与府邸密室。收集触发回忆性对话片段，拼合出李安的完整记忆。这一机制将探索玩法与叙事展示绑定，让地图探索具备额外的情感意义。
+
+</TextImage>
+
+<TextImage image="/images/games/the-scholars-side-quest/features/narrative-and-gameplay.png" alt="叙事与玩法结合图" caption="叙事流程与玩法系统交叉关系图" />
+
+---
+
+## 场景设计
+
+主要场景**望联府**（Wang Lian Mansion）是游戏核心区域。我负责整个场景的布局规划与关卡迭代，从参考收集、原型搭建到光照打磨，历经多轮迭代。
+
+<TextImage image="/images/games/the-scholars-side-quest/features/map-reference.png" alt="参考图收集" align="left">
+
+### 参考与概念阶段
+
+广泛收集中国古代建筑与园林参考，结合游戏世界的幻象主题进行风格化提炼：保留传统木构建筑元素，加入超现实的光效与粒子，营造"真实与幻象并存"的氛围。
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/map-basic-terrain.png',
+  '/images/games/the-scholars-side-quest/features/map-iteration.png',
+]} alts={['基础地形原型', '迭代后场景']} caption="左：基础地形原型；右：多轮迭代后的完整场景" />
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/demo-scene-1.png',
+  '/images/games/the-scholars-side-quest/features/demo-scene-2.png',
+]} alts={['入口区域', '内院区域']} caption="望联府：左为入口区，右为内院" />
+
+<TextImage image="/images/games/the-scholars-side-quest/features/lighting-contrast.png" alt="高对比度彩色光照" align="right">
+
+### 竹林光照设计
+
+竹林区域采用**高对比度彩色光照**（Strong Contrasting Color Lighting）策略：冷蓝色环境光 vs 暖橙色地面光，营造出如梦似幻的幻境感，同时辅助玩家辨别路径方向。
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/atmosphere.png',
+  '/images/games/the-scholars-side-quest/features/particle-effects.png',
+]} alts={['氛围光照效果', '粒子特效']} caption="氛围光效与粒子特效打磨（Polish 阶段）" />
+
+---
+
+## 动画制作
+
+<TextImage image="/images/games/the-scholars-side-quest/features/rigging.png" alt="角色绑定" align="left">
+
+### 角色绑定与制作流程
+
+我参与了主要角色的绑定（Rigging）工作，使用 **Maya** 完成骨骼搭建与权重绑定，随后在 Blender 进行蒙皮调整，最终导入 Unreal Engine 4 完成动画整合。
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/animation.png',
+  '/images/games/the-scholars-side-quest/features/unreal-sequence.png',
+]} alts={['动画过场效果', 'UE4 Sequencer 时间轴']} caption="左：过场动画效果；右：UE4 Sequencer 非线性时间轴" />
+
+### 13 段动画过场
+
+使用 UE4 **Sequencer** 非线性编辑工具制作 13 段过场动画。每段过场与任务节点绑定，关键情节（首次进入望联府、收集线索、最终揭示）均有专属动画强化叙事冲击力。
+
+<ImageGrid images={[
+  '/images/games/the-scholars-side-quest/features/cutscene-01.png',
+  '/images/games/the-scholars-side-quest/features/cutscene-02.png',
+  '/images/games/the-scholars-side-quest/features/cutscene-03.png',
+  '/images/games/the-scholars-side-quest/features/cutscene-04.png',
+]} columns={2} caption="部分过场动画截帧（共 13 段）" />
+
+---
+
+## 战斗设计
+
+<TextImage image="/images/games/the-scholars-side-quest/features/combat-01.png" alt="战斗截图" align="right">
+
+### 战斗定位
+
+作为支线任务设计，战斗部分以**轻量化动作**为主：短促的连击 + 闪避，服务于任务推进而非竞技对抗。我负责设定各区域的敌人数量、刷新节点与战斗区域边界，确保战斗节奏与叙事节奏的协调。
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/combat-02.png',
+  '/images/games/the-scholars-side-quest/features/combat-03.png',
+]} alts={['战斗截图 2', '战斗截图 3']} caption="关卡内战斗场景" />
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/cutscene-05.png',
+]} alts={['过场动画特写']} />

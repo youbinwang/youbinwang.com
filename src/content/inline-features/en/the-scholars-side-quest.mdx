@@ -1,3 +1,138 @@
 ---
 title: The Scholar's Side Quest — Key Features
 ---
+
+## Character and Narrative Design
+
+Set in the fictional **Letter Town**, players control "Hun" — a son of Hades trained as a top swordsman — to uncover the truth behind a town engulfed in illusions. I authored the 17-page narrative script, designed the character arcs and dialogue logic for 5 key NPCs, and tightly coupled story progression with scene unlocks via quest triggers.
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/character-hun.png',
+  '/images/games/the-scholars-side-quest/features/character-lian.png',
+  '/images/games/the-scholars-side-quest/features/character-scholar.png',
+  '/images/games/the-scholars-side-quest/features/character-xia.png',
+]} alts={['Hun (Main Character)', 'Li An', 'Scholar Lv Chuan', 'General Xia']} caption="Key characters (left to right): Hun, Li An, Scholar Lv Chuan, General Xia" />
+
+| Character | Role | Design Focus |
+|---|---|---|
+| **Hun** | Son of Hades, top swordsman | Player character — fast, forceful combat style |
+| **Li An** | Hidden illusionist family, born with forgetfulness | Key clue carrier, triggers the central quest line |
+| **Lv Chuan (Scholar)** | Official family but prefers novel writing | Quest giver, drives the main narrative |
+| **General Xia** | Great court general, now trapped by illusions | Pre-boss NPC, reveals world background |
+| **Cui Yun (Maid)** | Lv Chuan's maid | Supporting NPC, delivers clue information |
+
+<TextImage image="/images/games/the-scholars-side-quest/features/story-plot-narrative.png" alt="Story structure and narrative flow" align="right">
+
+### Narrative Structure
+
+The quest follows a **three-act structure**: Act I "Arrive & Investigate" (gather clues, meet characters), Act II "Break the Illusion" (untangle the NPC curse chains), Act III "Reveal the Truth" (boss fight + ending cutscene). Each dialogue sequence automatically triggers the corresponding animation cutscene, maintaining narrative momentum.
+
+</TextImage>
+
+---
+
+## Quest Flow Design
+
+<TextImage image="/images/games/the-scholars-side-quest/features/gameplay-dialogue-1.png" alt="Dialogue system screenshot" align="left">
+
+### Dialogue-Driven Progression
+
+The game uses a **dialogue plugin** to power core quest functionality: players must interact with NPCs to advance the quest, and cutscenes trigger automatically at the end of each dialogue sequence. This design merges narrative delivery with quest state updates into a single interaction node, minimizing UI interruption.
+
+</TextImage>
+
+<TextImage image="/images/games/the-scholars-side-quest/features/gameplay-dialogue-2.png" alt="Quest flow and gameplay integration" align="right">
+
+### Collectible Design
+
+A side quest spawned from Li An's forgetfulness: **8 letters hidden throughout Letter Town** — in building corners, bamboo groves, and mansion chambers. Collecting each letter triggers a memory-flashback dialogue fragment that assembles Li An's complete backstory. This mechanic ties exploration gameplay to narrative delivery, giving map traversal emotional stakes.
+
+</TextImage>
+
+<TextImage image="/images/games/the-scholars-side-quest/features/narrative-and-gameplay.png" alt="Narrative and gameplay relationship diagram" caption="Cross-reference between narrative flow and gameplay systems" />
+
+---
+
+## Level Design
+
+The primary setting, **Wang Lian Mansion**, is the game's core zone. I was responsible for the full layout planning and iterative level design — from reference gathering and prototype blocking to final lighting polish.
+
+<TextImage image="/images/games/the-scholars-side-quest/features/map-reference.png" alt="Reference collection for level design" align="left">
+
+### Reference and Concept Phase
+
+Gathered extensive references from traditional Chinese architecture and garden design, then applied stylized abstraction to fit the illusion-world theme: preserving wooden structural elements while adding surreal lighting and particle effects to create an atmosphere where reality and illusion coexist.
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/map-basic-terrain.png',
+  '/images/games/the-scholars-side-quest/features/map-iteration.png',
+]} alts={['Basic terrain prototype', 'After iteration']} caption="Left: Basic terrain blockout; Right: Scene after multiple iteration passes" />
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/demo-scene-1.png',
+  '/images/games/the-scholars-side-quest/features/demo-scene-2.png',
+]} alts={['Entrance area', 'Inner courtyard']} caption="Wang Lian Mansion: entrance (left) and inner courtyard (right)" />
+
+<TextImage image="/images/games/the-scholars-side-quest/features/lighting-contrast.png" alt="High-contrast color lighting in bamboo forest" align="right">
+
+### Bamboo Forest Lighting
+
+The bamboo forest area uses a **Strong Contrasting Color Lighting** strategy: cool blue ambient light against warm orange ground light. This creates a dream-like illusion atmosphere while also helping players distinguish directional paths — functional art direction.
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/atmosphere.png',
+  '/images/games/the-scholars-side-quest/features/particle-effects.png',
+]} alts={['Atmosphere lighting', 'Particle effects']} caption="Atmosphere lighting and particle effects (Polish phase)" />
+
+---
+
+## Animation Production
+
+<TextImage image="/images/games/the-scholars-side-quest/features/rigging.png" alt="Character rigging" align="left">
+
+### Character Rigging Pipeline
+
+I participated in the rigging of key characters — using **Maya** for skeleton construction and weight painting, adjusting skin deformation in Blender, then importing into Unreal Engine 4 for animation integration.
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/animation.png',
+  '/images/games/the-scholars-side-quest/features/unreal-sequence.png',
+]} alts={['Animation cutscene', 'UE4 Sequencer timeline']} caption="Left: Animation cutscene output; Right: UE4 Sequencer non-linear timeline" />
+
+### 13 Animation Cutscenes
+
+Produced 13 cutscene animations using UE4's **Sequencer** non-linear editing tool. Each cutscene is bound to a specific quest node — key narrative moments (first entry into Wang Lian Mansion, clue discovery, final revelation) all have dedicated animations to amplify emotional impact.
+
+<ImageGrid images={[
+  '/images/games/the-scholars-side-quest/features/cutscene-01.png',
+  '/images/games/the-scholars-side-quest/features/cutscene-02.png',
+  '/images/games/the-scholars-side-quest/features/cutscene-03.png',
+  '/images/games/the-scholars-side-quest/features/cutscene-04.png',
+]} columns={2} caption="Selected cutscene frames (13 total)" />
+
+---
+
+## Combat Design
+
+<TextImage image="/images/games/the-scholars-side-quest/features/combat-01.png" alt="Combat screenshot" align="right">
+
+### Combat Philosophy
+
+As a side quest, the combat system is intentionally **lightweight**: short combo chains and dodge rolls that serve quest progression rather than competitive depth. My responsibilities included setting enemy counts per area, spawn point placement, and combat zone boundaries — ensuring that combat pacing reinforced rather than disrupted the narrative rhythm.
+
+</TextImage>
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/combat-02.png',
+  '/images/games/the-scholars-side-quest/features/combat-03.png',
+]} alts={['Combat screenshot 2', 'Combat screenshot 3']} caption="In-level combat encounters" />
+
+<ImageRow images={[
+  '/images/games/the-scholars-side-quest/features/cutscene-05.png',
+]} alts={['Cutscene close-up']} />

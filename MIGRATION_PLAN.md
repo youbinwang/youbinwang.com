@@ -429,7 +429,7 @@ node ./node_modules/astro/bin/astro.mjs preview
 - [ ] 1.8 完整验证（build + preview）
 
 ### Phase 2（每个项目）
-- [ ] the-scholars-side-quest（试点）
+- [x] the-scholars-side-quest（试点）✅ 2026-04-20 完成 — 中英文 MDX + 29 张 features 图
 - [ ] on-the-road
 - [ ] the-camera
 - [ ] aid-master
