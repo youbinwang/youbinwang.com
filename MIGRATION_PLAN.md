@@ -89,27 +89,6 @@ src/content/
 6. 返回 Games 链接
 ```
 
-### 图片目录规范（Phase 2 强制）
-
-**所有 KEY FEATURES 用图必须按 section 分子目录**，不允许平铺加前缀：
-
-```text
-public/images/games/{slug}/features/
-├── {section-slug-1}/
-│   ├── 01.{ext}
-│   ├── 02.{ext}
-│   └── ...
-├── {section-slug-2}/
-│   ├── 01.{ext}
-│   └── ...
-└── ...
-```
-
-- `{section-slug-N}` = 该 section 对应 MDX h2 的 kebab-case slug（去掉中文/特殊字符，与 TOC anchor 一致），例：`character`、`gameplay`、`map`、`combat`、`animation`、`cutscene`、`gameplay-rules`
-- 编号 `01.png` `02.png` 起按 section 内出现顺序
-- **支持 `.png` `.jpg` `.jpeg`**，扩展名跟随源文件
-- 试点项目 `the-scholars-side-quest` 当前使用「前缀分类」平铺（如 `features/character-hun.png`），列为可选 retro-fit 任务，新项目一律按子目录方案
-
 ### MDX layout 组件库
 
 新建 `src/components/mdx/`，全局自动注入到所有 MDX 文件：
@@ -302,67 +281,42 @@ node ./node_modules/astro/bin/astro.mjs build
 
 **目标**：把 10 个项目的 KEY FEATURES 内容迁移到 inline-features collection。
 
-#### 自动化脚本（已就位）
-
-`scripts/migrate-game-html.mjs` 解析 Squarespace HTML 并生成 5 个产物到 `tmp/migration/{slug}/`：
-
-| 产物 | 用途 |
-|---|---|
-| `outline.md` | 按 h3/h4 边界分 section 的内容大纲（含段落首句 + 紧邻图片清单），用于人脑 grok 原结构 |
-| `images.json` | 100% 图片清单 + 建议的 `{section-slug}/NN.ext` 目标路径 |
-| `copy-images.sh` | 基于 images.json 生成的 `cp` 批处理（review 后执行） |
-| `{slug}.draft.mdx` | 中文 MDX 骨架（h2 框架 + TODO 翻译占位 + layout 组件占位） |
-| `en/{slug}.draft.mdx` | 英文 MDX 骨架（直接搬原 Squarespace 文案） |
-
-可用 slug：`elemental-realm` / `shepherds` / `the-camera` / `on-the-road` / `aid-master` / `baihua-pavilion` / `greedy-roots` / `elliot-fig` / `stars-chat`（`echo-quest` 和 `the-scholars-side-quest` 已完成，跳过）。
-
 #### 通用流程（每个项目）
 
-```bash
-# 1. 预览（dry-run，不写入）
-npm run migrate -- --slug on-the-road --dry-run
+1. **解析本地 HTML**
+   - 路径：`C:\Users\wangyoubin\Desktop\youbinwang Site\Game Projects\{项目名}\`
+   - 提取：section 结构、headings、文案、图片引用
+   - 输出：结构化 outline（送给 AI 作为生成 MDX 的输入）
 
-# 2. 实际生成
-npm run migrate -- --slug on-the-road
+2. **复制图片到 public/**
+   - 源：`{项目名} — Youbin Wang_files/*.png` 等
+   - 目标：`public/images/games/{slug}/features/{kebab-name}.png`
+   - 命名规则：去掉 URL encoding、空格变 `-`、全小写
 
-# 3. 打开 tmp/migration/on-the-road/outline.md，规划最终 MDX section 结构
-# 4. 编辑 tmp/migration/on-the-road/images.json：
-#    - 调整 suggestedSection（合并/拆分 section 时改）
-#    - 调整 suggestedFilename（按展示顺序重新编号）
-#    - 删除装饰图（hero / 重复占位等）
+3. **生成第一版 MDX**
+   - 创建 `src/content/inline-features/{slug}.mdx`（中文）+ `src/content/inline-features/en/{slug}.mdx`（英文）
+   - 用 `<TextImage>` `<ImageRow>` `<ImageGrid>` 组件做图文混排
+   - 中文翻译策略按 CLAUDE.md：英文原文项目 → 中文版暂保留英文文案（不翻译）
 
-# 5. 复制图片
-bash tmp/migration/on-the-road/copy-images.sh
+4. **人工精修**
+   - 检查 layout 组件选择是否合适
+   - 调整图片裁切位置 / size
+   - 校对中英文文案
+   - 增删 headings 让 TOC 合理（建议每个项目 3-6 个 h2）
 
-# 6. 精修 MDX 骨架，移到正式位置
-mv tmp/migration/on-the-road/on-the-road.draft.mdx \
-   src/content/inline-features/on-the-road.mdx
-mv tmp/migration/on-the-road/en/on-the-road.draft.mdx \
-   src/content/inline-features/en/on-the-road.mdx
-
-# 7. 中文翻译（找到所有 {/* TODO 翻译: ... */} 注释，写中文文案替换）
-
-# 8. 验证
-npm run build
-```
-
-#### 脚本能做什么、不能做什么
-
-| ✅ 自动 | ⚠️ 仍需人工 |
-|---|---|
-| 提取所有 h1-h6 + p + img（按文档顺序，去重）| 翻译中文文案（脚本只生成 TODO 占位）|
-| 按 h3/h4 边界自动分 section + slug-ify | 合并 / 拆分 section（Squarespace 把每个卡片当 h4，碎片化严重，需人工归并）|
-| 1 张图 → `<TextImage>`，2-4 张 → `<ImageRow>`，≥5 张 → `<ImageGrid>` | layout 组件最终选择（上述只是默认猜测）|
-| 复制 + 重命名图片到 `features/{section}/NN.ext` | 删除装饰图（hero / 卡片占位等）|
-| 生成中英文双版本骨架 | 校对中英文文案、图片裁切位置、caption 文字 |
+5. **构建验证**
+   ```bash
+   node ./node_modules/astro/bin/astro.mjs build
+   ```
+   访问 `/games/{slug}/` 检查渲染效果。
 
 #### 项目顺序建议
 
 | 优先级 | 项目 | 理由 |
 |---|---|---|
-| ✅ 完成 | the-scholars-side-quest | 试点项目，已完整跑通流程 |
-| ★★ | on-the-road | 内容丰富（卡片/规则/玩法），可验证 layout 组件多样性 |
-| ★★ | the-camera | 2D RPG 叙事，结构相对简单 |
+| ★★★ | the-scholars-side-quest | 试点项目，HTML 已解析完成，验证完整流程 |
+| ★★ | on-the-road | 内容丰富（角色/规则/玩法），可验证 layout 组件多样性 |
+| ★★ | the-camera | 桌游类，结构相对简单 |
 | ★ | aid-master / baihua-pavilion / shepherds / elemental-realm / greedy-roots / elliot-fig / stars-chat | 后续按内容丰富度排序 |
 
 #### 每个项目的独立 prompt 模板
