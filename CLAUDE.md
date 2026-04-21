@@ -65,6 +65,8 @@ Youbin Wang 的个人作品集网站，基于 Astro + Starlight + Cloudflare Pag
 | `<ImageRow>` | 横排图组（2-4 张并列等高） |
 | `<ImageGrid>` | 网格图组（参数 `columns: 2 \| 3 \| 4`） |
 
+**KEY FEATURES 图片目录规范（强制）**：每个项目的 features 用图必须按 section 分子目录，路径 `public/images/games/{slug}/features/{section-slug}/01.{ext}`。`{section-slug}` 与 MDX h2 的 TOC anchor 一致。详见 [MIGRATION_PLAN.md](MIGRATION_PLAN.md) 第二节。试点项目 `the-scholars-side-quest` 当前用「前缀分类」平铺，列为可选 retro-fit 任务。
+
 ### 文档系统（`/docs/` 前缀）
 
 - 仅服务长篇深度技术文档（当前只有 echo-quest）
