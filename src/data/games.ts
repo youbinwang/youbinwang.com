@@ -68,7 +68,7 @@ export const games: GameProject[] = [
     keywords: { en: 'Combat & Level Design', cn: '战斗与关卡设计 Demo' },
     category: 'combat-level',
     tags: { genre: '3D Action', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
-    coverImage: '', // TODO: add cover image
+    coverImage: '/images/games/echo-quest/cover.png',
     heroImage: '/images/games/echo-quest/hero.png',
     heroPosition: '50% 30%',
     meta: {
@@ -98,7 +98,7 @@ export const games: GameProject[] = [
     keywords: { en: 'Gameplay, Combat and Level Design Demo', cn: '玩法、战斗与关卡设计 Demo' },
     category: 'combat-level',
     tags: { genre: 'ARPG / Puzzle', engine: 'UE5', discipline: 'Combat & Level Design', scope: 'Technical Showcase' },
-    coverImage: '', // TODO: add cover image
+    coverImage: '/images/games/elemental-realm/cover.png',
     heroImage: '/images/games/elemental-realm/hero.png',
     meta: {
       role: { en: 'Personal Project, Gameplay / Level / Combat Designer, Unreal Engineer', cn: '个人作品，玩法、战斗、关卡策划，Unreal Engine 程序' },
